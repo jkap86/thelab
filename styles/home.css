@@ -1,0 +1,80 @@
+div#homepage {
+  height: inherit;
+  width: inherit;
+  overflow: hidden;
+  position: relative;
+  filter: contrast(2);
+}
+
+div.home_title,
+div.home_wrapper {
+  height: 80vmin;
+  width: 80vmin;
+  margin: auto;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-direction: column;
+}
+
+div.home_title > div {
+  margin-top: 2rem;
+}
+
+img.homelogo {
+  width: inherit;
+  height: inherit;
+  filter: drop-shadow(0 0 3rem white) contrast(2) hue-rotate(50deg);
+  opacity: 0.5;
+}
+
+div.home_title > strong {
+  color: var(--color1);
+  font-family: var(--font1);
+  font-size: 20vmin;
+  letter-spacing: 2vmin;
+  text-shadow: 0 0 1rem black;
+}
+
+div.user_input {
+  font-size: 5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+div.user_input > input {
+  background-color: var(--color1);
+  border-radius: 5rem;
+  border: 2rem ridge var(--color2);
+  width: 50rem;
+  opacity: 0.8;
+  padding: 1rem 2rem;
+  box-shadow: 0 0 3rem var(--color1);
+}
+div.user_input > a {
+  font-size: 4rem;
+  background-color: var(--color2);
+  border-radius: 10rem;
+  padding: 1rem 2rem;
+  border: 0.5rem double white;
+  box-shadow: 0 0 3rem var(--color1);
+}
+
+div#homepage select,
+div#homepage option {
+  display: block;
+  background-color: maroon;
+  color: var(--color1);
+  font-size: 5rem;
+  appearance: none;
+  padding: 1rem 2rem;
+  border: 1rem groove var(--color1);
+  border-radius: 10rem;
+  text-align: center;
+}

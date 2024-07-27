@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
+import "../styles/globals.css";
+import ProviderWrapper from "@/redux/ProviderWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +17,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <head>
+        <meta
+          name="viewport"
+          content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1"
+        />
+        <link href="https://fonts.cdnfonts.com/css/pulang" rel="stylesheet" />
+        <link href="https://fonts.cdnfonts.com/css/chillit" rel="stylesheet" />
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+        />
+      </head>
+      <body className={inter.className}>
+        <ProviderWrapper>{children}</ProviderWrapper>
+      </body>
     </html>
   );
 }

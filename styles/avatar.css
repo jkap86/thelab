@@ -1,0 +1,10 @@
+div.avatar {
+  width: 100%;
+  text-align: left;
+}
+img.avatar {
+  width: 5rem;
+  height: 5rem;
+  vertical-align: middle;
+  padding-right: 1rem;
+}
