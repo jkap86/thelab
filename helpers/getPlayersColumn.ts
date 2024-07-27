@@ -61,7 +61,7 @@ export const getPlayersColumn = (
       break;
     case "KTC":
       text = ktc_current[player_obj.player_id];
-      trendColor = getTrendColor_Range(parseInt(text), 0, 10000);
+      trendColor = getTrendColor_Range(text, 0, 10000);
       break;
     default:
       text = "-";
@@ -106,7 +106,7 @@ export const getPlayersSortValue = (
       sortValue = player_obj.age || 999;
       break;
     case "KTC":
-      sortValue = parseInt(ktc_current[player_obj.player_id]) || 0;
+      sortValue = ktc_current[player_obj.player_id] || 0;
       break;
     default:
       sortValue = playershare.owned.length;
