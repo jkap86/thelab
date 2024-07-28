@@ -79,7 +79,7 @@ export const fetchAllPlayers = () => async (dispatch: AppDispatch) => {
 export const fetchKTC_dates = () => async (dispatch: AppDispatch) => {
   try {
     const response: { data: { date: string; values: string[][] } } =
-      await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ktc/current`);
+      await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}ktc/current`);
 
     dispatch({
       type: "SET_KTC_DATES",
