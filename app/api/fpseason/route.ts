@@ -5,6 +5,7 @@ import fs from "fs";
 type playerStat = {
   player_id: string;
   stats: { [key: string]: number };
+  player: { injury_status: string };
 };
 
 export async function GET(req: NextRequest) {
@@ -25,10 +26,17 @@ export async function GET(req: NextRequest) {
       const fp = fpseason.data
         .filter((player_stat: playerStat) => player_stat.stats.pts_ppr)
         .map((player_stat: playerStat) => {
-          return { player_id: player_stat.player_id, stats: player_stat.stats };
+          return {
+            player_id: player_stat.player_id,
+            stats: player_stat.stats,
+            injury_status: player_stat.player.injury_status || "",
+          };
         });
 
-      fs.writeFileSync("./data/fpseason.json", JSON.stringify(fp));
+      fs.writeFileSync(
+        "./data/fpseason.json",
+        JSON.stringify({ data: fp, updatedAt: new Date().getTime() })
+      );
 
       return NextResponse.json(fp, { status: 200 });
     } catch (err: any) {

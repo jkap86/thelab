@@ -16,6 +16,38 @@ export const getStandingsColumn = (
   let sortby;
 
   switch (column) {
+    case "T KTC":
+      sortby =
+        roster.players?.reduce((acc, cur) => acc + ktc_current[cur], 0) || 0;
+
+      text = sortby.toLocaleString("en-US");
+
+      const ktc_values_t = rosters.map(
+        (r) => r.players?.reduce((acc, cur) => acc + ktc_current[cur], 0) || 0
+      );
+
+      trendColor = getTrendColor_Range(
+        sortby,
+        Math.min(...ktc_values_t),
+        Math.max(...ktc_values_t)
+      );
+      break;
+    case "S KTC":
+      sortby =
+        roster.starters?.reduce((acc, cur) => acc + ktc_current[cur], 0) || 0;
+
+      text = sortby.toLocaleString("en-US");
+
+      const ktc_values_s = rosters.map(
+        (r) => r.starters?.reduce((acc, cur) => acc + ktc_current[cur], 0) || 0
+      );
+
+      trendColor = getTrendColor_Range(
+        sortby,
+        Math.min(...ktc_values_s),
+        Math.max(...ktc_values_s)
+      );
+      break;
     case "S Proj":
       sortby = roster?.proj_ros_s || 0;
 

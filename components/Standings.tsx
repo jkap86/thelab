@@ -121,6 +121,8 @@ const Standings: React.FC<StandingsProps> = ({
             { text: "Losses", abbrev: "L" },
             { text: "Total ROS Proj", abbrev: "T Proj" },
             { text: "Starters ROS Proj", abbrev: "S Proj" },
+            { text: "Total KTC Value", abbrev: "T KTC" },
+            { text: "Starters KTC Value", abbrev: "S KTC" },
           ]}
           columnText={standingsColumn}
           setColumnText={setStandingsColumn}

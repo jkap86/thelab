@@ -1,5 +1,19 @@
-import { League, Allplayer } from "@/lib/types";
+import { League, Allplayer, LeagueSettings } from "@/lib/types";
 import { getTrendColor_Percentage, getTrendColor_Range } from "./getTrendColor";
+
+export const isIrEligible = (
+  injury_status: string,
+  settings: LeagueSettings
+) => {
+  switch (injury_status.toLowerCase()) {
+    case "na":
+      return settings.reserve_allow_na;
+    case "doubtful":
+      return settings.reserve_allow_doubtful;
+    default:
+      return 0;
+  }
+};
 
 export const getLeaguesColumn = (
   col: string,

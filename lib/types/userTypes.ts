@@ -16,18 +16,22 @@ export type LeagueDb = {
   updatedat: Date;
 };
 
+export type LeagueSettings = {
+  taxi_slots: number;
+  reserve_slots: number;
+  best_ball: number;
+  type: number;
+  reserve_allow_na: number;
+  reserve_allow_doubtful: number;
+};
+
 export type League = {
   index: number;
   league_id: string;
   name: string;
   avatar: string;
   season: string;
-  settings: {
-    taxi_slots: number;
-    reserve_slots: number;
-    best_ball: number;
-    type: number;
-  };
+  settings: LeagueSettings;
   scoring_settings: { [key: string]: number };
   roster_positions: string[];
   rosters: Roster[];

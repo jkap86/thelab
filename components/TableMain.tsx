@@ -1,5 +1,6 @@
 import Search from "./Search";
 import "../styles/tableMain.css";
+import { useEffect } from "react";
 
 type ClickHandler = (id: any) => void;
 
@@ -50,6 +51,12 @@ const TableMain: React.FC<TableMainProps> = ({
   searches,
 }) => {
   const body = page ? data.slice((page - 1) * 25, (page - 1) * 25 + 25) : data;
+
+  useEffect(() => {
+    if (data.length <= 25) {
+      setPage && setPage(1);
+    }
+  }, [data]);
 
   return (
     <>

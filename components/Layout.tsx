@@ -31,7 +31,6 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
     errorLeagues,
   } = useSelector((state: RootState) => state.user);
 
-  console.log({ user });
   useEffect(() => {
     if (!allplayers && !isLoadingAllplayers) {
       dispatch(fetchAllPlayers());
