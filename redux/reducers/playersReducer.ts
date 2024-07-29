@@ -35,9 +35,9 @@ export interface PlayersState {
 
 const initialState: PlayersState = {
   column1: "# Own",
-  column2: "% Own",
-  column3: "# Avail",
-  column4: "Age",
+  column2: "KTC",
+  column3: "Age",
+  column4: "# Avail",
   sortPlayersBy: {
     column: 1,
     asc: false,
@@ -45,10 +45,10 @@ const initialState: PlayersState = {
   searchedPlayer: false,
   activePlayer: false,
   detailTab: "Owned",
-  ownedColumn1: "Wins",
-  ownedColumn2: "Losses",
-  ownedColumn3: "FP",
-  ownedColumn4: "FPA",
+  ownedColumn1: "S Proj Rk",
+  ownedColumn2: "S KTC Rk",
+  ownedColumn3: "T Proj Rk",
+  ownedColumn4: "T KTC Rk",
   sortOwnedBy: {
     column: 0,
     asc: false,

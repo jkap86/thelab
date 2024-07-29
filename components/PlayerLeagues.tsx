@@ -62,8 +62,8 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
     { text: "Fantasy Points Against", abbrev: "FPA" },
     { text: "Total Projected Points Rank", abbrev: "T Proj Rk" },
     { text: "Starter Projected Points Rank", abbrev: "S Proj Rk" },
-    { text: "KTC Total Rank", abbrev: "KTC Rnk" },
-    { text: "KTC Starters Rank", abbrev: "KTC S Rnk" },
+    { text: "KTC Total Rank", abbrev: "T KTC Rk" },
+    { text: "KTC Starters Rank", abbrev: "S KTC Rk" },
   ];
 
   const takenOptions = [...ownedOptions];

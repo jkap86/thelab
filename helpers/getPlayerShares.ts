@@ -96,7 +96,7 @@ export const getOptimalStarters = (
       const slot_options = players
         ?.filter((player) =>
           position_map[slot.slot].includes(
-            allplayers[player.player_id].position
+            allplayers[player.player_id]?.position
           )
         )
         .sort((a, b) => b.proj - a.proj);

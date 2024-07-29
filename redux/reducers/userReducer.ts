@@ -74,8 +74,7 @@ const userReducer = (state = initialState, action: UserActionTypes) => {
         draft.errorSyncing = action.payload;
         break;
       case "RESET_STATE":
-        draft = initialState;
-        break;
+        return initialState;
       default:
         break;
     }

@@ -31,8 +31,7 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
     errorLeagues,
   } = useSelector((state: RootState) => state.user);
 
-  console.log({ leagues });
-
+  console.log({ user });
   useEffect(() => {
     if (!allplayers && !isLoadingAllplayers) {
       dispatch(fetchAllPlayers());
@@ -49,11 +48,7 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
       dispatch(resetState());
     } else if (!user && !isLoadingUser && !errorUser) {
       dispatch(fetchUser(username));
-    }
-  }, [username, user, isLoadingUser, errorUser, dispatch, fetchUser]);
-
-  useEffect(() => {
-    if (
+    } else if (
       user &&
       !errorUser &&
       !leagues &&
@@ -64,13 +59,17 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
       dispatch(fetchLeagues(user.user_id, fpseason, allplayers));
     }
   }, [
-    user,
-    leagues,
-    isLoadingLeagues,
-    dispatch,
-    fetchLeagues,
+    username,
     allplayers,
     fpseason,
+    user,
+    leagues,
+    isLoadingUser,
+    errorUser,
+    isLoadingLeagues,
+    dispatch,
+    fetchUser,
+    fetchLeagues,
   ]);
 
   return (errorUser && errorUser) || (errorLeagues && errorLeagues) ? (

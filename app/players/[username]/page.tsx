@@ -18,6 +18,11 @@ import {
 } from "@/helpers/getPlayersColumn";
 import Avatar from "@/components/Avatar";
 import PlayerLeagues from "@/components/PlayerLeagues";
+import {
+  filterLeagueIds,
+  filterLeagues,
+  filterLmLeagues,
+} from "@/helpers/filterLeagues";
 
 interface PlayersProps {
   params: { username: string };
@@ -45,7 +50,8 @@ const Players: React.FC<PlayersProps> = ({ params }) => {
   const columnOptions = [
     { text: "# Owned", abbrev: "# Own" },
     { text: "% Owned", abbrev: "% Own" },
-    { text: "% Available", abbrev: "% Avail" },
+    { text: "# Taken", abbrev: "# Taken" },
+    { text: "# Available", abbrev: "# Avail" },
     { text: "Age", abbrev: "Age" },
     { text: "KTC Dynasty Value", abbrev: "KTC" },
   ];
@@ -204,9 +210,36 @@ const Players: React.FC<PlayersProps> = ({ params }) => {
           <PlayerLeagues
             type={2}
             player_id={player_id}
-            owned={playershares[player_id].owned}
-            taken={playershares[player_id].taken}
-            available={playershares[player_id].available}
+            owned={
+              (leagues &&
+                filterLeagueIds(
+                  playershares[player_id].owned,
+                  leagues,
+                  type1,
+                  type2
+                )) ||
+              []
+            }
+            taken={
+              (leagues &&
+                filterLmLeagues(
+                  playershares[player_id].taken,
+                  leagues,
+                  type1,
+                  type2
+                )) ||
+              []
+            }
+            available={
+              (leagues &&
+                filterLeagueIds(
+                  playershares[player_id].available,
+                  leagues,
+                  type1,
+                  type2
+                )) ||
+              []
+            }
           />
         ),
       };

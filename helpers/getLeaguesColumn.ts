@@ -1,6 +1,5 @@
 import { League, Allplayer } from "@/lib/types";
 import { getTrendColor_Percentage, getTrendColor_Range } from "./getTrendColor";
-import { getPlayerProjection } from "./getPlayerShares";
 
 export const getLeaguesColumn = (
   col: string,
@@ -37,7 +36,7 @@ export const getLeaguesColumn = (
 
       trendColor = getTrendColor_Range(t_rank, 1, league.rosters.length, true);
       break;
-    case "KTC Rnk":
+    case "T KTC Rk":
       const values = league.rosters
         .map((roster) => {
           return {
@@ -56,7 +55,7 @@ export const getLeaguesColumn = (
 
       trendColor = getTrendColor_Range(text, 0, league.rosters.length, true);
       break;
-    case "KTC S Rnk":
+    case "S KTC Rk":
       const values_s = league.rosters
         .map((roster) => {
           return {
@@ -185,7 +184,7 @@ export const getLeaguesSortValue = (
           (roster) => roster.roster_id === league.userRoster.roster_id
         );
       break;
-    case "KTC Rnk":
+    case "T KTC Rk":
       const values = league.rosters
         .map((roster) => {
           return {
@@ -201,7 +200,7 @@ export const getLeaguesSortValue = (
         values.findIndex((v) => v.roster_id === league.userRoster.roster_id) +
         1;
       break;
-    case "KTC S Rnk":
+    case "S KTC Rk":
       const values_s = league.rosters
         .map((roster) => {
           return {

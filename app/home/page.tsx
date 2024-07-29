@@ -5,7 +5,6 @@ import Link from "next/link";
 import thelablogo from "../../public/images/thelab.png";
 import Image from "next/image";
 import "../../styles/home.css";
-import axios from "axios";
 
 const Hompage: React.FC = () => {
   const [tab, setTab] = useState("Leagues");

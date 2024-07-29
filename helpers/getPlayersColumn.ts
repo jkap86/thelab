@@ -1,6 +1,10 @@
 import { Allplayer, League, User } from "@/lib/types";
 import { getTrendColor_Range } from "./getTrendColor";
-import { filterLeagueIds, filterLeagues } from "./filterLeagues";
+import {
+  filterLeagueIds,
+  filterLeagues,
+  filterLmLeagues,
+} from "./filterLeagues";
 
 export const getPlayersColumn = (
   col: string,
@@ -23,6 +27,14 @@ export const getPlayersColumn = (
     (leagues && filterLeagues(Object.values(leagues), type1, type2)) || [];
   const owned =
     (leagues && filterLeagueIds(playershare.owned, leagues, type1, type2)) ||
+    [];
+  const taken =
+    (leagues && filterLmLeagues(playershare.taken, leagues, type1, type2)) ||
+    [];
+
+  const available =
+    (leagues &&
+      filterLeagueIds(playershare.available, leagues, type1, type2)) ||
     [];
 
   let text, trendColor;
@@ -47,15 +59,17 @@ export const getPlayersColumn = (
       trendColor = getTrendColor_Range(text / total.length, 0, 0.25);
       break;
     case "% Own":
-      text =
-        Math.round(
-          (playershare.owned.length * 1000) / Object.keys(leagues).length
-        ) / 10;
+      text = Math.round((owned.length * 1000) / total.length) / 10;
 
       trendColor = getTrendColor_Range(text, 0, 25);
       break;
+    case "# Taken":
+      text = taken.length;
+
+      trendColor = getTrendColor_Range(text, 0, 0.75);
+      break;
     case "# Avail":
-      text = playershare.available.length;
+      text = available.length;
 
       trendColor = getTrendColor_Range(text, 0, 0.25);
       break;

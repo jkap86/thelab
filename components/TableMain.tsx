@@ -124,69 +124,83 @@ const TableMain: React.FC<TableMainProps> = ({
           </tr>
         </thead>
         <tbody>
-          {body.map((row) => {
-            return (
-              <tr
-                key={row.id}
-                className={active === row.id && half ? "sticky" : ""}
-              >
-                <td
-                  colSpan={headers.reduce((acc, cur) => acc + cur.colspan, 0)}
+          {body.length > 0 ? (
+            body.map((row) => {
+              return (
+                <tr
+                  key={row.id}
+                  className={active === row.id && half ? "sticky" : ""}
                 >
-                  <table className="main_content">
-                    <tbody>
-                      <tr
-                        className={active === row.id ? "active" : ""}
-                        onClick={() =>
-                          setActive &&
-                          (active === row.id
-                            ? setActive("")
-                            : setActive(row.id))
-                        }
-                      >
-                        {row.columns.map(
-                          (
-                            col: {
-                              text: string;
-                              colspan: number;
-                              classname: string;
-                              style?: { [key: string]: any };
-                            },
-                            index: number
-                          ) => {
-                            return (
-                              <td
-                                key={index}
-                                colSpan={col.colspan}
-                                className={"content " + col.classname}
-                                style={col.style}
-                              >
-                                <div>{col.text}</div>
-                              </td>
-                            );
-                          }
-                        )}
-                      </tr>
-                    </tbody>
-                    {active === row.id && (
+                  <td
+                    colSpan={headers.reduce((acc, cur) => acc + cur.colspan, 0)}
+                  >
+                    <table className="main_content">
                       <tbody>
-                        <tr className="detail">
-                          <td
-                            colSpan={headers.reduce(
-                              (acc, cur) => acc + cur.colspan,
-                              0
-                            )}
-                          >
-                            {row.secondaryTable}
-                          </td>
+                        <tr
+                          className={active === row.id ? "active" : ""}
+                          onClick={() =>
+                            setActive &&
+                            (active === row.id
+                              ? setActive("")
+                              : setActive(row.id))
+                          }
+                        >
+                          {row.columns.map(
+                            (
+                              col: {
+                                text: string;
+                                colspan: number;
+                                classname: string;
+                                style?: { [key: string]: any };
+                              },
+                              index: number
+                            ) => {
+                              return (
+                                <td
+                                  key={index}
+                                  colSpan={col.colspan}
+                                  className={"content " + col.classname}
+                                  style={col.style}
+                                >
+                                  <div>{col.text}</div>
+                                </td>
+                              );
+                            }
+                          )}
                         </tr>
                       </tbody>
-                    )}
-                  </table>
-                </td>
-              </tr>
-            );
-          })}
+                      {active === row.id && (
+                        <tbody>
+                          <tr className="detail">
+                            <td
+                              colSpan={headers.reduce(
+                                (acc, cur) => acc + cur.colspan,
+                                0
+                              )}
+                            >
+                              {row.secondaryTable}
+                            </td>
+                          </tr>
+                        </tbody>
+                      )}
+                    </table>
+                  </td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td colSpan={headers.reduce((acc, cur) => acc + cur.colspan, 0)}>
+                <table className="main_content">
+                  <tbody>
+                    <tr>
+                      <td className="content">---</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
       {page ? (

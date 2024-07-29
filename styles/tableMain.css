@@ -40,9 +40,10 @@ td.content.sort {
 
 th.main_header {
   height: 7rem;
-  font-size: 3rem;
+  font-size: 2.5rem;
   background-image: radial-gradient(white -250%, black 100%);
   box-shadow: inset 0 0 1rem black;
+  white-space: nowrap;
 }
 
 th.main_header div {

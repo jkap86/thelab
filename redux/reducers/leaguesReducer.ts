@@ -21,20 +21,20 @@ export interface LeagueState {
 }
 
 const initialState: LeagueState = {
-  column1: "Wins",
-  column2: "Losses",
-  column3: "FP",
-  column4: "FPA",
+  column1: "S Proj Rk",
+  column2: "S KTC Rk",
+  column3: "T Proj Rk",
+  column4: "S Proj Rk",
   activeLeague: false,
   sortLeaguesBy: {
-    column: 1,
+    column: 0,
     asc: false,
   },
   searchedLeague: false,
-  standingsColumn: "W",
+  standingsColumn: "S Proj",
   standingsTab: "Standings",
   standingsTab2: "",
-  teamColumn: "Age",
+  teamColumn: "Proj",
   page: 1,
 };
 

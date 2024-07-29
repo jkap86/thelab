@@ -61,8 +61,8 @@ const Leagues: React.FC<LeaguesProps> = ({ params }) => {
     { text: "Open IR Spots", abbrev: "O IR S" },
     { text: "Total Projected Points Rank", abbrev: "T Proj Rk" },
     { text: "Starter Projected Points Rank", abbrev: "S Proj Rk" },
-    { text: "KTC Total Rank", abbrev: "KTC Rnk" },
-    { text: "KTC Starters Rank", abbrev: "KTC S Rnk" },
+    { text: "Total KTC Rank", abbrev: "T KTC Rk" },
+    { text: "Starters KTC Rank", abbrev: "S KTC Rk" },
   ];
 
   const headers_sort = [
