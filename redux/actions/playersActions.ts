@@ -24,6 +24,22 @@ interface setSortOwnedByAction {
   };
 }
 
+interface setSortTakenByAction {
+  type: "SET_SORT_TAKEN";
+  payload: {
+    col: 0 | 1 | 2 | 3 | 4;
+    asc: boolean;
+  };
+}
+
+interface setSortAvailableByAction {
+  type: "SET_SORT_AVAILABLE";
+  payload: {
+    col: 0 | 1 | 2 | 3 | 4;
+    asc: boolean;
+  };
+}
+
 interface setSearchedPlayerAction {
   type: "SET_SEARCHED_PLAYER";
   payload: string | false;
@@ -60,7 +76,9 @@ export type PlayersActionTypes =
   | setPlayersPageAction
   | setDetailColumnAction
   | setPlayersDetailTabAction
-  | setSortOwnedByAction;
+  | setSortOwnedByAction
+  | setSortTakenByAction
+  | setSortAvailableByAction;
 
 export const setPlayersColumn = (
   col: 1 | 2 | 3 | 4,
@@ -89,6 +107,28 @@ export const setSortOwnedBy = (
   asc: boolean
 ): setSortOwnedByAction => ({
   type: "SET_SORT_OWNED",
+  payload: {
+    col: col,
+    asc: asc,
+  },
+});
+
+export const setSortTakenBy = (
+  col: 0 | 1 | 2 | 3 | 4,
+  asc: boolean
+): setSortTakenByAction => ({
+  type: "SET_SORT_TAKEN",
+  payload: {
+    col: col,
+    asc: asc,
+  },
+});
+
+export const setSortAvailableBy = (
+  col: 0 | 1 | 2 | 3 | 4,
+  asc: boolean
+): setSortAvailableByAction => ({
+  type: "SET_SORT_AVAILABLE",
   payload: {
     col: col,
     asc: asc,

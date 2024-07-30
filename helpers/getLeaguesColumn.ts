@@ -1,4 +1,4 @@
-import { League, Allplayer, LeagueSettings } from "@/lib/types";
+import { League, Allplayer, LeagueSettings, Roster } from "@/lib/types";
 import { getTrendColor_Percentage, getTrendColor_Range } from "./getTrendColor";
 
 export const isIrEligible = (
@@ -20,8 +20,13 @@ export const getLeaguesColumn = (
   league: League,
   ktc_current: { [key: string]: number },
   fpseason: { [key: string]: { [key: string]: number } },
-  allplayers: { [key: string]: Allplayer }
+  allplayers: { [key: string]: Allplayer },
+  lmroster?: Roster
 ) => {
+  const wins = league.rosters.map((roster) => roster.wins);
+  const min_wins = Math.min(...wins);
+  const max_wins = Math.max(...wins);
+
   let text;
   let trendColor;
 
@@ -97,10 +102,6 @@ export const getLeaguesColumn = (
     case "Wins":
       text = league.userRoster.wins;
 
-      const wins = league.rosters.map((roster) => roster.wins);
-      const min_wins = Math.min(...wins);
-      const max_wins = Math.max(...wins);
-
       trendColor = getTrendColor_Range(text, min_wins, max_wins);
       break;
     case "Losses":
@@ -163,6 +164,46 @@ export const getLeaguesColumn = (
       trendColor =
         text === 0 ? { color: `rgb(0, 255, 0)` } : { color: `rgb(255, 0, 0)` };
       break;
+    case "Lm Wins":
+      console.log({ lmroster });
+      text = (lmroster && lmroster.wins.toString()) || "-";
+
+      trendColor = getTrendColor_Range(
+        typeof text === "string" ? 0 : text,
+        min_wins,
+        max_wins
+      );
+      break;
+    case "LmS Proj":
+      const lm_s_rank =
+        [...(league.rosters || [])]
+          .sort((a, b) => (b?.proj_ros_s || 0) - (a?.proj_ros_s || 0))
+          .findIndex((roster) => roster.roster_id === lmroster?.roster_id) + 1;
+
+      text = lm_s_rank;
+
+      trendColor = getTrendColor_Range(
+        lm_s_rank,
+        1,
+        league.rosters.length,
+        true
+      );
+      break;
+    case "LmT Proj":
+      const lm_t_rank =
+        [...(league.rosters || [])]
+          .sort((a, b) => (b?.proj_ros_t || 0) - (a.proj_ros_t || 0))
+          .findIndex((roster) => roster.roster_id === lmroster?.roster_id) + 1;
+
+      text = lm_t_rank;
+
+      trendColor = getTrendColor_Range(
+        lm_t_rank,
+        1,
+        league.rosters.length,
+        true
+      );
+      break;
     default:
       text = "-";
       trendColor = { color: `rgb(255, 255, 255)` };
@@ -178,11 +219,15 @@ export const getLeaguesSortValue = (
   league: League,
   ktc_current: { [key: string]: number },
   fpseason: { [key: string]: { [key: string]: number } },
-  allplayers: { [key: string]: Allplayer }
+  allplayers: { [key: string]: Allplayer },
+  owned_by?: string
 ) => {
   let sortValue;
 
   switch (sortCol) {
+    case "Owned By":
+      sortValue = owned_by || league.index;
+      break;
     case "S Proj Rk":
       sortValue =
         [...(league.rosters || [])]

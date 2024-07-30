@@ -30,6 +30,10 @@ export interface PlayersState {
   availableColumn2: string;
   availableColumn3: string;
   availableColumn4: string;
+  sortAvailableBy: {
+    column: 0 | 1 | 2 | 3 | 4;
+    asc: boolean;
+  };
   page: number;
 }
 
@@ -56,13 +60,17 @@ const initialState: PlayersState = {
   takenColumn3: "Wins",
   takenColumn4: "Lm Wins",
   sortTakenBy: {
-    column: 1,
+    column: 0,
     asc: false,
   },
   availableColumn1: "Wins",
   availableColumn2: "Losses",
   availableColumn3: "FP",
   availableColumn4: "FPA",
+  sortAvailableBy: {
+    column: 0,
+    asc: false,
+  },
   page: 1,
 };
 
@@ -113,6 +121,19 @@ const playersReducer = (state = initialState, action: PlayersActionTypes) => {
           column: action.payload.col,
           asc: action.payload.asc,
         },
+      };
+    case "SET_SORT_TAKEN":
+      return {
+        ...state,
+        sortTakenBy: {
+          column: action.payload.col,
+          asc: action.payload.asc,
+        },
+      };
+    case "SET_SORT_AVAILABLE":
+      return {
+        ...state,
+        sortAvailableBy: {},
       };
     default:
       return state;

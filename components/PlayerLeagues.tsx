@@ -7,10 +7,14 @@ import {
   setDetailColumn,
   setPlayersDetailTab,
   setSortOwnedBy,
+  setSortTakenBy,
 } from "@/redux/actions/playersActions";
 import { User } from "@/lib/types";
 import Avatar from "./Avatar";
-import { getLeaguesColumn } from "@/helpers/getLeaguesColumn";
+import {
+  getLeaguesColumn,
+  getLeaguesSortValue,
+} from "@/helpers/getLeaguesColumn";
 import { getSortIcon } from "@/helpers/getSortIcon";
 
 interface PlayerLeaguesProps {
@@ -66,7 +70,18 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
     { text: "KTC Starters Rank", abbrev: "S KTC Rk" },
   ];
 
-  const takenOptions = [...ownedOptions];
+  const takenOptions = [
+    ...ownedOptions,
+    { text: "Lm Wins", abbrev: "Lm Wins" },
+    {
+      text: "Leaguemate Total Projected Points Rank",
+      abbrev: "LmT Proj",
+    },
+    {
+      text: "Leaguemate Starter Projected Points Rank",
+      abbrev: "LmS Proj",
+    },
+  ];
 
   const tableOwned = (
     <TableMain
@@ -158,54 +173,110 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
           colspan: 1,
         },
       ]}
-      data={owned.map((league_id, index) => {
-        return {
-          id: `${league_id}`,
-          columns: [
-            {
-              text: (
-                <Avatar
-                  id={(leagues && leagues[league_id].avatar) || null}
-                  type="L"
-                  text={(leagues && leagues[league_id].name) || "-"}
-                />
-              ),
-              colspan: 3,
-              classname: sortOwnedBy.column === 0 ? "sort" : "",
-            },
-            ...[ownedColumn1, ownedColumn2, ownedColumn3, ownedColumn4].map(
-              (col, index) => {
-                let text, trendColor;
+      data={owned
+        .map((league_id, index) => {
+          let sortCol;
 
-                if (leagues && leagues[league_id]) {
-                  ({ text, trendColor } = getLeaguesColumn(
-                    col,
-                    leagues[league_id],
-                    ktc_current || {},
-                    fpseason || {},
-                    allplayers || {}
-                  ));
-                } else {
-                  text = "-";
-                  trendColor = {};
+          if (sortOwnedBy.column === 0 && sortOwnedBy.asc) {
+            sortCol = "League";
+          } else {
+            sortCol =
+              [ownedColumn1, ownedColumn2, ownedColumn3, ownedColumn4].find(
+                (col, index) => sortOwnedBy.column === index + 1
+              ) || "Index";
+          }
+          return {
+            id: `${league_id}`,
+            sortby:
+              leagues &&
+              getLeaguesSortValue(
+                sortCol,
+                sortOwnedBy.asc,
+                leagues[league_id],
+                ktc_current || {},
+                fpseason || {},
+                allplayers || {}
+              ),
+            columns: [
+              {
+                text: (
+                  <Avatar
+                    id={(leagues && leagues[league_id].avatar) || null}
+                    type="L"
+                    text={(leagues && leagues[league_id].name) || "-"}
+                  />
+                ),
+                colspan: 3,
+                classname: sortOwnedBy.column === 0 ? "sort" : "",
+              },
+              ...[ownedColumn1, ownedColumn2, ownedColumn3, ownedColumn4].map(
+                (col, index) => {
+                  let text, trendColor;
+
+                  if (leagues && leagues[league_id]) {
+                    ({ text, trendColor } = getLeaguesColumn(
+                      col,
+                      leagues[league_id],
+                      ktc_current || {},
+                      fpseason || {},
+                      allplayers || {}
+                    ));
+                  } else {
+                    text = "-";
+                    trendColor = {};
+                  }
+                  return {
+                    text: text,
+                    colspan: 1,
+                    style: { ...trendColor },
+                    classname: sortOwnedBy.column === index + 1 ? "sort" : "",
+                  };
                 }
-                return {
-                  text: text,
-                  colspan: 1,
-                  style: { ...trendColor },
-                  classname: sortOwnedBy.column === index + 1 ? "sort" : "",
-                };
-              }
-            ),
-          ],
-        };
-      })}
+              ),
+            ],
+          };
+        })
+        .sort((a, b) =>
+          sortOwnedBy.asc
+            ? a.sortby > b.sortby
+              ? 1
+              : -1
+            : a.sortby < b.sortby
+            ? 1
+            : -1
+        )}
     />
   );
 
   const tableTaken = (
     <TableMain
       type={type}
+      headers_sort={[
+        {
+          text: getSortIcon(0, sortTakenBy, (colNum, asc) =>
+            dispatch(setSortTakenBy(colNum, asc))
+          ),
+          colspan: 3,
+        },
+        {
+          text: getSortIcon(1, sortTakenBy, (colNum, asc) =>
+            dispatch(setSortTakenBy(colNum, asc))
+          ),
+          colspan: 2,
+        },
+        {
+          text: getSortIcon(2, sortTakenBy, (colNum, asc) =>
+            dispatch(setSortTakenBy(colNum, asc))
+          ),
+          colspan: 1,
+        },
+        {
+          text: getSortIcon(3, sortTakenBy, (colNum, asc) =>
+            dispatch(setSortTakenBy(colNum, asc))
+          ),
+          colspan: 1,
+        },
+      ]}
       headers={[
         {
           text: <div>League</div>,
@@ -215,7 +286,7 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
         {
           text: <div>Owned By</div>,
           colspan: 2,
-          classname: sortTakenBy.column === 4 ? "sort" : "",
+          classname: sortTakenBy.column === 1 ? "sort" : "",
         },
         {
           text: (
@@ -228,6 +299,7 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
             />
           ),
           colspan: 1,
+          classname: sortTakenBy.column === 2 ? "sort" : "",
         },
         {
           text: (
@@ -240,51 +312,95 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
             />
           ),
           colspan: 1,
+          classname: sortTakenBy.column === 3 ? "sort" : "",
         },
       ]}
-      data={taken.map((lm) => {
-        return {
-          id: lm.league,
-          columns: [
-            {
-              text: (
-                <Avatar
-                  id={(leagues && leagues[lm.league].avatar) || null}
-                  type="L"
-                  text={(leagues && leagues[lm.league].name) || "-"}
-                />
+      data={taken
+        .map((lm) => {
+          let sortCol;
+
+          if (sortTakenBy.column === 0 && sortTakenBy.asc) {
+            sortCol = "League";
+          } else if (sortTakenBy.column === 0 && !sortTakenBy.asc) {
+            sortCol = "Index";
+          } else if (sortTakenBy.column === 1) {
+            sortCol = "Owned By";
+          } else {
+            sortCol =
+              [takenColumn3, takenColumn4].find(
+                (col, index) => sortTakenBy.column === index + 2
+              ) || "Index";
+          }
+          return {
+            id: lm.league,
+            sortby:
+              leagues &&
+              getLeaguesSortValue(
+                sortCol,
+                sortOwnedBy.asc,
+                leagues[lm.league],
+                ktc_current || {},
+                fpseason || {},
+                allplayers || {},
+                lm.lm.username
               ),
-              colspan: 3,
-            },
-            {
-              text: <Avatar id={lm.lm.avatar} type="U" text={lm.lm.username} />,
-              colspan: 2,
-            },
-            ...[takenColumn3, takenColumn4].map((col, index) => {
-              let text, trendColor;
+            columns: [
+              {
+                text: (
+                  <Avatar
+                    id={(leagues && leagues[lm.league].avatar) || null}
+                    type="L"
+                    text={(leagues && leagues[lm.league].name) || "-"}
+                  />
+                ),
+                colspan: 3,
+                classname: sortTakenBy.column === 0 ? "sort" : "",
+              },
+              {
+                text: (
+                  <Avatar id={lm.lm.avatar} type="U" text={lm.lm.username} />
+                ),
+                colspan: 2,
+                classname: sortTakenBy.column === 1 ? "sort" : "",
+              },
+              ...[takenColumn3, takenColumn4].map((col, index) => {
+                let text, trendColor;
 
-              if (leagues && leagues[lm.league]) {
-                ({ text, trendColor } = getLeaguesColumn(
-                  col,
-                  leagues[lm.league],
-                  ktc_current || {},
-                  fpseason || {},
-                  allplayers || {}
-                ));
-              } else {
-                text = "-";
-                trendColor = {};
-              }
+                if (leagues && leagues[lm.league]) {
+                  ({ text, trendColor } = getLeaguesColumn(
+                    col,
+                    leagues[lm.league],
+                    ktc_current || {},
+                    fpseason || {},
+                    allplayers || {},
+                    leagues[lm.league].rosters.find(
+                      (r) => r.roster_id === lm.lm_roster_id
+                    )
+                  ));
+                } else {
+                  text = "-";
+                  trendColor = {};
+                }
 
-              return {
-                text: text,
-                colspan: 1,
-                style: { ...trendColor },
-              };
-            }),
-          ],
-        };
-      })}
+                return {
+                  text: text,
+                  colspan: 1,
+                  style: { ...trendColor },
+                  classname: sortTakenBy.column === index + 2 ? "sort" : "",
+                };
+              }),
+            ],
+          };
+        })
+        .sort((a, b) =>
+          sortTakenBy.asc
+            ? a.sortby > b.sortby
+              ? 1
+              : -1
+            : a.sortby < b.sortby
+            ? 1
+            : -1
+        )}
     />
   );
 
