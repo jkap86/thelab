@@ -56,7 +56,7 @@ const TableMain: React.FC<TableMainProps> = ({
     if (data.length <= 25) {
       setPage && setPage(1);
     }
-  }, [data]);
+  }, []);
 
   return (
     <>
