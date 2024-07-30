@@ -24,7 +24,7 @@ const initialState: LeagueState = {
   column1: "S Proj Rk",
   column2: "S KTC Rk",
   column3: "T Proj Rk",
-  column4: "S Proj Rk",
+  column4: "T KTC Rk",
   activeLeague: false,
   sortLeaguesBy: {
     column: 0,

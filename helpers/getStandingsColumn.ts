@@ -33,13 +33,15 @@ export const getStandingsColumn = (
       );
       break;
     case "S KTC":
-      sortby =
-        roster.starters?.reduce((acc, cur) => acc + ktc_current[cur], 0) || 0;
+      sortby = roster.starters?.reduce(
+        (acc, cur) => acc + (ktc_current[cur] || 0),
+        0
+      );
 
       text = sortby.toLocaleString("en-US");
 
-      const ktc_values_s = rosters.map(
-        (r) => r.starters?.reduce((acc, cur) => acc + ktc_current[cur], 0) || 0
+      const ktc_values_s = rosters.map((r) =>
+        r.starters?.reduce((acc, cur) => acc + (ktc_current[cur] || 0), 0)
       );
 
       trendColor = getTrendColor_Range(
