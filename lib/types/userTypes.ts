@@ -4,6 +4,15 @@ export type User = {
   avatar: string;
 };
 
+export type UserDb = {
+  user_id: string;
+  username: string;
+  avatar: string | null;
+  type: string;
+  updatedAt: Date;
+  createdAt: Date;
+};
+
 export type LeagueDb = {
   league_id: string;
   name: string;

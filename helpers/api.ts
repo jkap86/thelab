@@ -6,13 +6,15 @@ import {
   SleeperDraft,
   SleeperDraftpick,
 } from "@/lib/types/sleeperApiRawTypes";
-import { LeagueDb, Draftpick } from "@/lib/types";
+import { LeagueDb, Draftpick, UserDb } from "@/lib/types";
 import axios from "axios";
 
 export const updateLeagues = async (
   leaguesToUpdate: SleeperLeague[],
   db: PoolClient
 ) => {
+  const users_db: UserDb[] = [];
+  const userLeagues_db: { user_id: string; league_id: string }[] = [];
   const updatedLeagues: LeagueDb[] = [];
   const batchSize = 10;
 
@@ -51,6 +53,32 @@ export const updateLeagues = async (
             league_draftpicks_obj = {};
           }
 
+          const rosters_w_username = getRostersUsername(
+            rosters.data,
+            users.data,
+            league_draftpicks_obj
+          );
+
+          rosters_w_username
+            .filter((ru) => ru.user_id)
+            .forEach((ru) => {
+              if (!users_db.some((u) => u.user_id === ru.user_id)) {
+                users_db.push({
+                  user_id: ru.user_id,
+                  username: ru.username,
+                  avatar: ru.avatar,
+                  type: "LM",
+                  updatedAt: new Date(),
+                  createdAt: new Date(),
+                });
+              }
+
+              userLeagues_db.push({
+                user_id: ru.user_id,
+                league_id: league.data.league_id,
+              });
+            });
+
           updatedLeagues.push({
             league_id: leagueToUpdate.league_id,
             name: league.data.name,
@@ -59,11 +87,7 @@ export const updateLeagues = async (
             settings: league.data.settings,
             scoring_settings: league.data.scoring_settings,
             roster_positions: league.data.roster_positions,
-            rosters: getRostersUsername(
-              rosters.data,
-              users.data,
-              league_draftpicks_obj
-            ),
+            rosters: rosters_w_username,
             updatedat: new Date(),
           });
         } catch (err: any) {
@@ -77,6 +101,8 @@ export const updateLeagues = async (
     try {
       await db.query("BEGIN");
       await upsertLeagues(db, updatedLeagues);
+      await upsertUsers(db, users_db);
+      await upsertUserLeagues(db, userLeagues_db);
       await db.query("COMMIT");
     } catch (err) {
       await db.query("ROLLBACK");
@@ -281,6 +307,56 @@ export const upsertLeagues = async (
         JSON.stringify(league.roster_positions),
         JSON.stringify(league.rosters),
         league.updatedat,
+      ]);
+    } catch (err: any) {
+      console.log(err.message);
+    }
+  }
+};
+
+export const upsertUsers = async (db: PoolClient, users: UserDb[]) => {
+  console.log(`Upserting ${users.length} users...`);
+
+  const upsertUsersQuery = `
+    INSERT INTO users (user_id, username, avatar, type, updatedAt, createdAt)
+    VALUES ($1, $2, $3, $4, $5, $6)
+    ON CONFLICT (user_id) DO UPDATE SET
+      username = EXCLUDED.username,
+      avatar = EXCLUDED.avatar,
+      updatedAt = EXCLUDED.updatedAt;
+  `;
+
+  for (const user of users) {
+    try {
+      await db.query(upsertUsersQuery, [
+        user.user_id,
+        user.username,
+        user.avatar,
+        user.type,
+        user.updatedAt,
+        user.createdAt,
+      ]);
+    } catch (err: any) {
+      console.log(err.message);
+    }
+  }
+};
+
+export const upsertUserLeagues = async (
+  db: PoolClient,
+  userLeagues: { user_id: string; league_id: string }[]
+) => {
+  const upsertUserLeaguesQuery = `
+    INSERT INTO userLeagues (user_id, league_id)
+    VALUES ($1, $2)
+    ON CONFLICT DO NOTHING
+  `;
+
+  for (const userLeague of userLeagues) {
+    try {
+      await db.query(upsertUserLeaguesQuery, [
+        userLeague.user_id,
+        userLeague.league_id,
       ]);
     } catch (err: any) {
       console.log(err.message);
