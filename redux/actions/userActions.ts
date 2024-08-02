@@ -1,6 +1,6 @@
 import axios from "axios";
 import { AppDispatch } from "../store";
-import { User, League, Allplayer } from "@/lib/types";
+import { User, League, Allplayer, Leaguemate } from "@/lib/types";
 import { getOptimalStarters, getPlayerShares } from "@/helpers/getPlayerShares";
 
 interface fetchUserStartAction {
@@ -36,6 +36,7 @@ interface setStateLeaguesAction {
         available: string[];
       };
     };
+    leaguemates: { [key: string]: Leaguemate };
   };
 }
 
@@ -140,15 +141,6 @@ export const fetchLeagues =
 
       const leagues_obj = Object.fromEntries(
         response.data.map((league) => {
-          /*
-          const user = getOptimalStarters(
-            league.userRoster,
-            league.roster_positions,
-            fpseason,
-            allplayers,
-            league.scoring_settings
-          );
-          */
           return [
             league.league_id,
             {
@@ -173,13 +165,14 @@ export const fetchLeagues =
           ];
         })
       );
-      const playershares = getPlayerShares(response.data);
+      const { playershares, leaguemates } = getPlayerShares(response.data);
 
       dispatch({
         type: "SET_STATE_LEAGUES",
         payload: {
           leagues: leagues_obj,
           playershares: playershares,
+          leaguemates: leaguemates,
         },
       });
     } catch (err: any) {

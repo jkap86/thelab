@@ -1,6 +1,6 @@
 import { produce, WritableDraft } from "immer";
 import { UserActionTypes } from "../actions/userActions";
-import { League, User } from "@/lib/types";
+import { League, Leaguemate, User } from "@/lib/types";
 
 export interface UserState {
   user: User | false;
@@ -22,6 +22,9 @@ export interface UserState {
       available: string[];
     };
   };
+  leaguemates: {
+    [key: string]: Leaguemate;
+  };
 }
 const initialState: UserState = {
   user: false,
@@ -33,6 +36,7 @@ const initialState: UserState = {
   isSyncing: false,
   errorSyncing: false,
   playershares: {},
+  leaguemates: {},
 };
 
 const userReducer = (state = initialState, action: UserActionTypes) => {
@@ -54,8 +58,9 @@ const userReducer = (state = initialState, action: UserActionTypes) => {
         break;
       case "SET_STATE_LEAGUES":
         draft.isLoadingLeagues = false;
-        (draft.leagues = action.payload.leagues),
-          (draft.playershares = action.payload.playershares);
+        draft.leagues = action.payload.leagues;
+        draft.playershares = action.payload.playershares;
+        draft.leaguemates = action.payload.leaguemates;
         break;
       case "FETCH_LEAGUES_ERROR":
         draft.isLoadingLeagues = false;

@@ -136,6 +136,15 @@ export const getPlayerShares = (leagues: League[]) => {
     };
   } = {};
 
+  const leaguemates: {
+    [key: string]: {
+      user_id: string;
+      username: string;
+      avatar: string | null;
+      leagues: string[];
+    };
+  } = {};
+
   leagues.forEach((league) => {
     league.userRoster.players?.forEach((player_id) => {
       if (!playershares[player_id]) {
@@ -152,6 +161,17 @@ export const getPlayerShares = (leagues: League[]) => {
     league.rosters
       .filter((roster) => roster.roster_id !== league.userRoster.roster_id)
       .forEach((roster) => {
+        if (!leaguemates[roster.user_id]) {
+          leaguemates[roster.user_id] = {
+            user_id: roster.user_id,
+            username: roster.username,
+            avatar: roster.avatar,
+            leagues: [],
+          };
+        }
+
+        leaguemates[roster.user_id].leagues.push(league.league_id);
+
         roster.players?.forEach((player_id) => {
           if (!playershares[player_id]) {
             playershares[player_id] = {
@@ -185,5 +205,5 @@ export const getPlayerShares = (leagues: League[]) => {
     });
   });
 
-  return playershares;
+  return { playershares, leaguemates };
 };

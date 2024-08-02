@@ -78,3 +78,10 @@ export type Draftpick = {
   };
   order?: number | null;
 };
+
+export type Leaguemate = {
+  user_id: string;
+  username: string;
+  avatar: string | null;
+  leagues: string[];
+};

@@ -18,12 +18,16 @@ export const getStandingsColumn = (
   switch (column) {
     case "T KTC":
       sortby =
-        roster.players?.reduce((acc, cur) => acc + ktc_current[cur], 0) || 0;
+        roster.players?.reduce(
+          (acc, cur) => acc + (ktc_current[cur] || 0),
+          0
+        ) || 0;
 
       text = sortby.toLocaleString("en-US");
 
       const ktc_values_t = rosters.map(
-        (r) => r.players?.reduce((acc, cur) => acc + ktc_current[cur], 0) || 0
+        (r) =>
+          r.players?.reduce((acc, cur) => acc + (ktc_current[cur] || 0), 0) || 0
       );
 
       trendColor = getTrendColor_Range(

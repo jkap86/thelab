@@ -79,6 +79,8 @@ const Heading: React.FC = () => {
           >
             <option>Leagues</option>
             <option>Players</option>
+            <option>Leaguemates</option>
+            <option>Trades</option>
           </select>
         </h2>
       </div>
