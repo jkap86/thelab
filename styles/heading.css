@@ -68,4 +68,5 @@ h2 > select {
   color: var(--color1);
   font-size: 3rem;
   margin-bottom: 2rem;
+  text-align: center;
 }

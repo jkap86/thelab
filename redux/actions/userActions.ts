@@ -1,7 +1,8 @@
 import axios from "axios";
 import { AppDispatch } from "../store";
-import { User, League, Allplayer, Leaguemate } from "@/lib/types";
+import { User, League, Allplayer, Leaguemate, Trade } from "@/lib/types";
 import { getOptimalStarters, getPlayerShares } from "@/helpers/getPlayerShares";
+import { getTradeTips } from "@/helpers/getTradeTips";
 
 interface fetchUserStartAction {
   type: "FETCH_USER_START";
@@ -73,6 +74,23 @@ interface syncLeagueErrorAction {
   payload: string;
 }
 
+interface fetchLmTradesStartAction {
+  type: "FETCH_LMTRADES_START";
+}
+
+interface setStateLmTradesAction {
+  type: "SET_STATE_LMTRADES";
+  payload: {
+    count: number;
+    trades: Trade[];
+  };
+}
+
+interface fetchLmTradesErrorAction {
+  type: "FETCH_LMTRADES_ERROR";
+  payload: string;
+}
+
 interface resetState {
   type: "RESET_STATE";
 }
@@ -87,6 +105,9 @@ export type UserActionTypes =
   | syncLeagueStartAction
   | syncLeagueEndAction
   | syncLeagueErrorAction
+  | fetchLmTradesStartAction
+  | setStateLmTradesAction
+  | fetchLmTradesErrorAction
   | resetState;
 
 export const resetState = () => (dispatch: AppDispatch) => {
@@ -245,6 +266,41 @@ export const syncLeague =
       console.log({ err });
       dispatch({
         type: "SYNC_LEAGUE_ERROR",
+        payload: err.message,
+      });
+    }
+  };
+
+export const fetchLmTrades =
+  (
+    leaguemate_ids: string[],
+    offset: number,
+    limit: number,
+    leagues: { [key: string]: League }
+  ) =>
+  async (dispatch: AppDispatch) => {
+    dispatch({
+      type: "FETCH_LMTRADES_START",
+    });
+
+    try {
+      const response: { data: { count: number; rows: Trade[] } } =
+        await axios.post("/api/lmtrades", {
+          leaguemate_ids,
+          offset,
+          limit,
+        });
+
+      const trades_w_tips = getTradeTips(response.data.rows, leagues);
+
+      dispatch({
+        type: "SET_STATE_LMTRADES",
+        payload: { count: response.data.count, trades: trades_w_tips },
+      });
+    } catch (err: any) {
+      console.log({ err });
+      dispatch({
+        type: "FETCH_LMTRADES_ERROR",
         payload: err.message,
       });
     }

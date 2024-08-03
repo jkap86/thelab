@@ -85,3 +85,34 @@ export type Leaguemate = {
   avatar: string | null;
   leagues: string[];
 };
+
+export type Trade = {
+  transaction_id: string;
+  status_updated: string;
+  adds: { [key: string]: string };
+  drops: { [key: string]: string };
+  draft_picks: {
+    season: string;
+    round: number;
+    order: number | null;
+    original: string;
+    old: string;
+    new: string;
+  }[];
+  avatar: string;
+  name: string;
+  settings: { [key: string]: number };
+  roster_positions: string[];
+  managers: string[];
+  rosters: {
+    roster_id: number;
+    username: string;
+    user_id: string;
+    avatar: string;
+    players: string[];
+  }[];
+  tips?: {
+    for: { user_id: string; leaguemate_id: string; player_id: string };
+    away: { user_id: string; leaguemate_id: string; player_id: string };
+  };
+};

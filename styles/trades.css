@@ -1,0 +1,38 @@
+table.trades {
+  table-layout: fixed;
+  margin: auto;
+  background-color: black;
+  width: 100%;
+  border-spacing: 0;
+}
+
+table.trades table {
+  border: 1rem ridge silver;
+}
+table.trades table td {
+  font-size: 3rem;
+  background-image: radial-gradient(var(--color3) -300%, var(--color4) 100%);
+  box-shadow: inset 0 0 2rem black;
+  text-align: center;
+  padding: 1rem;
+}
+
+table.trades table td.timestamp {
+  font-size: 2rem;
+}
+
+table.trades table tr:first-of-type td div.avatar {
+  text-align: center;
+}
+
+table.trades table td.adds > div,
+table.trades table td.drops > div {
+  display: flex;
+  flex-direction: column;
+  padding-left: 2rem;
+}
+
+table.trades table td.adds > div > div,
+table.trades table td.drops > div > div {
+  text-align: left;
+}

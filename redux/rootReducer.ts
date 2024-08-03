@@ -5,6 +5,7 @@ import userReducer from "./reducers/userReducer";
 import leaguesReducer from "./reducers/leaguesReducer";
 import playersReducer from "./reducers/playersReducer";
 import LeaguematesReducer from "./reducers/leaguematesReducer";
+import tradesReducer from "./reducers/tradesReducer";
 
 const rootReducer = combineReducers({
   home: homepageReducer,
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
   leagues: leaguesReducer,
   players: playersReducer,
   leaguemates: LeaguematesReducer,
+  trades: tradesReducer,
 });
 
 export default rootReducer;
