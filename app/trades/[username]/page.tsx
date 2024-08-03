@@ -129,7 +129,9 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                                   )
                                   .map((dp) => {
                                     return (
-                                      <div>
+                                      <div
+                                        key={`${dp.season}_${dp.round}_${dp.original}_${index}`}
+                                      >
                                         {dp.order
                                           ? `${dp.season} ${
                                               dp.round
