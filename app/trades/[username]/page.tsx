@@ -114,9 +114,9 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                                       lmTrade.adds[add] ===
                                       manager_roster?.user_id
                                   )
-                                  .map((add) => {
+                                  .map((add, index) => {
                                     return (
-                                      <div>
+                                      <div key={`${add}_${index}`}>
                                         {allplayers &&
                                           allplayers[add]?.full_name}
                                       </div>
@@ -154,9 +154,9 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                                     lmTrade.drops[drops] ===
                                     manager_roster?.user_id
                                 )
-                                .map((drop) => {
+                                .map((drop, index) => {
                                   return (
-                                    <div>
+                                    <div key={`${drop}_${index}`}>
                                       {allplayers &&
                                         allplayers[drop]?.full_name}
                                     </div>
@@ -167,9 +167,11 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                                 .filter(
                                   (dp) => dp.old === manager_roster?.user_id
                                 )
-                                .map((dp) => {
+                                .map((dp, index) => {
                                   return (
-                                    <div>
+                                    <div
+                                      key={`${dp.season}_${dp.round}_${dp.original}_${index}`}
+                                    >
                                       {dp.order
                                         ? `${dp.season} ${
                                             dp.round
