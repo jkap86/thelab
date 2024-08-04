@@ -11,6 +11,7 @@ export interface PlayersState {
   };
   searchedPlayer: string | false;
   activePlayer: string | false;
+  activePlayerLeague: string | false;
   detailTab: string;
   ownedColumn1: string;
   ownedColumn2: string;
@@ -48,6 +49,7 @@ const initialState: PlayersState = {
   },
   searchedPlayer: false,
   activePlayer: false,
+  activePlayerLeague: false,
   detailTab: "Owned",
   ownedColumn1: "S Proj Rk",
   ownedColumn2: "S KTC Rk",
@@ -134,6 +136,11 @@ const playersReducer = (state = initialState, action: PlayersActionTypes) => {
       return {
         ...state,
         sortAvailableBy: {},
+      };
+    case "SET_ACTIVE_PLAYER_LEAGUE":
+      return {
+        ...state,
+        activePlayerLeague: action.payload,
       };
     default:
       return state;

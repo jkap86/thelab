@@ -10,6 +10,11 @@ div.nav {
   font-size: 3rem;
   filter: drop-shadow(0 0 1rem white);
 }
+
+div.nav.nav3 {
+  top: 35rem;
+  z-index: 5;
+}
 div.nav > div {
   display: flex;
   align-items: center;

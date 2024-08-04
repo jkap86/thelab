@@ -60,6 +60,11 @@ interface setPlayersDetailTabAction {
   payload: string;
 }
 
+interface setActivePlayerLeagueAction {
+  type: "SET_ACTIVE_PLAYER_LEAGUE";
+  payload: string;
+}
+
 interface setDetailColumnAction {
   type: "SET_DETAIL_COLUMN";
   payload: {
@@ -74,6 +79,7 @@ export type PlayersActionTypes =
   | setSearchedPlayerAction
   | setActivePlayerAction
   | setPlayersPageAction
+  | setActivePlayerLeagueAction
   | setDetailColumnAction
   | setPlayersDetailTabAction
   | setSortOwnedByAction
@@ -145,6 +151,13 @@ export const setSearchedPlayer = (
 export const setActivePlayer = (player_id: string): setActivePlayerAction => ({
   type: "SET_ACTIVE_PLAYERS",
   payload: player_id,
+});
+
+export const setActivePlayerLeague = (
+  league_id: string
+): setActivePlayerLeagueAction => ({
+  type: "SET_ACTIVE_PLAYER_LEAGUE",
+  payload: league_id,
 });
 
 export const setPlayersPage = (page: number): setPlayersPageAction => ({

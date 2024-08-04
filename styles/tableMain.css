@@ -141,6 +141,7 @@ table.main.detail {
 }
 
 table.half tr.active > td.content,
+table.detail tr.active > td.content,
 tr.active > td.content {
   background-image: radial-gradient(var(--color4) -50%, var(--color1) 100%);
 }
@@ -151,16 +152,33 @@ table.detail thead.main_heading > tr {
   top: 21rem;
   z-index: 7;
 }
+
+table.half.detail2,
+table.detail2 thead.main_heading > tr {
+  position: sticky;
+  top: 42rem;
+  z-index: 4;
+}
+
 table.half {
   width: 50%;
   display: inline-table;
 }
 
+table.detail tr.active,
 table.half.detail tr.sticky {
   position: sticky;
   top: 28rem;
   z-index: 6;
 }
+
+table.detail2 tr.active,
+table.half.detail2 tr.sticky {
+  position: sticky;
+  top: 49rem;
+  z-index: 3;
+}
+
 table.half.detail tr.sticky tr.active {
   position: unset;
 }

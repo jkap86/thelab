@@ -4,6 +4,7 @@ import "@/styles/detailnav.css";
 import TableMain from "./TableMain";
 import HeaderDropdown from "./HeaderDropdown";
 import {
+  setActivePlayerLeague,
   setDetailColumn,
   setPlayersDetailTab,
   setSortOwnedBy,
@@ -16,6 +17,13 @@ import {
   getLeaguesSortValue,
 } from "@/helpers/getLeaguesColumn";
 import { getSortIcon } from "@/helpers/getSortIcon";
+import Standings from "./Standings";
+import {
+  setStandingsColumn,
+  setStandingsTab,
+  setStandingsTab2,
+  setTeamColumn,
+} from "@/redux/actions/leaguesActions";
 
 interface PlayerLeaguesProps {
   type: number;
@@ -41,6 +49,11 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
     (state: RootState) => state.common
   );
   const { leagues } = useSelector((state: RootState) => state.user);
+  const { standingsColumn, standingsTab, standingsTab2, teamColumn } =
+    useSelector((state: RootState) => state.leagues);
+  const { activePlayerLeague } = useSelector(
+    (state: RootState) => state.players
+  );
 
   const {
     detailTab,
@@ -234,6 +247,20 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
                 }
               ),
             ],
+            secondaryTable: leagues && (
+              <Standings
+                type={3}
+                league={leagues[league_id]}
+                standingsColumn={standingsColumn}
+                setStandingsColumn={(col) => dispatch(setStandingsColumn(col))}
+                standingsTab={standingsTab}
+                standingsTab2={standingsTab2}
+                setStandingsTab={(tab) => dispatch(setStandingsTab(tab))}
+                setStandingsTab2={(tab) => dispatch(setStandingsTab2(tab))}
+                teamColumn={teamColumn}
+                setTeamColumn={(col) => dispatch(setTeamColumn(col))}
+              />
+            ),
           };
         })
         .sort((a, b) =>
@@ -245,6 +272,8 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
             ? 1
             : -1
         )}
+      active={activePlayerLeague}
+      setActive={(league_id) => dispatch(setActivePlayerLeague(league_id))}
     />
   );
 
@@ -405,6 +434,7 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
   );
 
   const tableAvailable = <TableMain type={type} headers={[]} data={[]} />;
+
   return (
     <>
       <div className={"nav nav" + type}>
