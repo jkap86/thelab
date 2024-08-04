@@ -323,7 +323,9 @@ export const upsertUsers = async (db: PoolClient, users: UserDb[]) => {
     ON CONFLICT (user_id) DO UPDATE SET
       username = EXCLUDED.username,
       avatar = EXCLUDED.avatar,
-      type = EXCLUDED.type,
+      type = CASE
+        WHEN users.type != 'S' THEN EXCLUDED.type
+        ELSE users.type,
       updatedAt = EXCLUDED.updatedAt;
   `;
 
