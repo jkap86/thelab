@@ -324,8 +324,9 @@ export const upsertUsers = async (db: PoolClient, users: UserDb[]) => {
       username = EXCLUDED.username,
       avatar = EXCLUDED.avatar,
       type = CASE
-        WHEN users.type != 'S' THEN EXCLUDED.type
-        ELSE users.type,
+        WHEN users.type = 'S' THEN users.type
+        ELSE EXCLUDED.type
+      END,
       updatedAt = EXCLUDED.updatedAt;
   `;
 
