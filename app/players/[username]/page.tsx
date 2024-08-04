@@ -254,6 +254,27 @@ const Players: React.FC<PlayersProps> = ({ params }) => {
         : -1
     );
 
+  const searches = [
+    {
+      searched: searchedPlayer,
+      setSearched: (searched: string) => dispatch(setSearchedPlayer(searched)),
+      options: Object.keys(playershares).map((player_id) => {
+        return {
+          id: player_id,
+          text: (allplayers && allplayers[player_id].full_name) || "",
+          display: (
+            <Avatar
+              id={player_id}
+              type="P"
+              text={(allplayers && allplayers[player_id].full_name) || ""}
+            />
+          ),
+        };
+      }),
+      placeholder: "Search Players",
+    },
+  ];
+
   const content = (
     <>
       <TableMain
@@ -265,26 +286,7 @@ const Players: React.FC<PlayersProps> = ({ params }) => {
         setPage={(page) => dispatch(setPlayersPage(page))}
         active={activePlayer}
         setActive={(player_id) => dispatch(setActivePlayer(player_id))}
-        searches={[
-          {
-            searched: searchedPlayer,
-            setSearched: (searched) => dispatch(setSearchedPlayer(searched)),
-            options: Object.keys(playershares).map((player_id) => {
-              return {
-                id: player_id,
-                text: (allplayers && allplayers[player_id].full_name) || "",
-                display: (
-                  <Avatar
-                    id={player_id}
-                    type="P"
-                    text={(allplayers && allplayers[player_id].full_name) || ""}
-                  />
-                ),
-              };
-            }),
-            placeholder: "Search Players",
-          },
-        ]}
+        searches={searches}
       />
     </>
   );

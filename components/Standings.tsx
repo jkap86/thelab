@@ -11,6 +11,7 @@ import {
   getTeamColumn,
 } from "@/helpers/getStandingsColumn";
 import { syncLeague } from "@/redux/actions/userActions";
+import { getPlayerProjection } from "@/helpers/getPlayerShares";
 
 type setColumn = (column: string) => void;
 type setTab = (tab: string) => void;
@@ -273,7 +274,18 @@ const Standings: React.FC<StandingsProps> = ({
             }
           };
 
-          return getPositionValue(a) - getPositionValue(b);
+          const pos_diff = getPositionValue(a) - getPositionValue(b);
+
+          if (pos_diff !== 0) {
+            return pos_diff;
+          }
+
+          return (
+            (fpseason &&
+              getPlayerProjection(b, league.scoring_settings, fpseason) -
+                getPlayerProjection(a, league.scoring_settings, fpseason)) ||
+            1
+          );
         })
         .map((player_id, index) => {
           let text, trendColor;
