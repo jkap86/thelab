@@ -23,6 +23,7 @@ import {
   filterLeagues,
   filterLmLeagues,
 } from "@/helpers/filterLeagues";
+import "@/styles/players.css";
 
 interface PlayersProps {
   params: { username: string };
@@ -145,7 +146,7 @@ const Players: React.FC<PlayersProps> = ({ params }) => {
     .filter(
       (player_id) =>
         allplayers &&
-        allplayers[player_id].full_name &&
+        allplayers[player_id]?.full_name &&
         (!searchedPlayer || searchedPlayer === player_id)
     )
     .map((player_id, index) => {
@@ -178,7 +179,7 @@ const Players: React.FC<PlayersProps> = ({ params }) => {
                 <Avatar
                   id={player_id}
                   type={"P"}
-                  text={allplayers[player_id].full_name}
+                  text={allplayers[player_id]?.full_name || ""}
                 />
               )) ||
               "-",
@@ -261,12 +262,12 @@ const Players: React.FC<PlayersProps> = ({ params }) => {
       options: Object.keys(playershares).map((player_id) => {
         return {
           id: player_id,
-          text: (allplayers && allplayers[player_id].full_name) || "",
+          text: (allplayers && allplayers[player_id]?.full_name) || "",
           display: (
             <Avatar
               id={player_id}
               type="P"
-              text={(allplayers && allplayers[player_id].full_name) || ""}
+              text={(allplayers && allplayers[player_id]?.full_name) || ""}
             />
           ),
         };
@@ -276,7 +277,7 @@ const Players: React.FC<PlayersProps> = ({ params }) => {
   ];
 
   const content = (
-    <>
+    <div className="players">
       <TableMain
         type={1}
         headers_sort={headers_sort}
@@ -288,7 +289,7 @@ const Players: React.FC<PlayersProps> = ({ params }) => {
         setActive={(player_id) => dispatch(setActivePlayer(player_id))}
         searches={searches}
       />
-    </>
+    </div>
   );
 
   return <Layout username={params.username} content={content} />;

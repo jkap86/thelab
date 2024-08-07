@@ -85,6 +85,7 @@ const userReducer = (state = initialState, action: UserActionTypes) => {
         draft.isSyncing = false;
         draft.leagues = action.payload.leagues;
         draft.playershares = action.payload.playershares;
+        draft.leaguemates = action.payload.leaguemates;
         break;
       case "SYNC_LEAGUE_ERROR":
         draft.isSyncing = false;

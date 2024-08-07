@@ -165,7 +165,6 @@ export const getLeaguesColumn = (
         text === 0 ? { color: `rgb(0, 255, 0)` } : { color: `rgb(255, 0, 0)` };
       break;
     case "Lm Wins":
-      console.log({ lmroster });
       text = (lmroster && lmroster.wins.toString()) || "-";
 
       trendColor = getTrendColor_Range(

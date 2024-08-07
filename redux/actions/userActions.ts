@@ -66,6 +66,14 @@ interface syncLeagueEndAction {
         available: string[];
       };
     };
+    leaguemates: {
+      [key: string]: {
+        user_id: string;
+        username: string;
+        avatar: string | null;
+        leagues: string[];
+      };
+    };
   };
 }
 
@@ -249,7 +257,7 @@ export const syncLeague =
         },
       };
 
-      const updated_playershares = getPlayerShares(
+      const { playershares, leaguemates } = getPlayerShares(
         Object.values(updated_leagues_obj)
       );
 
@@ -257,7 +265,8 @@ export const syncLeague =
         type: "SYNC_LEAGUE_END",
         payload: {
           leagues: updated_leagues_obj,
-          playershares: updated_playershares,
+          playershares: playershares,
+          leaguemates: leaguemates,
         },
       });
 
