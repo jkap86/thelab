@@ -1,6 +1,13 @@
 import axios from "axios";
 import { AppDispatch } from "../store";
-import { User, League, Allplayer, Leaguemate, Trade } from "@/lib/types";
+import {
+  User,
+  League,
+  Allplayer,
+  Leaguemate,
+  Trade,
+  Matchup,
+} from "@/lib/types";
 import { getOptimalStarters, getPlayerShares } from "@/helpers/getPlayerShares";
 import { getTradeTips } from "@/helpers/getTradeTips";
 
@@ -82,6 +89,20 @@ interface syncLeagueErrorAction {
   payload: string;
 }
 
+interface fetchMatchupsStartAction {
+  type: "FETCH_MATCHUPS_START";
+}
+
+interface fetchMatchupsEndAction {
+  type: "FETCH_MATCHUPS_END";
+  payload: Matchup[];
+}
+
+interface fetchMatchupsErrorAction {
+  type: "FETCH_MATCHUPS_ERROR";
+  payload: string;
+}
+
 interface fetchLmTradesStartAction {
   type: "FETCH_LMTRADES_START";
 }
@@ -113,6 +134,9 @@ export type UserActionTypes =
   | syncLeagueStartAction
   | syncLeagueEndAction
   | syncLeagueErrorAction
+  | fetchMatchupsStartAction
+  | fetchMatchupsEndAction
+  | fetchMatchupsErrorAction
   | fetchLmTradesStartAction
   | setStateLmTradesAction
   | fetchLmTradesErrorAction
@@ -277,6 +301,27 @@ export const syncLeague =
         type: "SYNC_LEAGUE_ERROR",
         payload: err.message,
       });
+    }
+  };
+
+export const fetchMatchups =
+  (league_ids: string[]) => async (dispatch: AppDispatch) => {
+    dispatch({
+      type: "FETCH_MATCHUPS_START",
+    });
+
+    try {
+      const response: { data: Matchup[] } = await axios.post("/api/matchups", {
+        league_ids,
+      });
+
+      dispatch({
+        type: "FETCH_MATCHUPS_END",
+        payload: response.data,
+      });
+    } catch (err: any) {
+      console.log({ err });
+      dispatch({ type: "FETCH_MATCHUPS_ERROR" });
     }
   };
 

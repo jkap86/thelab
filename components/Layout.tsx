@@ -5,12 +5,14 @@ import {
 } from "@/redux/actions/commonActions";
 import {
   fetchLeagues,
+  fetchMatchups,
   fetchUser,
   resetState,
 } from "@/redux/actions/userActions";
 import { AppDispatch, RootState } from "@/redux/store";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { usePathname } from "next/navigation";
 import Heading from "./Heading";
 
 interface LayoutProps {
@@ -20,6 +22,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ username, content }) => {
   const dispatch: AppDispatch = useDispatch();
+  const pathname = usePathname();
   const { allplayers, isLoadingAllplayers, ktc_current, fpseason } =
     useSelector((state: RootState) => state.common);
   const {
@@ -29,7 +32,12 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
     leagues,
     isLoadingLeagues,
     errorLeagues,
+    matchups,
   } = useSelector((state: RootState) => state.user);
+
+  const navTab =
+    pathname.split("/")[1].charAt(0).toUpperCase() +
+    pathname.split("/")[1].slice(1);
 
   useEffect(() => {
     if (!allplayers && !isLoadingAllplayers) {
@@ -71,6 +79,14 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
     fetchLeagues,
   ]);
 
+  // MATCHUPS
+
+  useEffect(() => {
+    if (navTab.toLowerCase() === "matchups" && leagues && !matchups) {
+      dispatch(fetchMatchups(Object.keys(leagues)));
+    }
+  }, [navTab, leagues, matchups, dispatch]);
+
   return (errorUser && errorUser) || (errorLeagues && errorLeagues) ? (
     <h1>
       {errorUser}
@@ -81,12 +97,12 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
     <h1>Loading...</h1>
   ) : user && isLoadingLeagues ? (
     <>
-      <Heading />
+      <Heading navTab={navTab} />
       <h1>Loading...</h1>
     </>
   ) : (
     <>
-      <Heading />
+      <Heading navTab={navTab} />
       {content}
     </>
   );

@@ -21,7 +21,11 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
     (state: RootState) => state.user
   );
 
-  console.log({ lmTrades });
+  console.log({
+    lmTrades: (lmTrades.trades || []).filter(
+      (t) => (t.tips?.away?.length || 0) > 0
+    ),
+  });
 
   useEffect(() => {
     if (
@@ -116,7 +120,19 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                                   )
                                   .map((add, index) => {
                                     return (
-                                      <div key={`${add}_${index}`}>
+                                      <div
+                                        key={`${add}_${index}`}
+                                        className={
+                                          lmTrade.tips?.away?.some(
+                                            (tip) =>
+                                              tip.player_id === add &&
+                                              lmTrade.adds[add] ===
+                                                tip.leaguemate_id
+                                          )
+                                            ? "redb"
+                                            : ""
+                                        }
+                                      >
                                         {allplayers &&
                                           allplayers[add]?.full_name}
                                       </div>
@@ -156,7 +172,19 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                                 )
                                 .map((drop, index) => {
                                   return (
-                                    <div key={`${drop}_${index}`}>
+                                    <div
+                                      key={`${drop}_${index}`}
+                                      className={
+                                        lmTrade.tips?.for.some(
+                                          (tip) =>
+                                            tip.player_id === drop &&
+                                            tip.leaguemate_id ===
+                                              lmTrade.drops[drop]
+                                        )
+                                          ? "greenb"
+                                          : ""
+                                      }
+                                    >
                                       {allplayers &&
                                         allplayers[drop]?.full_name}
                                     </div>

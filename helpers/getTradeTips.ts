@@ -4,5 +4,76 @@ export const getTradeTips = (
   trades: Trade[],
   leagues: { [key: string]: League }
 ) => {
-  return trades;
+  const trades_w_tips: Trade[] = [];
+
+  trades.forEach((trade) => {
+    const trade_away: {
+      league_id: string;
+      leaguemate_id: string;
+      player_id: string;
+    }[] = [];
+
+    Object.keys(trade.adds || {}).forEach((player_id) => {
+      const lm_user_id = trade.adds[player_id];
+
+      if (lm_user_id) {
+        Object.keys(leagues)
+          .filter((league_id) => {
+            return (
+              league_id !== trade.league_id &&
+              lm_user_id !== leagues[league_id].userRoster.user_id &&
+              leagues[league_id].userRoster.players?.includes(player_id) &&
+              leagues[league_id].rosters.find((r) => r.user_id === lm_user_id)
+            );
+          })
+          .forEach((league_id) => {
+            trade_away.push({
+              league_id: league_id,
+              player_id: player_id,
+              leaguemate_id: lm_user_id,
+            });
+          });
+      }
+    });
+
+    const acquire: {
+      league_id: string;
+      leaguemate_id: string;
+      player_id: string;
+    }[] = [];
+
+    Object.keys(trade.drops || {}).forEach((player_id) => {
+      const lm_user_id = trade.drops[player_id];
+
+      if (lm_user_id) {
+        Object.keys(leagues)
+          .filter((league_id) => {
+            return (
+              league_id !== trade.league_id &&
+              lm_user_id !== leagues[league_id].userRoster.user_id &&
+              leagues[league_id].rosters?.find(
+                (r) =>
+                  r.user_id === lm_user_id && r.players?.includes(player_id)
+              )
+            );
+          })
+          .forEach((league_id) => {
+            acquire.push({
+              league_id: league_id,
+              player_id: player_id,
+              leaguemate_id: lm_user_id,
+            });
+          });
+      }
+    });
+
+    trades_w_tips.push({
+      ...trade,
+      tips: {
+        for: acquire,
+        away: trade_away,
+      },
+    });
+  });
+  return trades_w_tips;
 };

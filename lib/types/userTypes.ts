@@ -86,6 +86,8 @@ export type Leaguemate = {
   leagues: string[];
 };
 
+export type Matchup = {};
+
 export type Trade = {
   transaction_id: string;
   status_updated: string;
@@ -111,8 +113,9 @@ export type Trade = {
     avatar: string;
     players: string[];
   }[];
+  league_id: string;
   tips?: {
-    for: { user_id: string; leaguemate_id: string; player_id: string };
-    away: { user_id: string; leaguemate_id: string; player_id: string };
+    for: { league_id: string; leaguemate_id: string; player_id: string }[];
+    away: { league_id: string; leaguemate_id: string; player_id: string }[];
   };
 };

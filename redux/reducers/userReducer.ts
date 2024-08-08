@@ -1,6 +1,6 @@
 import { produce, WritableDraft } from "immer";
 import { UserActionTypes } from "../actions/userActions";
-import { League, Leaguemate, Trade, User } from "@/lib/types";
+import { League, Leaguemate, Matchup, Trade, User } from "@/lib/types";
 
 export interface UserState {
   user: User | false;
@@ -31,6 +31,9 @@ export interface UserState {
     trades: Trade[] | false;
   };
   errorLmTrades: string | false;
+  isLoadingMatchups: boolean;
+  matchups: Matchup[] | false;
+  errorMatchups: string | false;
 }
 const initialState: UserState = {
   user: false,
@@ -49,6 +52,9 @@ const initialState: UserState = {
     trades: false,
   },
   errorLmTrades: false,
+  isLoadingMatchups: false,
+  matchups: false,
+  errorMatchups: false,
 };
 
 const userReducer = (state = initialState, action: UserActionTypes) => {

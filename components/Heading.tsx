@@ -1,21 +1,20 @@
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Avatar from "./Avatar";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import "../styles/heading.css";
 import { setType1, setType2 } from "@/redux/actions/commonActions";
 
-const Heading: React.FC = () => {
+interface HeadingProps {
+  navTab: string;
+}
+
+const Heading: React.FC<HeadingProps> = ({ navTab }) => {
   const router = useRouter();
-  const pathname = usePathname();
   const dispatch: AppDispatch = useDispatch();
   const { type1, type2 } = useSelector((state: RootState) => state.common);
   const { user } = useSelector((state: RootState) => state.user);
-
-  const navTab =
-    pathname.split("/")[1].charAt(0).toUpperCase() +
-    pathname.split("/")[1].slice(1);
 
   return (
     user && (
@@ -81,6 +80,7 @@ const Heading: React.FC = () => {
             <option>Players</option>
             <option>Leaguemates</option>
             <option>Trades</option>
+            <option>Matchups</option>
           </select>
         </h2>
       </div>
