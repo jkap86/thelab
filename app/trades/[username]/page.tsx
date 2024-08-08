@@ -123,11 +123,11 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                                       <div
                                         key={`${add}_${index}`}
                                         className={
-                                          lmTrade.tips?.away?.some(
+                                          lmTrade.tips?.away.some(
                                             (tip) =>
                                               tip.player_id === add &&
-                                              lmTrade.adds[add] ===
-                                                tip.leaguemate_id
+                                              tip.leaguemate_id ===
+                                                lmTrade.adds[add]
                                           )
                                             ? "redb"
                                             : ""
@@ -175,11 +175,11 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                                     <div
                                       key={`${drop}_${index}`}
                                       className={
-                                        lmTrade.tips?.for.some(
+                                        lmTrade.tips?.for?.some(
                                           (tip) =>
                                             tip.player_id === drop &&
-                                            tip.leaguemate_id ===
-                                              lmTrade.drops[drop]
+                                            lmTrade.drops[drop] ===
+                                              tip.leaguemate_id
                                         )
                                           ? "greenb"
                                           : ""
