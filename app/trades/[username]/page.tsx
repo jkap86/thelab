@@ -24,6 +24,7 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
   );
   const { activeTrade, page } = useSelector((state: RootState) => state.trades);
 
+  const cur_trade_length = (lmTrades.trades && lmTrades.trades.length) || 0;
   useEffect(() => {
     if (
       leagues &&
@@ -54,6 +55,22 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
               </li>
             );
           })}
+          {leagues && lmTrades.trades && lmTrades.count > cur_trade_length ? (
+            <li
+              onClick={() =>
+                dispatch(
+                  fetchLmTrades(
+                    Object.keys(leaguemates),
+                    cur_trade_length,
+                    cur_trade_length + 125,
+                    leagues
+                  )
+                )
+              }
+            >
+              ...
+            </li>
+          ) : null}
         </ol>
       </div>
       <table className="trades">

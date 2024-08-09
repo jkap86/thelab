@@ -32,7 +32,7 @@ export interface UserState {
   };
   errorLmTrades: string | false;
   isLoadingMatchups: boolean;
-  matchups: Matchup[] | false;
+  matchups: { [key: string]: Matchup[] } | false;
   errorMatchups: string | false;
 }
 const initialState: UserState = {
@@ -100,7 +100,17 @@ const userReducer = (state = initialState, action: UserActionTypes) => {
       case "SET_STATE_LMTRADES":
         draft.lmTrades = {
           count: action.payload.count,
-          trades: action.payload.trades,
+          trades: draft.lmTrades.trades
+            ? [
+                ...draft.lmTrades.trades,
+                ...action.payload.trades.filter(
+                  (t) =>
+                    !(draft.lmTrades.trades || []).some(
+                      (x) => t.transaction_id === x.transaction_id
+                    )
+                ),
+              ]
+            : action.payload.trades,
         };
         break;
       case "FETCH_MATCHUPS_START":
@@ -108,6 +118,7 @@ const userReducer = (state = initialState, action: UserActionTypes) => {
         break;
       case "FETCH_MATCHUPS_END":
         draft.isLoadingMatchups = false;
+        draft.matchups = action.payload;
         break;
       case "FETCH_MATCHUPS_ERROR":
         draft.isLoadingMatchups = false;

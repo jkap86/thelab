@@ -86,7 +86,9 @@ export type Leaguemate = {
   leagues: string[];
 };
 
-export type Matchup = {};
+export type Matchup = {
+  league_id: string;
+};
 
 export type Trade = {
   transaction_id: string;

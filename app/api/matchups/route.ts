@@ -16,6 +16,6 @@ export async function POST(req: NextRequest) {
 
     const result = await pool.query(getMatchupsQuery, [league_ids, week]);
 
-    return NextResponse.json(result, { status: 200 });
+    return NextResponse.json(result.rows, { status: 200 });
   }
 }

@@ -95,7 +95,7 @@ interface fetchMatchupsStartAction {
 
 interface fetchMatchupsEndAction {
   type: "FETCH_MATCHUPS_END";
-  payload: Matchup[];
+  payload: { [key: string]: Matchup[] };
 }
 
 interface fetchMatchupsErrorAction {
@@ -316,9 +316,19 @@ export const fetchMatchups =
         week,
       });
 
+      const matchups_obj: { [key: string]: Matchup[] } = {};
+
+      response.data.forEach((matchup) => {
+        if (!matchups_obj[matchup.league_id]) {
+          matchups_obj[matchup.league_id] = [];
+        }
+
+        matchups_obj[matchup.league_id].push(matchup);
+      });
+
       dispatch({
         type: "FETCH_MATCHUPS_END",
-        payload: response.data,
+        payload: matchups_obj,
       });
     } catch (err: any) {
       console.log({ err });
