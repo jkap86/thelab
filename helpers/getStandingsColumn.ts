@@ -124,13 +124,13 @@ export const getTeamColumn = (
   switch (column) {
     case "Proj":
       text = Math.round(
-        getPlayerProjection(player.player_id, scoring_settings, fpseason)
+        getPlayerProjection(player?.player_id, scoring_settings, fpseason)
       );
 
       const positional_values = Object.keys(fpseason)
         .filter(
           (player_id) =>
-            allplayers[player_id].position === player.position &&
+            allplayers[player_id].position === player?.position &&
             rosters.find((r) => r.starters.includes(player_id))
         )
         .map((player_id) =>

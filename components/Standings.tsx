@@ -239,9 +239,7 @@ const Standings: React.FC<StandingsProps> = ({
                   <Avatar
                     id={roster.starters[index]}
                     type="P"
-                    text={
-                      allplayers[roster.starters[index]]?.full_name || "Empty"
-                    }
+                    text={allplayers[roster.starters[index]]?.full_name || "-"}
                   />
                 ),
                 colspan: 3,
