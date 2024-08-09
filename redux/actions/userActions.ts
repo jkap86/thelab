@@ -305,7 +305,7 @@ export const syncLeague =
   };
 
 export const fetchMatchups =
-  (league_ids: string[]) => async (dispatch: AppDispatch) => {
+  (league_ids: string[], week: number) => async (dispatch: AppDispatch) => {
     dispatch({
       type: "FETCH_MATCHUPS_START",
     });
@@ -313,6 +313,7 @@ export const fetchMatchups =
     try {
       const response: { data: Matchup[] } = await axios.post("/api/matchups", {
         league_ids,
+        week,
       });
 
       dispatch({
@@ -321,7 +322,7 @@ export const fetchMatchups =
       });
     } catch (err: any) {
       console.log({ err });
-      dispatch({ type: "FETCH_MATCHUPS_ERROR" });
+      dispatch({ type: "FETCH_MATCHUPS_ERROR", payload: err.message });
     }
   };
 

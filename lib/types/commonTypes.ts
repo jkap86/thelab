@@ -5,3 +5,9 @@ export type Allplayer = {
   full_name: string;
   age: number;
 };
+
+export type SleeperState = {
+  season: string;
+  season_type: string;
+  display_week: number;
+};

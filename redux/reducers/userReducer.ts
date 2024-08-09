@@ -103,6 +103,16 @@ const userReducer = (state = initialState, action: UserActionTypes) => {
           trades: action.payload.trades,
         };
         break;
+      case "FETCH_MATCHUPS_START":
+        draft.isLoadingMatchups = true;
+        break;
+      case "FETCH_MATCHUPS_END":
+        draft.isLoadingMatchups = false;
+        break;
+      case "FETCH_MATCHUPS_ERROR":
+        draft.isLoadingMatchups = false;
+        draft.errorMatchups = action.payload;
+        break;
       case "RESET_STATE":
         return initialState;
       default:

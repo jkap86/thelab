@@ -23,8 +23,15 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ username, content }) => {
   const dispatch: AppDispatch = useDispatch();
   const pathname = usePathname();
-  const { allplayers, isLoadingAllplayers, ktc_current, fpseason } =
-    useSelector((state: RootState) => state.common);
+  const {
+    state,
+    allplayers,
+    isLoadingAllplayers,
+    fpseason,
+    isLoadingFpSeason,
+    ktc_current,
+    isLoadingKTC,
+  } = useSelector((state: RootState) => state.common);
   const {
     user,
     isLoadingUser,
@@ -46,9 +53,16 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
   }, [allplayers, isLoadingAllplayers, dispatch, fetchAllPlayers]);
 
   useEffect(() => {
-    dispatch(fetchKTC_dates());
-    dispatch(fetchFpSeason());
-  }, []);
+    if (!ktc_current && !isLoadingKTC) {
+      dispatch(fetchKTC_dates());
+    }
+  }, [ktc_current, isLoadingKTC, fetchKTC_dates, dispatch]);
+
+  useEffect(() => {
+    if (!fpseason && !isLoadingFpSeason) {
+      dispatch(fetchFpSeason());
+    }
+  }, [fpseason, isLoadingFpSeason, fetchFpSeason, dispatch]);
 
   useEffect(() => {
     if (user && username.toLowerCase() !== user.username.toLowerCase()) {
@@ -82,10 +96,10 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
   // MATCHUPS
 
   useEffect(() => {
-    if (navTab.toLowerCase() === "matchups" && leagues && !matchups) {
-      dispatch(fetchMatchups(Object.keys(leagues)));
+    if (navTab.toLowerCase() === "matchups" && leagues && !matchups && state) {
+      dispatch(fetchMatchups(Object.keys(leagues), state.display_week));
     }
-  }, [navTab, leagues, matchups, dispatch]);
+  }, [navTab, leagues, matchups, state, dispatch]);
 
   return (errorUser && errorUser) || (errorLeagues && errorLeagues) ? (
     <h1>

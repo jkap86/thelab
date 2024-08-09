@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Allplayer } from "@/lib/types";
+import { Allplayer, SleeperState } from "@/lib/types";
 import { AppDispatch } from "../store";
 
 interface fetchAllplayersStartAction {
@@ -8,12 +8,19 @@ interface fetchAllplayersStartAction {
 
 interface setStateAllplayersAction {
   type: "SET_STATE_ALLPLAYERS";
-  payload: { [key: string]: Allplayer };
+  payload: {
+    allplayers: { [key: string]: Allplayer };
+    state: SleeperState;
+  };
 }
 
 interface fetchAllplayersErrorAction {
   type: "FETCH_ALLPLAYERS_ERROR";
   payload: Error;
+}
+
+interface fetchKtcStartAction {
+  type: "FETCH_KTC_START";
 }
 
 interface setKTC_datesAction {
@@ -23,11 +30,23 @@ interface setKTC_datesAction {
   };
 }
 
+interface fetchKtcErrorAction {
+  type: "FETCH_KTC_ERROR";
+}
+
+interface fetchFpSeasonStartAction {
+  type: "FETCH_FPSEASON_START";
+}
+
 interface setFpSeason {
   type: "SET_FP_SEASON";
   payload: {
     [key: string]: { [key: string]: number };
   };
+}
+
+interface fetchFpSeasonErrorAction {
+  type: "FETCH_FPSEASON_ERROR";
 }
 
 interface setType1Action {
@@ -44,8 +63,12 @@ export type CommonActionTypes =
   | fetchAllplayersStartAction
   | setStateAllplayersAction
   | fetchAllplayersErrorAction
+  | fetchKtcStartAction
   | setKTC_datesAction
+  | fetchKtcErrorAction
+  | fetchFpSeasonStartAction
   | setFpSeason
+  | fetchFpSeasonErrorAction
   | setType1Action
   | setType2Action;
 
@@ -55,17 +78,25 @@ export const fetchAllPlayers = () => async (dispatch: AppDispatch) => {
   });
 
   try {
-    const response: { data: Allplayer[] } = await axios.get("/api/allplayers");
+    const response: {
+      data: {
+        allplayers: Allplayer[];
+        state: { [key: string]: string | number };
+      };
+    } = await axios.get("/api/allplayers");
 
     const allplayers_obj: { [key: string]: Allplayer } = {};
 
-    response.data.forEach((player_obj) => {
+    response.data.allplayers.forEach((player_obj) => {
       allplayers_obj[player_obj.player_id] = player_obj;
     });
 
     dispatch({
       type: "SET_STATE_ALLPLAYERS",
-      payload: allplayers_obj,
+      payload: {
+        allplayers: allplayers_obj,
+        state: response.data.state,
+      },
     });
   } catch (err: any) {
     console.log({ err });
@@ -77,6 +108,9 @@ export const fetchAllPlayers = () => async (dispatch: AppDispatch) => {
 };
 
 export const fetchKTC_dates = () => async (dispatch: AppDispatch) => {
+  dispatch({
+    type: "FETCH_KTC_START",
+  });
   try {
     const response: { data: { date: string; values: string[][] } } =
       await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ktc/current`);
@@ -85,12 +119,16 @@ export const fetchKTC_dates = () => async (dispatch: AppDispatch) => {
       type: "SET_KTC_DATES",
       payload: Object.fromEntries(response.data.values),
     });
-  } catch (err) {
-    console.log(err);
+  } catch (err: any) {
+    console.log({ err });
+    dispatch({ type: "FETCH_KTC_ERROR" });
   }
 };
 
 export const fetchFpSeason = () => async (dispatch: AppDispatch) => {
+  dispatch({
+    type: "FETCH_FPSEASON_START",
+  });
   try {
     const response: {
       data: { player_id: string; stats: { [key: string]: number } }[];
@@ -107,6 +145,9 @@ export const fetchFpSeason = () => async (dispatch: AppDispatch) => {
     });
   } catch (err) {
     console.log(err);
+    dispatch({
+      type: "FETCH_FPSEASON_ERROR",
+    });
   }
 };
 
