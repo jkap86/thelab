@@ -51,11 +51,8 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
   const { leagues } = useSelector((state: RootState) => state.user);
   const { standingsColumn, standingsTab, standingsTab2, teamColumn } =
     useSelector((state: RootState) => state.leagues);
-  const { activePlayerLeague } = useSelector(
-    (state: RootState) => state.players
-  );
-
   const {
+    activePlayerLeague,
     detailTab,
     ownedColumn1,
     ownedColumn2,
@@ -69,6 +66,7 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
     availableColumn2,
     availableColumn3,
     availableColumn4,
+    sortAvailableBy,
   } = useSelector((state: RootState) => state.players);
 
   const ownedOptions = [
@@ -433,7 +431,112 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
     />
   );
 
-  const tableAvailable = <TableMain type={type} headers={[]} data={[]} />;
+  const tableAvailable = (
+    <TableMain
+      type={type}
+      headers={[
+        {
+          text: <div>League</div>,
+          colspan: 3,
+        },
+        {
+          text: (
+            <HeaderDropdown
+              options={ownedOptions}
+              columnText={availableColumn1}
+              setColumnText={(col: string) =>
+                dispatch(setDetailColumn("availableColumn1", col))
+              }
+            />
+          ),
+          colspan: 1,
+        },
+        {
+          text: (
+            <HeaderDropdown
+              options={ownedOptions}
+              columnText={availableColumn2}
+              setColumnText={(col: string) =>
+                dispatch(setDetailColumn("availableColumn2", col))
+              }
+            />
+          ),
+          colspan: 1,
+        },
+        {
+          text: (
+            <HeaderDropdown
+              options={ownedOptions}
+              columnText={availableColumn3}
+              setColumnText={(col: string) =>
+                dispatch(setDetailColumn("availableColumn3", col))
+              }
+            />
+          ),
+          colspan: 1,
+        },
+        {
+          text: (
+            <HeaderDropdown
+              options={ownedOptions}
+              columnText={availableColumn4}
+              setColumnText={(col: string) =>
+                dispatch(setDetailColumn("availableColumn4", col))
+              }
+            />
+          ),
+          colspan: 1,
+        },
+      ]}
+      data={
+        (leagues &&
+          available.map((league_id) => {
+            return {
+              id: league_id,
+              columns: [
+                {
+                  text: (
+                    <Avatar
+                      id={leagues[league_id].avatar}
+                      type={"L"}
+                      text={leagues[league_id].name}
+                    />
+                  ),
+                  colspan: 3,
+                },
+                ...[
+                  availableColumn1,
+                  availableColumn2,
+                  availableColumn3,
+                  availableColumn4,
+                ].map((col, index) => {
+                  let text, trendColor;
+
+                  if (leagues && leagues[league_id]) {
+                    ({ text, trendColor } = getLeaguesColumn(
+                      col,
+                      leagues[league_id],
+                      ktc_current || {},
+                      fpseason || {},
+                      allplayers || {}
+                    ));
+                  } else {
+                    text = "-";
+                    trendColor = {};
+                  }
+                  return {
+                    text: text,
+                    colspan: 1,
+                    style: { ...trendColor },
+                  };
+                }),
+              ],
+            };
+          })) ||
+        []
+      }
+    />
+  );
 
   return (
     <>

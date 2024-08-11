@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import TableMain from "./TableMain";
 import { useState } from "react";
 import { position_map } from "@/helpers/getPlayerShares";
+import "@/styles/detailnav.css";
 
 interface MatchupProps {
   league_id: string;
@@ -73,6 +74,7 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
                   user_matchup.players_projections
                     .find((pp) => pp.player_id === user_matchup.starters[index])
                     ?.proj?.toFixed(1) || "-",
+                colspan: 2,
               },
             ],
           };
@@ -103,7 +105,7 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
             columns: [
               { text: allplayers[option].position, colspan: 1 },
               { text: allplayers[option].full_name, colspan: 3 },
-              { text: getUserPlayerProjection(option).toFixed(1), colspan: 1 },
+              { text: getUserPlayerProjection(option).toFixed(1), colspan: 2 },
             ],
           };
         })) ||
@@ -111,7 +113,10 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
 
   return (
     <>
-      <div className="nav nav2"></div>
+      <div className="nav nav2">
+        <div></div>
+        <div></div>
+      </div>
       <TableMain
         type={2}
         half={true}
