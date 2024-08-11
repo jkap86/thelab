@@ -87,7 +87,23 @@ export type Leaguemate = {
 };
 
 export type Matchup = {
+  roster_id: number;
+  matchup_id: number;
   league_id: string;
+  players: string[];
+  starters: string[];
+};
+
+export type MatchupOptimal = {
+  roster_id: number;
+  matchup_id: number;
+  league_id: string;
+  players: string[];
+  starters: string[];
+  optimal_starters: string[];
+  optimal_proj: number;
+  actual_proj: number;
+  players_projections: { player_id: string; proj: number }[];
 };
 
 export type Trade = {
@@ -120,4 +136,15 @@ export type Trade = {
     for: { league_id: string; leaguemate_id: string; player_id: string }[];
     away: { league_id: string; leaguemate_id: string; player_id: string }[];
   };
+};
+
+export type PlayerStat = {
+  player_id: string;
+  stats: { [key: string]: number };
+  injury_status: string;
+};
+
+export type PlayerProjection = {
+  projection: { [key: string]: number };
+  injury_status: string;
 };

@@ -48,3 +48,9 @@ export type SleeperDraftpick = {
   previous_owner_id: number;
   round: number;
 };
+
+export type SleeperPlayerStat = {
+  player_id: string;
+  stats: { [key: string]: number };
+  player: { injury_status: string };
+};

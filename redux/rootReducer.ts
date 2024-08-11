@@ -6,6 +6,7 @@ import leaguesReducer from "./reducers/leaguesReducer";
 import playersReducer from "./reducers/playersReducer";
 import LeaguematesReducer from "./reducers/leaguematesReducer";
 import tradesReducer from "./reducers/tradesReducer";
+import matchupsReducer from "./reducers/matchupsReducer";
 
 const rootReducer = combineReducers({
   home: homepageReducer,
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   players: playersReducer,
   leaguemates: LeaguematesReducer,
   trades: tradesReducer,
+  matchups: matchupsReducer,
 });
 
 export default rootReducer;

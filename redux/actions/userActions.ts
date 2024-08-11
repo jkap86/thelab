@@ -7,8 +7,14 @@ import {
   Leaguemate,
   Trade,
   Matchup,
+  PlayerProjection,
+  MatchupOptimal,
 } from "@/lib/types";
-import { getOptimalStarters, getPlayerShares } from "@/helpers/getPlayerShares";
+import {
+  getOptimalStarters,
+  getOptimalStartersMatchup,
+  getPlayerShares,
+} from "@/helpers/getPlayerShares";
 import { getTradeTips } from "@/helpers/getTradeTips";
 
 interface fetchUserStartAction {
@@ -95,7 +101,7 @@ interface fetchMatchupsStartAction {
 
 interface fetchMatchupsEndAction {
   type: "FETCH_MATCHUPS_END";
-  payload: { [key: string]: Matchup[] };
+  payload: { [key: string]: MatchupOptimal[] };
 }
 
 interface fetchMatchupsErrorAction {
@@ -305,10 +311,18 @@ export const syncLeague =
   };
 
 export const fetchMatchups =
-  (league_ids: string[], week: number) => async (dispatch: AppDispatch) => {
+  (
+    leagues: { [key: string]: League },
+    week: number,
+    allplayers: { [key: string]: Allplayer },
+    fpweek: { [key: string]: PlayerProjection }
+  ) =>
+  async (dispatch: AppDispatch) => {
     dispatch({
       type: "FETCH_MATCHUPS_START",
     });
+
+    const league_ids = Object.keys(leagues);
 
     try {
       const response: { data: Matchup[] } = await axios.post("/api/matchups", {
@@ -316,14 +330,32 @@ export const fetchMatchups =
         week,
       });
 
-      const matchups_obj: { [key: string]: Matchup[] } = {};
+      const matchups_obj: { [key: string]: MatchupOptimal[] } = {};
 
       response.data.forEach((matchup) => {
         if (!matchups_obj[matchup.league_id]) {
           matchups_obj[matchup.league_id] = [];
         }
 
-        matchups_obj[matchup.league_id].push(matchup);
+        const {
+          optimal_starters,
+          optimal_proj,
+          actual_proj,
+          players_projections,
+        } = getOptimalStartersMatchup(
+          matchup,
+          leagues[matchup.league_id].roster_positions,
+          fpweek,
+          allplayers,
+          leagues[matchup.league_id].scoring_settings
+        );
+        matchups_obj[matchup.league_id].push({
+          ...matchup,
+          optimal_starters,
+          optimal_proj,
+          actual_proj,
+          players_projections,
+        });
       });
 
       dispatch({

@@ -2,7 +2,7 @@ import { League, Roster } from "@/lib/types";
 import "@/styles/detailnav.css";
 import TableMain from "./TableMain";
 import Avatar from "./Avatar";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import HeaderDropdown from "./HeaderDropdown";

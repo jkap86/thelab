@@ -1,6 +1,7 @@
 import {
   fetchAllPlayers,
   fetchFpSeason,
+  fetchFpWeek,
   fetchKTC_dates,
 } from "@/redux/actions/commonActions";
 import {
@@ -31,6 +32,8 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
     isLoadingFpSeason,
     ktc_current,
     isLoadingKTC,
+    isLoadingFpWeek,
+    fpweek,
   } = useSelector((state: RootState) => state.common);
   const {
     user,
@@ -46,6 +49,7 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
     pathname.split("/")[1].charAt(0).toUpperCase() +
     pathname.split("/")[1].slice(1);
 
+  console.log({ matchups });
   useEffect(() => {
     if (!allplayers && !isLoadingAllplayers) {
       dispatch(fetchAllPlayers());
@@ -96,10 +100,28 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
   // MATCHUPS
 
   useEffect(() => {
-    if (navTab.toLowerCase() === "matchups" && leagues && !matchups && state) {
-      dispatch(fetchMatchups(Object.keys(leagues), state.display_week));
+    if (
+      navTab.toLowerCase() === "matchups" &&
+      allplayers &&
+      leagues &&
+      fpweek &&
+      !matchups &&
+      state
+    ) {
+      dispatch(fetchMatchups(leagues, state.display_week, allplayers, fpweek));
     }
-  }, [navTab, leagues, matchups, state, dispatch]);
+  }, [navTab, leagues, matchups, allplayers, fpweek, state, dispatch]);
+
+  useEffect(() => {
+    if (
+      navTab.toLowerCase() === "matchups" &&
+      state &&
+      !fpweek &&
+      !isLoadingFpWeek
+    ) {
+      dispatch(fetchFpWeek(state.display_week));
+    }
+  }, [state, navTab, fpweek, isLoadingFpWeek, dispatch]);
 
   return (errorUser && errorUser) || (errorLeagues && errorLeagues) ? (
     <h1>

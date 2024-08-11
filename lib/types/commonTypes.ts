@@ -4,6 +4,7 @@ export type Allplayer = {
   team: string;
   full_name: string;
   age: number;
+  fantasy_positions: string[];
 };
 
 export type SleeperState = {

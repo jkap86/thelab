@@ -33,6 +33,7 @@ export async function GET(req: NextRequest) {
           team: player_obj.team || "FA",
           full_name: player_obj.full_name,
           age: player_obj.age,
+          fantasy_positions: player_obj.fantasy_positions,
         });
       });
 

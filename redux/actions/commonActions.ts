@@ -1,5 +1,10 @@
 import axios from "axios";
-import { Allplayer, SleeperState } from "@/lib/types";
+import {
+  Allplayer,
+  PlayerProjection,
+  PlayerStat,
+  SleeperState,
+} from "@/lib/types";
 import { AppDispatch } from "../store";
 
 interface fetchAllplayersStartAction {
@@ -38,7 +43,7 @@ interface fetchFpSeasonStartAction {
   type: "FETCH_FPSEASON_START";
 }
 
-interface setFpSeason {
+interface setFpSeasonAction {
   type: "SET_FP_SEASON";
   payload: {
     [key: string]: { [key: string]: number };
@@ -47,6 +52,21 @@ interface setFpSeason {
 
 interface fetchFpSeasonErrorAction {
   type: "FETCH_FPSEASON_ERROR";
+}
+
+interface fetchFpWeekStartAction {
+  type: "FETCH_FPWEEK_START";
+}
+
+interface setFpWeekAction {
+  type: "SET_FP_WEEK";
+  payload: {
+    [key: string]: PlayerProjection;
+  };
+}
+
+interface fetchFpWeekErrorAction {
+  type: "FETCH_FPWEEK_ERROR";
 }
 
 interface setType1Action {
@@ -67,8 +87,11 @@ export type CommonActionTypes =
   | setKTC_datesAction
   | fetchKtcErrorAction
   | fetchFpSeasonStartAction
-  | setFpSeason
+  | setFpSeasonAction
   | fetchFpSeasonErrorAction
+  | fetchFpWeekStartAction
+  | setFpWeekAction
+  | fetchFpWeekErrorAction
   | setType1Action
   | setType2Action;
 
@@ -131,7 +154,7 @@ export const fetchFpSeason = () => async (dispatch: AppDispatch) => {
   });
   try {
     const response: {
-      data: { player_id: string; stats: { [key: string]: number } }[];
+      data: PlayerStat[];
     } = await axios.get(`/api/fpseason`);
 
     dispatch({
@@ -147,6 +170,40 @@ export const fetchFpSeason = () => async (dispatch: AppDispatch) => {
     console.log(err);
     dispatch({
       type: "FETCH_FPSEASON_ERROR",
+    });
+  }
+};
+
+export const fetchFpWeek = (week: number) => async (dispatch: AppDispatch) => {
+  dispatch({
+    type: "FETCH_FPWEEK_START",
+  });
+
+  try {
+    const response: {
+      data: PlayerStat[];
+    } = await axios.get("/api/fpweek", {
+      params: {
+        week,
+      },
+    });
+
+    dispatch({
+      type: "SET_FP_WEEK",
+      payload: Object.fromEntries(
+        response.data.map((player_stat) => [
+          player_stat.player_id,
+          {
+            projection: player_stat.stats,
+            injury_status: player_stat.injury_status,
+          },
+        ])
+      ),
+    });
+  } catch (err) {
+    console.log(err);
+    dispatch({
+      type: "FETCH_FPWEEK_ERROR",
     });
   }
 };

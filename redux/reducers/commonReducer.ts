@@ -1,5 +1,5 @@
 import { produce, WritableDraft } from "immer";
-import { Allplayer, SleeperState } from "@/lib/types";
+import { Allplayer, PlayerProjection, SleeperState } from "@/lib/types";
 import { CommonActionTypes } from "../actions/commonActions";
 
 export interface CommonState {
@@ -15,6 +15,8 @@ export interface CommonState {
   isLoadingKTC: boolean;
   fpseason: { [key: string]: { [key: string]: number } } | false;
   isLoadingFpSeason: boolean;
+  isLoadingFpWeek: boolean;
+  fpweek: { [key: string]: PlayerProjection } | false;
   type1: "Redraft" | "All" | "Dynasty";
   type2: "Bestball" | "All" | "Lineup";
 }
@@ -27,6 +29,8 @@ const initialState: CommonState = {
   isLoadingKTC: false,
   fpseason: false,
   isLoadingFpSeason: false,
+  fpweek: false,
+  isLoadingFpWeek: false,
   type1: "All",
   type2: "All",
 };
@@ -65,6 +69,16 @@ const commonReducer = (state = initialState, action: CommonActionTypes) => {
         break;
       case "FETCH_FPSEASON_ERROR":
         draft.isLoadingFpSeason = false;
+        break;
+      case "FETCH_FPWEEK_START":
+        draft.isLoadingFpWeek = true;
+        break;
+      case "SET_FP_WEEK":
+        draft.fpweek = action.payload;
+        draft.isLoadingFpWeek = false;
+        break;
+      case "FETCH_FPWEEK_ERROR":
+        draft.isLoadingFpWeek = false;
         break;
       case "SET_COMMON_TYPE1":
         draft.type1 = action.payload;

@@ -1,6 +1,13 @@
-import { Allplayer, League, Roster, User } from "@/lib/types";
+import {
+  Allplayer,
+  League,
+  Matchup,
+  PlayerProjection,
+  Roster,
+  User,
+} from "@/lib/types";
 
-export const position_map = {
+export const position_map: { [key: string]: string[] } = {
   QB: ["QB"],
   RB: ["RB", "FB"],
   WR: ["WR"],
@@ -48,6 +55,28 @@ export const getPlayerProjection = (
   return projection;
 };
 
+export const getPlayerProjectionWeek = (
+  player_id: string,
+  scoring_settings: { [key: string]: number },
+  fpweek: { [key: string]: PlayerProjection }
+) => {
+  const player_proj_week = fpweek[player_id];
+
+  if (!player_proj_week || !scoring_settings) {
+    return 0;
+  }
+
+  const projection = Object.keys(player_proj_week.projection)
+    .filter((key) => Object.keys(scoring_settings).includes(key))
+    .reduce(
+      (acc, cur) =>
+        acc + scoring_settings[cur] * (player_proj_week.projection[cur] || 0),
+      0
+    );
+
+  return projection;
+};
+
 export const getOptimalStarters = (
   roster: Roster,
   roster_positions: string[],
@@ -82,7 +111,6 @@ export const getOptimalStarters = (
         rp === "WRRB_FLEX" ||
         rp === "REC_FLEX"
     )
-
     .map((slot, index) => {
       return {
         slot,
@@ -206,4 +234,84 @@ export const getPlayerShares = (leagues: League[]) => {
   });
 
   return { playershares, leaguemates };
+};
+
+export const getOptimalStartersMatchup = (
+  matchup: Matchup,
+  roster_positions: string[],
+  fpweek: { [key: string]: PlayerProjection },
+  allplayers: { [key: string]: Allplayer },
+  scoring_settings: { [key: string]: number }
+) => {
+  const optimal_starters: {
+    slot_index: number;
+    optimal_player: string;
+    proj: number;
+  }[] = [];
+
+  const players_projections = (matchup.players || []).map((player_id) => {
+    return {
+      player_id: player_id,
+      proj: getPlayerProjectionWeek(player_id, scoring_settings, fpweek),
+    };
+  });
+
+  let players = [...players_projections];
+
+  const starting_slots = roster_positions
+    .filter(
+      (rp) =>
+        rp === "QB" ||
+        rp === "RB" ||
+        rp === "WR" ||
+        rp === "TE" ||
+        rp === "FLEX" ||
+        rp === "SUPER_FLEX" ||
+        rp === "WRRB_FLEX" ||
+        rp === "REC_FLEX"
+    )
+    .map((slot, index) => {
+      return {
+        slot,
+        index,
+      };
+    });
+
+  starting_slots
+    .sort((a, b) => getPosLen(a.slot) - getPosLen(b.slot))
+    .forEach((slot) => {
+      const slot_options = players
+        ?.filter((player) =>
+          position_map[slot.slot].some((p) =>
+            allplayers[player.player_id]?.fantasy_positions.includes(p)
+          )
+        )
+        .sort((a, b) => b.proj - a.proj);
+
+      const optimal_player = slot_options?.[0] || "0";
+
+      players =
+        players?.filter((p) => p.player_id !== optimal_player.player_id) ||
+        null;
+
+      optimal_starters.push({
+        slot_index: slot.index,
+        optimal_player: optimal_player.player_id,
+        proj: optimal_player.proj,
+      });
+    });
+
+  const actual_proj = matchup.starters.reduce(
+    (acc, cur) => acc + getPlayerProjectionWeek(cur, scoring_settings, fpweek),
+    0
+  );
+
+  return {
+    optimal_starters: optimal_starters
+      .sort((a, b) => a.slot_index - b.slot_index)
+      .map((s) => s.optimal_player),
+    optimal_proj: optimal_starters.reduce((acc, cur) => acc + cur.proj, 0),
+    actual_proj: actual_proj,
+    players_projections,
+  };
 };
