@@ -6,6 +6,7 @@ export interface TradesState {
   searchedPlayer: string | false;
   page: number;
   activeTrade: string | false;
+  searchedManager: string | false;
 }
 
 const initialState: TradesState = {
@@ -13,6 +14,7 @@ const initialState: TradesState = {
   searchedPlayer: false,
   page: 1,
   activeTrade: false,
+  searchedManager: false,
 };
 
 const tradesReducer = (state = initialState, action: TradesActionTypes) => {
@@ -23,6 +25,12 @@ const tradesReducer = (state = initialState, action: TradesActionTypes) => {
         break;
       case "SET_ACTIVE_TRADE":
         draft.activeTrade = action.payload;
+        break;
+      case "SET_SEARCHED_MANAGER":
+        draft.searchedManager = action.payload;
+        break;
+      case "SET_SEARCHED_PLAYER":
+        draft.searchedPlayer = action.payload;
         break;
       default:
         break;

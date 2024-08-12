@@ -9,6 +9,7 @@ import {
   setPlayersDetailTab,
   setSortOwnedBy,
   setSortTakenBy,
+  setSortAvailableBy,
 } from "@/redux/actions/playersActions";
 import { User } from "@/lib/types";
 import Avatar from "./Avatar";
@@ -434,6 +435,38 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
   const tableAvailable = (
     <TableMain
       type={type}
+      headers_sort={[
+        {
+          text: getSortIcon(0, sortAvailableBy, (colNum, asc) =>
+            dispatch(setSortAvailableBy(colNum, asc))
+          ),
+          colspan: 3,
+        },
+        {
+          text: getSortIcon(1, sortAvailableBy, (colNum, asc) =>
+            dispatch(setSortAvailableBy(colNum, asc))
+          ),
+          colspan: 1,
+        },
+        {
+          text: getSortIcon(2, sortAvailableBy, (colNum, asc) =>
+            dispatch(setSortAvailableBy(colNum, asc))
+          ),
+          colspan: 1,
+        },
+        {
+          text: getSortIcon(3, sortAvailableBy, (colNum, asc) =>
+            dispatch(setSortAvailableBy(colNum, asc))
+          ),
+          colspan: 1,
+        },
+        {
+          text: getSortIcon(4, sortAvailableBy, (colNum, asc) =>
+            dispatch(setSortAvailableBy(colNum, asc))
+          ),
+          colspan: 1,
+        },
+      ]}
       headers={[
         {
           text: <div>League</div>,

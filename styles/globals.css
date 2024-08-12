@@ -81,6 +81,7 @@ ol.page_numbers > li {
   line-height: 100%;
   text-shadow: var(--text-shadow1);
   border: 0.5rem ridge transparent;
+  font-family: var(--fontPulang);
 }
 
 ol.page_numbers > li.active {

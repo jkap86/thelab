@@ -135,7 +135,10 @@ const playersReducer = (state = initialState, action: PlayersActionTypes) => {
     case "SET_SORT_AVAILABLE":
       return {
         ...state,
-        sortAvailableBy: {},
+        sortAvailableBy: {
+          column: action.payload.col,
+          asc: action.payload.asc,
+        },
       };
     case "SET_ACTIVE_PLAYER_LEAGUE":
       return {

@@ -35,7 +35,7 @@ img.homelogo {
 
 div.home_title > strong {
   color: var(--color1);
-  font-family: var(--font1);
+  font-family: var(--fontPulang);
   font-size: 20vmin;
   letter-spacing: 2vmin;
   text-shadow: 0 0 1rem black;

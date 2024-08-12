@@ -7,8 +7,13 @@ import { AppDispatch, RootState } from "@/redux/store";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import "@/styles/trades.css";
-import { setActiveTrade, setTradesPage } from "@/redux/actions/tradesActions";
+import {
+  setActiveTrade,
+  setSearchedManager,
+  setTradesPage,
+} from "@/redux/actions/tradesActions";
 import TradeDetail from "@/components/TradeDetail";
+import Search from "@/components/Search";
 
 interface TradesProps {
   params: { username: string };
@@ -22,9 +27,12 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
   const { leagues, lmTrades, isLoadingLmTrades, leaguemates } = useSelector(
     (state: RootState) => state.user
   );
-  const { activeTrade, page } = useSelector((state: RootState) => state.trades);
+  const { activeTrade, page, searchedManager, searchedPlayer } = useSelector(
+    (state: RootState) => state.trades
+  );
 
   const cur_trade_length = (lmTrades.trades && lmTrades.trades.length) || 0;
+
   useEffect(() => {
     if (
       leagues &&
@@ -38,6 +46,26 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
 
   const content = (
     <>
+      <div className="searches">
+        <Search
+          searched={searchedManager}
+          setSearched={(user_id) => dispatch(setSearchedManager(user_id))}
+          options={Object.values(leaguemates || {}).map((leaguemate) => {
+            return {
+              id: leaguemate.user_id,
+              text: leaguemate.username,
+              display: (
+                <Avatar
+                  id={leaguemate.avatar}
+                  type={"U"}
+                  text={leaguemate.username}
+                />
+              ),
+            };
+          })}
+          placeholder={"Search Manager"}
+        />
+      </div>
       <div className="page_numbers_wrapper">
         <ol className="page_numbers">
           {Array.from(
