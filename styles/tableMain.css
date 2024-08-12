@@ -164,6 +164,7 @@ table.detail2 thead.main_heading > tr {
 table.half {
   width: 50%;
   display: inline-table;
+  vertical-align: top;
 }
 
 table.detail tr.active,

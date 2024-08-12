@@ -58,16 +58,22 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
       leagues[league_id].roster_positions
         .filter((rp) => rp !== "BN")
         .map((rp, index) => {
+          const classname = !user_matchup.optimal_starters.includes(
+            user_matchup.starters[index]
+          )
+            ? "red"
+            : "";
           return {
             id: `${rp}_${user_matchup.starters[index]}`,
             columns: [
-              { text: rp, colspan: 1 },
+              { text: rp, colspan: 1, classname },
               {
                 text:
                   (allplayers &&
                     allplayers[user_matchup.starters[index]]?.full_name) ||
                   "-",
                 colspan: 3,
+                classname,
               },
               {
                 text:
@@ -75,6 +81,7 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
                     .find((pp) => pp.player_id === user_matchup.starters[index])
                     ?.proj?.toFixed(1) || "-",
                 colspan: 2,
+                classname,
               },
             ],
           };
@@ -100,12 +107,23 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
       options
         .sort((a, b) => getUserPlayerProjection(b) - getUserPlayerProjection(a))
         .map((option, index) => {
+          const classname = user_matchup.optimal_starters.includes(option)
+            ? "green"
+            : "";
           return {
             id: option,
             columns: [
-              { text: allplayers[option].position, colspan: 1 },
-              { text: allplayers[option].full_name, colspan: 3 },
-              { text: getUserPlayerProjection(option).toFixed(1), colspan: 2 },
+              { text: allplayers[option].position, colspan: 1, classname },
+              {
+                text: allplayers[option].full_name,
+                colspan: 3,
+                classname,
+              },
+              {
+                text: getUserPlayerProjection(option).toFixed(1),
+                colspan: 2,
+                classname,
+              },
             ],
           };
         })) ||
@@ -115,6 +133,9 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
     <>
       <div className="nav nav2">
         <div></div>
+        <div className="sync">
+          <i className={"fa-solid fa-arrows-rotate "}></i>
+        </div>
         <div></div>
       </div>
       <TableMain
