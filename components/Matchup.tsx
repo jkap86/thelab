@@ -64,7 +64,7 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
             ? "red"
             : "";
           return {
-            id: `${rp}_${user_matchup.starters[index]}`,
+            id: `${rp}__${index}`,
             columns: [
               { text: rp, colspan: 1, classname },
               {
@@ -88,8 +88,9 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
         })) ||
     [];
 
-  const activeSlot = activePlayer?.split("_")[0];
-  const activeStarter = activePlayer?.split("_")?.[1];
+  const activeSlot = activePlayer?.split("__")[0];
+
+  console.log({ activeSlot });
 
   const options =
     user_matchup &&
