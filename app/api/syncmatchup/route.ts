@@ -11,7 +11,12 @@ export async function GET(req: NextRequest) {
 
   try {
     const matchups = await axiosInstance.get(
-      `https://api.sleeper.app/v1/league/${league_id}/matchups/${week}`
+      `https://api.sleeper.app/v1/league/${league_id}/matchups/${week}`,
+      {
+        params: {
+          t: new Date().getTime(),
+        },
+      }
     );
 
     const upsertMatchupQuery = `
