@@ -109,6 +109,24 @@ interface fetchMatchupsErrorAction {
   payload: string;
 }
 
+interface syncMatchupStartAction {
+  type: "SYNC_MATCHUP_START";
+  payload: string;
+}
+
+interface syncMatchupEndAction {
+  type: "SYNC_MATCHUP_END";
+  payload: {
+    matchups: MatchupOptimal[];
+    league_id: string;
+  };
+}
+
+interface syncMatchupErrorAction {
+  type: "SYNC_MATCHUP_ERROR";
+  payload: string;
+}
+
 interface fetchLmTradesStartAction {
   type: "FETCH_LMTRADES_START";
 }
@@ -143,6 +161,9 @@ export type UserActionTypes =
   | fetchMatchupsStartAction
   | fetchMatchupsEndAction
   | fetchMatchupsErrorAction
+  | syncMatchupStartAction
+  | syncMatchupEndAction
+  | syncMatchupErrorAction
   | fetchLmTradesStartAction
   | setStateLmTradesAction
   | fetchLmTradesErrorAction
@@ -365,6 +386,71 @@ export const fetchMatchups =
     } catch (err: any) {
       console.log({ err });
       dispatch({ type: "FETCH_MATCHUPS_ERROR", payload: err.message });
+    }
+  };
+
+export const syncMatchup =
+  (
+    league_id: string,
+    leagues: { [key: string]: League },
+    week: number,
+    allplayers: { [key: string]: Allplayer },
+    fpweek: { [key: string]: PlayerProjection }
+  ) =>
+  async (dispatch: AppDispatch) => {
+    dispatch({
+      type: "SYNC_MATCHUP_START",
+      payload: league_id,
+    });
+
+    try {
+      const response: { data: Matchup[] } = await axios.get(
+        "/api/syncmatchup",
+        {
+          params: {
+            league_id,
+            week,
+          },
+        }
+      );
+
+      const league_matchups: MatchupOptimal[] = [];
+
+      response.data.forEach((matchup) => {
+        const {
+          optimal_starters,
+          optimal_proj,
+          actual_proj,
+          players_projections,
+        } = getOptimalStartersMatchup(
+          matchup,
+          leagues[league_id].roster_positions,
+          fpweek,
+          allplayers,
+          leagues[league_id].scoring_settings
+        );
+
+        league_matchups.push({
+          ...matchup,
+          optimal_starters,
+          optimal_proj,
+          actual_proj,
+          players_projections,
+        });
+      });
+
+      dispatch({
+        type: "SYNC_MATCHUP_END",
+        payload: {
+          matchups: league_matchups,
+          league_id,
+        },
+      });
+    } catch (err: any) {
+      dispatch({
+        type: "SYNC_MATCHUP_ERROR",
+        payload: err.message,
+      });
     }
   };
 

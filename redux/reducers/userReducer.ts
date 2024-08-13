@@ -34,6 +34,8 @@ export interface UserState {
   isLoadingMatchups: boolean;
   matchups: { [key: string]: MatchupOptimal[] } | false;
   errorMatchups: string | false;
+  isSyncingMatchup: string | false;
+  errorSyncingMatchup: string | false;
 }
 const initialState: UserState = {
   user: false,
@@ -55,6 +57,8 @@ const initialState: UserState = {
   isLoadingMatchups: false,
   matchups: false,
   errorMatchups: false,
+  isSyncingMatchup: false,
+  errorSyncingMatchup: false,
 };
 
 const userReducer = (state = initialState, action: UserActionTypes) => {
@@ -123,6 +127,19 @@ const userReducer = (state = initialState, action: UserActionTypes) => {
       case "FETCH_MATCHUPS_ERROR":
         draft.isLoadingMatchups = false;
         draft.errorMatchups = action.payload;
+        break;
+      case "SYNC_MATCHUP_START":
+        draft.isSyncingMatchup = action.payload;
+        break;
+      case "SYNC_MATCHUP_END":
+        draft.isSyncingMatchup = false;
+        draft.matchups
+          ? (draft.matchups[action.payload.league_id] = action.payload.matchups)
+          : null;
+        break;
+      case "SYNC_MATCHUP_ERROR":
+        draft.isSyncingMatchup = false;
+        draft.errorSyncingMatchup = action.payload;
         break;
       case "RESET_STATE":
         return initialState;

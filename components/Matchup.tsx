@@ -5,6 +5,7 @@ import TableMain from "./TableMain";
 import { useState } from "react";
 import { position_map } from "@/helpers/getPlayerShares";
 import "@/styles/detailnav.css";
+import { syncMatchup } from "@/redux/actions/userActions";
 
 interface MatchupProps {
   league_id: string;
@@ -13,10 +14,15 @@ interface MatchupProps {
 
 const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
   const dispatch: AppDispatch = useDispatch();
-  const { allplayers } = useSelector((state: RootState) => state.common);
-  const { leagues } = useSelector((state: RootState) => state.user);
+  const { state, allplayers, fpweek } = useSelector(
+    (state: RootState) => state.common
+  );
+  const { leagues, isSyncingMatchup } = useSelector(
+    (state: RootState) => state.user
+  );
   const [activePlayer, setActivePlayer] = useState("");
 
+  const week = (state && Math.max(state.leg, 1)) || 1;
   const user_matchup =
     leagues &&
     matchups.find(
@@ -135,7 +141,20 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
       <div className="nav nav2">
         <div></div>
         <div className="sync">
-          <i className={"fa-solid fa-arrows-rotate "}></i>
+          <i
+            className={
+              "fa-solid fa-arrows-rotate " +
+              (isSyncingMatchup === league_id ? "rotate" : "")
+            }
+            onClick={() =>
+              leagues &&
+              allplayers &&
+              fpweek &&
+              dispatch(
+                syncMatchup(league_id, leagues, week, allplayers, fpweek)
+              )
+            }
+          ></i>
         </div>
         <div></div>
       </div>

@@ -41,9 +41,9 @@ export async function GET(req: NextRequest) {
       new Date(),
     ]);
 
-    const result = await pool.query(upsertMatchupQuery, values);
+    await pool.query(upsertMatchupQuery, values);
 
-    return NextResponse.json(result, { status: 200 });
+    return NextResponse.json(matchups.data, { status: 200 });
   } catch (err: any) {
     console.log(err.message);
   }

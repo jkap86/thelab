@@ -10,5 +10,5 @@ export type Allplayer = {
 export type SleeperState = {
   season: string;
   season_type: string;
-  display_week: number;
+  leg: number;
 };
