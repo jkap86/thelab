@@ -30,6 +30,12 @@ export interface UserState {
     count: number;
     trades: Trade[] | false;
   };
+  lmTradeSearches: {
+    manager: string | false;
+    player: string | false;
+    count: number;
+    trades: Trade[];
+  }[];
   errorLmTrades: string | false;
   isLoadingMatchups: boolean;
   matchups: { [key: string]: MatchupOptimal[] } | false;
@@ -53,6 +59,7 @@ const initialState: UserState = {
     count: 0,
     trades: false,
   },
+  lmTradeSearches: [],
   errorLmTrades: false,
   isLoadingMatchups: false,
   matchups: false,
@@ -140,6 +147,44 @@ const userReducer = (state = initialState, action: UserActionTypes) => {
       case "SYNC_MATCHUP_ERROR":
         draft.isSyncingMatchup = false;
         draft.errorSyncingMatchup = action.payload;
+        break;
+      case "FETCH_FILTERED_LMTRADES_END":
+        const existing = draft.lmTradeSearches.find(
+          (s) =>
+            s.manager === action.payload.manager &&
+            s.player === action.payload.player
+        );
+
+        if (existing) {
+          draft.lmTradeSearches = [
+            ...draft.lmTradeSearches.filter(
+              (s) =>
+                !(
+                  s.manager === existing.manager && s.player === existing.player
+                )
+            ),
+            {
+              ...existing,
+              trades: [
+                ...existing.trades,
+                ...action.payload.trades.filter(
+                  (t) =>
+                    !existing.trades.some(
+                      (t2) => t.transaction_id === t2.transaction_id
+                    )
+                ),
+              ],
+            },
+          ];
+        } else {
+          draft.lmTradeSearches.push({
+            manager: action.payload.manager,
+            player: action.payload.player,
+            count: action.payload.count,
+            trades: action.payload.trades,
+          });
+        }
+
         break;
       case "RESET_STATE":
         return initialState;

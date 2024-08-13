@@ -2,7 +2,10 @@
 
 import Avatar from "@/components/Avatar";
 import Layout from "@/components/Layout";
-import { fetchLmTrades } from "@/redux/actions/userActions";
+import {
+  fetchFilteredLmTrades,
+  fetchLmTrades,
+} from "@/redux/actions/userActions";
 import { AppDispatch, RootState } from "@/redux/store";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -24,14 +27,35 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
   const { allplayers, ktc_current } = useSelector(
     (state: RootState) => state.common
   );
-  const { leagues, lmTrades, isLoadingLmTrades, leaguemates } = useSelector(
-    (state: RootState) => state.user
-  );
+  const {
+    user,
+    leagues,
+    lmTrades,
+    isLoadingLmTrades,
+    leaguemates,
+    lmTradeSearches,
+  } = useSelector((state: RootState) => state.user);
   const { activeTrade, page, searchedManager, searchedPlayer } = useSelector(
     (state: RootState) => state.trades
   );
 
-  const cur_trade_length = (lmTrades.trades && lmTrades.trades.length) || 0;
+  console.log({ lmTrades });
+
+  const tradesDisplay =
+    searchedManager || searchedPlayer
+      ? lmTradeSearches.find(
+          (s) => s.manager === searchedManager && s.player === searchedPlayer
+        )?.trades || []
+      : lmTrades.trades || [];
+
+  const tradesCount =
+    searchedManager || searchedPlayer
+      ? lmTradeSearches.find(
+          (s) => s.manager === searchedManager && s.player === searchedPlayer
+        )?.count || 0
+      : lmTrades.count || 0;
+
+  const cur_trade_length = tradesDisplay.length;
 
   useEffect(() => {
     if (
@@ -42,7 +66,53 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
     ) {
       dispatch(fetchLmTrades(Object.keys(leaguemates), 0, 125, leagues));
     }
-  }, [leaguemates, isLoadingLmTrades, lmTrades, leagues, dispatch]);
+
+    if (searchedManager || searchedPlayer) {
+      leagues &&
+        dispatch(
+          fetchFilteredLmTrades(
+            Object.keys(leaguemates),
+            0,
+            125,
+            leagues,
+            searchedManager,
+            searchedPlayer
+          )
+        );
+    }
+  }, [
+    leaguemates,
+    isLoadingLmTrades,
+    lmTrades,
+    leagues,
+    searchedManager,
+    searchedPlayer,
+    dispatch,
+  ]);
+
+  const mananger_options = Object.values(leaguemates || {}).map(
+    (leaguemate) => {
+      return {
+        id: leaguemate.user_id,
+        text: leaguemate.username,
+        display: (
+          <Avatar
+            id={leaguemate.avatar}
+            type={"U"}
+            text={leaguemate.username}
+          />
+        ),
+      };
+    }
+  );
+
+  if (user) {
+    mananger_options.push({
+      id: user.user_id,
+      text: user.username,
+      display: <Avatar id={user.avatar} type={"U"} text={user.username} />,
+    });
+  }
 
   const content = (
     <>
@@ -50,28 +120,14 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
         <Search
           searched={searchedManager}
           setSearched={(user_id) => dispatch(setSearchedManager(user_id))}
-          options={Object.values(leaguemates || {}).map((leaguemate) => {
-            return {
-              id: leaguemate.user_id,
-              text: leaguemate.username,
-              display: (
-                <Avatar
-                  id={leaguemate.avatar}
-                  type={"U"}
-                  text={leaguemate.username}
-                />
-              ),
-            };
-          })}
+          options={mananger_options}
           placeholder={"Search Manager"}
         />
       </div>
       <div className="page_numbers_wrapper">
         <ol className="page_numbers">
           {Array.from(
-            Array(
-              Math.ceil((lmTrades.trades && lmTrades.trades?.length / 25) || 0)
-            ).keys()
+            Array(Math.ceil(tradesDisplay.length / 25 || 0)).keys()
           ).map((key) => {
             return (
               <li
@@ -83,17 +139,30 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
               </li>
             );
           })}
-          {leagues && lmTrades.trades && lmTrades.count > cur_trade_length ? (
+          {leagues && tradesCount > cur_trade_length ? (
             <li
-              onClick={() =>
-                dispatch(
-                  fetchLmTrades(
-                    Object.keys(leaguemates),
-                    cur_trade_length,
-                    cur_trade_length + 125,
-                    leagues
-                  )
-                )
+              onClick={
+                searchedManager || searchedPlayer
+                  ? () =>
+                      dispatch(
+                        fetchFilteredLmTrades(
+                          Object.keys(leaguemates),
+                          cur_trade_length,
+                          cur_trade_length + 125,
+                          leagues,
+                          searchedManager,
+                          searchedPlayer
+                        )
+                      )
+                  : () =>
+                      dispatch(
+                        fetchLmTrades(
+                          Object.keys(leaguemates),
+                          cur_trade_length,
+                          cur_trade_length + 125,
+                          leagues
+                        )
+                      )
               }
             >
               ...
@@ -102,7 +171,7 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
         </ol>
       </div>
       <table className="trades">
-        {[...(lmTrades.trades || [])]
+        {[...tradesDisplay]
           .sort((a, b) => (b.status_updated > a.status_updated ? 1 : -1))
           .slice((page - 1) * 25, (page - 1) * 25 + 25)
           .map((lmTrade, index) => {

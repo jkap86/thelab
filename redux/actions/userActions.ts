@@ -144,6 +144,16 @@ interface fetchLmTradesErrorAction {
   payload: string;
 }
 
+interface fetchFilteredLmTradesEndAction {
+  type: "FETCH_FILTERED_LMTRADES_END";
+  payload: {
+    manager: string | false;
+    player: string | false;
+    count: number;
+    trades: Trade[];
+  };
+}
+
 interface resetState {
   type: "RESET_STATE";
 }
@@ -167,6 +177,7 @@ export type UserActionTypes =
   | fetchLmTradesStartAction
   | setStateLmTradesAction
   | fetchLmTradesErrorAction
+  | fetchFilteredLmTradesEndAction
   | resetState;
 
 export const resetState = () => (dispatch: AppDispatch) => {
@@ -470,8 +481,8 @@ export const fetchLmTrades =
       const response: { data: { count: number; rows: Trade[] } } =
         await axios.post("/api/lmtrades", {
           leaguemate_ids,
-          offset,
           limit,
+          offset,
         });
 
       const trades_w_tips = getTradeTips(response.data.rows, leagues);
@@ -486,5 +497,51 @@ export const fetchLmTrades =
         type: "FETCH_LMTRADES_ERROR",
         payload: err.message,
       });
+    }
+  };
+
+export const fetchFilteredLmTrades =
+  (
+    leaguemate_ids: string[],
+    offset: number,
+    limit: number,
+    leagues: { [key: string]: League },
+    manager: string | false,
+    player: string | false
+  ) =>
+  async (dispatch: AppDispatch) => {
+    dispatch({
+      type: "FETCH_LMTRADES_START",
+    });
+
+    try {
+      const response: {
+        data: {
+          manager: string | false;
+          player: string | false;
+          count: number;
+          rows: Trade[];
+        };
+      } = await axios.post("/api/lmtrades", {
+        leaguemate_ids,
+        limit,
+        offset,
+        manager,
+        player,
+      });
+
+      const trades_w_tips = getTradeTips(response.data.rows, leagues);
+
+      dispatch({
+        type: "FETCH_FILTERED_LMTRADES_END",
+        payload: {
+          manager: response.data.manager,
+          player: response.data.player,
+          count: response.data.count,
+          trades: trades_w_tips,
+        },
+      });
+    } catch (err: any) {
+      console.log(err.message);
     }
   };
