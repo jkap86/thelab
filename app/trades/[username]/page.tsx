@@ -13,6 +13,7 @@ import "@/styles/trades.css";
 import {
   setActiveTrade,
   setSearchedManager,
+  setSearchedPlayer,
   setTradesPage,
 } from "@/redux/actions/tradesActions";
 import TradeDetail from "@/components/TradeDetail";
@@ -34,6 +35,7 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
     isLoadingLmTrades,
     leaguemates,
     lmTradeSearches,
+    playershares,
   } = useSelector((state: RootState) => state.user);
   const { activeTrade, page, searchedManager, searchedPlayer } = useSelector(
     (state: RootState) => state.trades
@@ -106,6 +108,19 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
     }
   );
 
+  const player_options = Object.keys(playershares).map((player_id) => {
+    const player_name =
+      (allplayers &&
+        allplayers[player_id] &&
+        allplayers[player_id].full_name) ||
+      player_id;
+    return {
+      id: player_id,
+      text: player_name,
+      display: <Avatar id={player_id} type={"P"} text={player_name} />,
+    };
+  });
+
   if (user) {
     mananger_options.push({
       id: user.user_id,
@@ -122,6 +137,12 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
           setSearched={(user_id) => dispatch(setSearchedManager(user_id))}
           options={mananger_options}
           placeholder={"Search Manager"}
+        />
+        <Search
+          searched={searchedPlayer}
+          setSearched={(player_id) => dispatch(setSearchedPlayer(player_id))}
+          options={player_options}
+          placeholder={"Search Player"}
         />
       </div>
       <div className="page_numbers_wrapper">
