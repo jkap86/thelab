@@ -179,7 +179,7 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
               <tbody key={`${lmTrade.transaction_id}_${index}`}>
                 <tr>
                   <td>
-                    <table>
+                    <table className="trade">
                       <tbody
                         onClick={() =>
                           dispatch(
@@ -256,57 +256,73 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                                 />
                               </td>
                               <td colSpan={7} className="adds">
-                                <div>
-                                  {Object.keys(lmTrade.adds)
-                                    .filter(
-                                      (add) =>
-                                        lmTrade.adds[add] ===
-                                        manager_roster?.user_id
-                                    )
-                                    .map((add, index) => {
-                                      return (
-                                        <div
-                                          key={`${add}_${index}`}
-                                          className={
-                                            lmTrade.tips?.away.some(
-                                              (tip) =>
-                                                tip.player_id === add &&
-                                                tip.leaguemate_id ===
-                                                  lmTrade.adds[add]
-                                            )
-                                              ? "redb"
-                                              : ""
-                                          }
-                                        >
-                                          {allplayers &&
-                                            allplayers[add]?.full_name}
-                                        </div>
-                                      );
-                                    })}
+                                <table className="adds">
+                                  <tbody>
+                                    {Object.keys(lmTrade.adds)
+                                      .filter(
+                                        (add) =>
+                                          lmTrade.adds[add] ===
+                                          manager_roster?.user_id
+                                      )
+                                      .map((add, index) => {
+                                        return (
+                                          <tr
+                                            key={`${add}_${index}`}
+                                            className={
+                                              lmTrade.tips?.away.some(
+                                                (tip) =>
+                                                  tip.player_id === add &&
+                                                  tip.leaguemate_id ===
+                                                    lmTrade.adds[add]
+                                              )
+                                                ? "redb"
+                                                : ""
+                                            }
+                                          >
+                                            <td colSpan={2}>
+                                              <div>
+                                                {allplayers &&
+                                                  allplayers[add]?.full_name}
+                                              </div>
+                                            </td>
+                                            <td>
+                                              <em>
+                                                {(ktc_current &&
+                                                  ktc_current[add]) ||
+                                                  "0"}
+                                              </em>
+                                            </td>
+                                          </tr>
+                                        );
+                                      })}
 
-                                  {lmTrade.draft_picks
-                                    .filter(
-                                      (dp) => dp.new === manager_roster?.user_id
-                                    )
-                                    .map((dp) => {
-                                      return (
-                                        <div
-                                          key={`${dp.season}_${dp.round}_${dp.original}_${index}`}
-                                        >
-                                          {dp.order
-                                            ? `${dp.season} ${
-                                                dp.round
-                                              }.${dp.order.toLocaleString(
-                                                "en-US",
-                                                {
-                                                  minimumIntegerDigits: 2,
-                                                }
-                                              )}`
-                                            : `${dp.season} Round ${dp.round}`}
-                                        </div>
-                                      );
-                                    })}
-                                </div>
+                                    {lmTrade.draft_picks
+                                      .filter(
+                                        (dp) =>
+                                          dp.new === manager_roster?.user_id
+                                      )
+                                      .map((dp) => {
+                                        return (
+                                          <tr
+                                            key={`${dp.season}_${dp.round}_${dp.original}_${index}`}
+                                          >
+                                            <td colSpan={2}>
+                                              {dp.order
+                                                ? `${dp.season} ${
+                                                    dp.round
+                                                  }.${dp.order.toLocaleString(
+                                                    "en-US",
+                                                    {
+                                                      minimumIntegerDigits: 2,
+                                                    }
+                                                  )}`
+                                                : `${dp.season} Round ${dp.round}`}
+                                            </td>
+                                          </tr>
+                                        );
+                                      })}
+                                  </tbody>
+                                </table>
                               </td>
                               <td colSpan={6} className="drops">
                                 {Object.keys(lmTrade.drops)

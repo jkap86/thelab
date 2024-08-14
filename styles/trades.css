@@ -6,7 +6,7 @@ table.trades {
   border-spacing: 0;
 }
 
-table.trades table {
+table.trades table.trade {
   border: 1rem ridge silver;
 }
 table.trades table td {
