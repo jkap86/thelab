@@ -287,20 +287,20 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                                       )
                                       .map((add, index) => {
                                         return (
-                                          <tr
-                                            key={`${add}_${index}`}
-                                            className={
-                                              lmTrade.tips?.away.some(
-                                                (tip) =>
-                                                  tip.player_id === add &&
-                                                  tip.leaguemate_id ===
-                                                    lmTrade.adds[add]
-                                              )
-                                                ? "redb"
-                                                : ""
-                                            }
-                                          >
-                                            <td colSpan={2}>
+                                          <tr key={`${add}_${index}`}>
+                                            <td
+                                              colSpan={2}
+                                              className={
+                                                lmTrade.tips?.away.some(
+                                                  (tip) =>
+                                                    tip.player_id === add &&
+                                                    tip.leaguemate_id ===
+                                                      lmTrade.adds[add]
+                                                )
+                                                  ? "redb"
+                                                  : ""
+                                              }
+                                            >
                                               <div>
                                                 {allplayers &&
                                                   allplayers[add]?.full_name}
