@@ -418,6 +418,20 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
                 };
               }),
             ],
+            secondaryTable: leagues && (
+              <Standings
+                type={3}
+                league={leagues[lm.league]}
+                standingsColumn={standingsColumn}
+                setStandingsColumn={(col) => dispatch(setStandingsColumn(col))}
+                standingsTab={standingsTab}
+                standingsTab2={standingsTab2}
+                setStandingsTab={(tab) => dispatch(setStandingsTab(tab))}
+                setStandingsTab2={(tab) => dispatch(setStandingsTab2(tab))}
+                teamColumn={teamColumn}
+                setTeamColumn={(col) => dispatch(setTeamColumn(col))}
+              />
+            ),
           };
         })
         .sort((a, b) =>
@@ -429,6 +443,8 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
             ? 1
             : -1
         )}
+      active={activePlayerLeague}
+      setActive={(league_id) => dispatch(setActivePlayerLeague(league_id))}
     />
   );
 
@@ -564,10 +580,28 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
                   };
                 }),
               ],
+              secondaryTable: leagues && (
+                <Standings
+                  type={3}
+                  league={leagues[league_id]}
+                  standingsColumn={standingsColumn}
+                  setStandingsColumn={(col) =>
+                    dispatch(setStandingsColumn(col))
+                  }
+                  standingsTab={standingsTab}
+                  standingsTab2={standingsTab2}
+                  setStandingsTab={(tab) => dispatch(setStandingsTab(tab))}
+                  setStandingsTab2={(tab) => dispatch(setStandingsTab2(tab))}
+                  teamColumn={teamColumn}
+                  setTeamColumn={(col) => dispatch(setTeamColumn(col))}
+                />
+              ),
             };
           })) ||
         []
       }
+      active={activePlayerLeague}
+      setActive={(league_id) => dispatch(setActivePlayerLeague(league_id))}
     />
   );
 

@@ -22,6 +22,9 @@ const Hompage: React.FC = () => {
           <select value={tab} onChange={(e) => setTab(e.target.value)}>
             <option>Players</option>
             <option>Leagues</option>
+            <option>Trades</option>
+            <option>Leaguemates</option>
+            <option>Matchups</option>
             <option>Picktracker</option>
           </select>
           <div>
