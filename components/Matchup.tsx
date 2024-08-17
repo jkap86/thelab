@@ -83,12 +83,12 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
                       {fpweek &&
                         fpweek[
                           user_matchup.starters[index]
-                        ].injury_status.slice(0, 1)}
+                        ]?.injury_status?.slice(0, 1)}
                     </em>
                   </div>
                 ),
                 colspan: 3,
-                classname: classname + "relative",
+                classname: classname + " relative",
               },
               {
                 text:
