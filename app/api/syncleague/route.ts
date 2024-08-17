@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
       `https://api.sleeper.app/v1/league/${league_id}`
     );
 
-    const updatedLeagues = await updateLeagues([league.data], db);
+    const updatedLeagues = await updateLeagues([league.data], null, db);
 
     const userRoster = updatedLeagues[0].rosters.find(
       (roster: Roster) =>
