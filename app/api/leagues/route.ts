@@ -12,6 +12,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
 
   const user_id_searched = searchParams.get("user_id");
+  const week = searchParams.get("week");
 
   try {
     const leagues = await axios.get(
@@ -38,7 +39,7 @@ export async function GET(req: NextRequest) {
       (league: SleeperLeague) => !upToDateLeagueIds.includes(league.league_id)
     );
 
-    const updatedLeagues = await updateLeagues(leaguesToUpdate, db);
+    const updatedLeagues = await updateLeagues(leaguesToUpdate, week, db);
 
     const leagues_to_send: League[] = [];
 

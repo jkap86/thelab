@@ -217,6 +217,7 @@ export const fetchUser =
 export const fetchLeagues =
   (
     user_id: string,
+    week: number,
     fpseason: { [key: string]: { [key: string]: number } },
     allplayers: { [key: string]: Allplayer }
   ) =>
@@ -227,7 +228,7 @@ export const fetchLeagues =
 
     try {
       const response: { data: League[] } = await axios.get("/api/leagues", {
-        params: { user_id: user_id },
+        params: { user_id, week },
       });
 
       const leagues_obj = Object.fromEntries(
@@ -383,9 +384,16 @@ export const fetchMatchups =
         );
         matchups_obj[matchup.league_id].push({
           ...matchup,
+          starters:
+            leagues[matchup.league_id].settings.best_ball === 1
+              ? optimal_starters
+              : matchup.starters,
           optimal_starters,
           optimal_proj,
-          actual_proj,
+          actual_proj:
+            leagues[matchup.league_id].settings.best_ball === 1
+              ? optimal_proj
+              : actual_proj,
           players_projections,
         });
       });
@@ -443,6 +451,10 @@ export const syncMatchup =
 
         league_matchups.push({
           ...matchup,
+          starters:
+            leagues[league_id].settings.best_ball === 1
+              ? optimal_starters
+              : matchup.starters,
           optimal_starters,
           optimal_proj,
           actual_proj,

@@ -8,9 +8,10 @@ import { setType1, setType2 } from "@/redux/actions/commonActions";
 
 interface HeadingProps {
   navTab: string;
+  week: number;
 }
 
-const Heading: React.FC<HeadingProps> = ({ navTab }) => {
+const Heading: React.FC<HeadingProps> = ({ navTab, week }) => {
   const router = useRouter();
   const dispatch: AppDispatch = useDispatch();
   const { type1, type2 } = useSelector((state: RootState) => state.common);
@@ -69,6 +70,7 @@ const Heading: React.FC<HeadingProps> = ({ navTab }) => {
             </div>
           </div>
         </div>
+        <h2>{navTab === "Matchups" && `Week ${week}`}</h2>
         <h2>
           <select
             value={navTab}

@@ -97,3 +97,15 @@ ol.page_numbers > li.active {
 .red {
   color: rgb(255, 0, 0);
 }
+
+.relative {
+  position: relative;
+}
+
+em.inj {
+  color: red;
+  position: absolute;
+  right: 1%;
+  top: 1%;
+  font-size: 75%;
+}

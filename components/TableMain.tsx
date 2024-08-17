@@ -35,6 +35,8 @@ interface TableMainProps {
     options: Option[];
     placeholder: string;
   }[];
+  filters1?: JSX.Element[];
+  filters2?: JSX.Element[];
 }
 
 const TableMain: React.FC<TableMainProps> = ({
@@ -49,6 +51,8 @@ const TableMain: React.FC<TableMainProps> = ({
   page,
   setPage,
   searches,
+  filters1,
+  filters2,
 }) => {
   const body = page ? data.slice((page - 1) * 25, (page - 1) * 25 + 25) : data;
 
@@ -60,6 +64,13 @@ const TableMain: React.FC<TableMainProps> = ({
 
   return (
     <>
+      {filters1 && (
+        <span>
+          {filters1.map((filter, index) => {
+            return <span key={index}>{filter}</span>;
+          })}
+        </span>
+      )}
       {searches && (
         <div className="searches">
           {searches.map((search) => {
@@ -76,7 +87,13 @@ const TableMain: React.FC<TableMainProps> = ({
           })}
         </div>
       )}
-
+      {filters2 && (
+        <span>
+          {filters2.map((filter, index) => {
+            return <span key={index}>{filter}</span>;
+          })}
+        </span>
+      )}
       {page ? (
         <div className="page_numbers_wrapper">
           <ol className="page_numbers">

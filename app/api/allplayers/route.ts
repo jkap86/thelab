@@ -31,7 +31,10 @@ export async function GET(req: NextRequest) {
           player_id: player_obj.player_id,
           position: player_obj.position,
           team: player_obj.team || "FA",
-          full_name: player_obj.full_name,
+          full_name:
+            player_obj.position === "DEF"
+              ? `${player_obj.player_id} DEF`
+              : player_obj.full_name,
           age: player_obj.age,
           fantasy_positions: player_obj.fantasy_positions,
         });

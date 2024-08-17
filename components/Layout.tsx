@@ -55,19 +55,19 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
     if (!allplayers && !isLoadingAllplayers) {
       dispatch(fetchAllPlayers());
     }
-  }, [allplayers, isLoadingAllplayers, dispatch, fetchAllPlayers]);
+  }, [allplayers, isLoadingAllplayers, dispatch]);
 
   useEffect(() => {
     if (!ktc_current && !isLoadingKTC) {
       dispatch(fetchKTC_dates());
     }
-  }, [ktc_current, isLoadingKTC, fetchKTC_dates, dispatch]);
+  }, [ktc_current, isLoadingKTC, dispatch]);
 
   useEffect(() => {
     if (!fpseason && !isLoadingFpSeason) {
       dispatch(fetchFpSeason());
     }
-  }, [fpseason, isLoadingFpSeason, fetchFpSeason, dispatch]);
+  }, [fpseason, isLoadingFpSeason, dispatch]);
 
   useEffect(() => {
     if (user && username.toLowerCase() !== user.username.toLowerCase()) {
@@ -82,20 +82,19 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
       allplayers &&
       fpseason
     ) {
-      dispatch(fetchLeagues(user.user_id, fpseason, allplayers));
+      dispatch(fetchLeagues(user.user_id, week, fpseason, allplayers));
     }
   }, [
     username,
     allplayers,
     fpseason,
     user,
+    week,
     leagues,
     isLoadingUser,
     errorUser,
     isLoadingLeagues,
     dispatch,
-    fetchUser,
-    fetchLeagues,
   ]);
 
   // MATCHUPS
@@ -128,12 +127,12 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
     <h1>Loading...</h1>
   ) : user && isLoadingLeagues ? (
     <>
-      <Heading navTab={navTab} />
+      <Heading navTab={navTab} week={week} />
       <h1>Loading...</h1>
     </>
   ) : (
     <>
-      <Heading navTab={navTab} />
+      <Heading navTab={navTab} week={week} />
       {content}
     </>
   );

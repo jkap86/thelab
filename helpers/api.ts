@@ -11,6 +11,7 @@ import axios from "axios";
 
 export const updateLeagues = async (
   leaguesToUpdate: SleeperLeague[],
+  week: string | null,
   db: PoolClient
 ) => {
   const users_db: UserDb[] = [];
@@ -34,6 +35,11 @@ export const updateLeagues = async (
             `https://api.sleeper.app/v1/league/${leagueToUpdate.league_id}/users`
           );
 
+          if (week && parseInt(week) <= 18) {
+            const matchups = await axios.get(
+              `https://api.sleeper.app/v1/league/${leagueToUpdate.league_id}/matchups/${week}`
+            );
+          }
           if (leagueToUpdate.settings.type === 2) {
             const drafts = await axios.get(
               `https://api.sleeper.app/v1/league/${leagueToUpdate.league_id}/drafts`

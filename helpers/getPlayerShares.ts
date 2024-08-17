@@ -16,6 +16,7 @@ export const position_map: { [key: string]: string[] } = {
   SUPER_FLEX: ["QB", "RB", "FB", "WR", "TE"],
   WRRB_FLEX: ["RB", "FB", "WR"],
   REC_FLEX: ["WR", "TE"],
+  DEF: ["DEF"],
 };
 const getPosLen = (pos: string) => {
   if (
@@ -26,7 +27,8 @@ const getPosLen = (pos: string) => {
     pos === "FLEX" ||
     pos === "SUPER_FLEX" ||
     pos === "WRRB_FLEX" ||
-    pos === "REC_FLEX"
+    pos === "REC_FLEX" ||
+    pos === "DEF"
   ) {
     return position_map[pos].length;
   } else {
@@ -109,7 +111,8 @@ export const getOptimalStarters = (
         rp === "FLEX" ||
         rp === "SUPER_FLEX" ||
         rp === "WRRB_FLEX" ||
-        rp === "REC_FLEX"
+        rp === "REC_FLEX" ||
+        rp === "DEF"
     )
     .map((slot, index) => {
       return {
@@ -268,7 +271,8 @@ export const getOptimalStartersMatchup = (
         rp === "FLEX" ||
         rp === "SUPER_FLEX" ||
         rp === "WRRB_FLEX" ||
-        rp === "REC_FLEX"
+        rp === "REC_FLEX" ||
+        rp === "DEF"
     )
     .map((slot, index) => {
       return {
