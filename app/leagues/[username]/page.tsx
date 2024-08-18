@@ -11,10 +11,8 @@ import {
   setLeaguesPage,
   setSearchedLeague,
   setSortLeaguesBy,
-  setStandingsColumn,
   setStandingsTab,
   setStandingsTab2,
-  setTeamColumn,
 } from "@/redux/actions/leaguesActions";
 import {
   getLeaguesColumn,
@@ -41,10 +39,8 @@ const Leagues: React.FC<LeaguesProps> = ({ params }) => {
     column4,
     activeLeague,
     sortLeaguesBy,
-    standingsColumn,
     standingsTab,
     standingsTab2,
-    teamColumn,
     searchedLeague,
     page,
   } = useSelector((state: RootState) => state.leagues);
