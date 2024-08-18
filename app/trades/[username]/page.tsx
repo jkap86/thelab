@@ -145,8 +145,7 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
 
   const content = (
     <>
-      <h1>{tradesCount}</h1>
-      <h1>{cur_trade_length}</h1>
+      <h1>{tradesCount.toLocaleString("en-US")} Leaguemates' Trades</h1>
       <div className="searches">
         <Search
           searched={searchedManager}
@@ -427,19 +426,19 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                                       .map((drop, index) => {
                                         return (
                                           <tr key={`${drop}_${index}`}>
-                                            <td>
-                                              <div
-                                                className={
-                                                  lmTrade.tips?.for?.some(
-                                                    (tip) =>
-                                                      tip.player_id === drop &&
-                                                      lmTrade.drops[drop] ===
-                                                        tip.leaguemate_id
-                                                  )
-                                                    ? "greenb"
-                                                    : ""
-                                                }
-                                              >
+                                            <td
+                                              className={
+                                                lmTrade.tips?.for?.some(
+                                                  (tip) =>
+                                                    tip.player_id === drop &&
+                                                    lmTrade.drops[drop] ===
+                                                      tip.leaguemate_id
+                                                )
+                                                  ? "greenb"
+                                                  : ""
+                                              }
+                                            >
+                                              <div>
                                                 {allplayers &&
                                                   allplayers[drop]?.full_name}
                                               </div>

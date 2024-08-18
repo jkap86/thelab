@@ -490,7 +490,7 @@ export const fetchLmTrades =
     });
 
     try {
-      const response: { data: { count: number; rows: Trade[] } } =
+      const response: { data: { count: string; rows: Trade[] } } =
         await axios.post("/api/lmtrades", {
           leaguemate_ids,
           limit,
@@ -501,7 +501,10 @@ export const fetchLmTrades =
 
       dispatch({
         type: "SET_STATE_LMTRADES",
-        payload: { count: response.data.count, trades: trades_w_tips },
+        payload: {
+          count: parseInt(response.data.count),
+          trades: trades_w_tips,
+        },
       });
     } catch (err: any) {
       console.log({ err });
