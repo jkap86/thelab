@@ -7,6 +7,9 @@ export interface TradesState {
   page: number;
   activeTrade: string | false;
   searchedManager: string | false;
+  detailTab: string;
+  rostersTab1: string;
+  rostersTab2: string;
 }
 
 const initialState: TradesState = {
@@ -15,6 +18,9 @@ const initialState: TradesState = {
   page: 1,
   activeTrade: false,
   searchedManager: false,
+  detailTab: "Rosters",
+  rostersTab1: "Standings",
+  rostersTab2: "Settings",
 };
 
 const tradesReducer = (state = initialState, action: TradesActionTypes) => {
@@ -31,6 +37,21 @@ const tradesReducer = (state = initialState, action: TradesActionTypes) => {
         break;
       case "SET_SEARCHED_PLAYER":
         draft.searchedPlayer = action.payload;
+        break;
+      case "SET_ROSTERS_TAB":
+        switch (action.payload.num) {
+          case 1:
+            draft.rostersTab1 = action.payload.value;
+            break;
+          case 2:
+            draft.rostersTab2 = action.payload.value;
+            break;
+          default:
+            break;
+        }
+        break;
+      case "SET_DETAIL_TAB":
+        draft.detailTab = action.payload;
         break;
       default:
         break;

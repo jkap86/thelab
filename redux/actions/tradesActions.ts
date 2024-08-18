@@ -18,11 +18,26 @@ interface setSearchedPlayerAction {
   payload: string | false;
 }
 
+interface setDetailTabAction {
+  type: "SET_DETAIL_TAB";
+  payload: string;
+}
+
+interface setRostersTabAction {
+  type: "SET_ROSTERS_TAB";
+  payload: {
+    num: 1 | 2;
+    value: string;
+  };
+}
+
 export type TradesActionTypes =
   | setTradesPageAction
   | setActiveTradeAction
   | setSearchedManagerAction
-  | setSearchedPlayerAction;
+  | setSearchedPlayerAction
+  | setRostersTabAction
+  | setDetailTabAction;
 
 export const setTradesPage = (page: number): setTradesPageAction => ({
   type: "SET_TRADES_PAGE",
@@ -48,4 +63,17 @@ export const setSearchedPlayer = (
 ): setSearchedPlayerAction => ({
   type: "SET_SEARCHED_PLAYER",
   payload: player_id,
+});
+
+export const setDetailTab = (tab: string): setDetailTabAction => ({
+  type: "SET_DETAIL_TAB",
+  payload: tab,
+});
+
+export const setRostersTab = (
+  num: 1 | 2,
+  value: string
+): setRostersTabAction => ({
+  type: "SET_ROSTERS_TAB",
+  payload: { num, value },
 });

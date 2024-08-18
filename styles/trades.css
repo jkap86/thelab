@@ -55,3 +55,7 @@ div.trades_nav {
   display: flex;
   justify-content: space-evenly;
 }
+
+div.trades_nav div.button.active {
+  color: var(--color1);
+}

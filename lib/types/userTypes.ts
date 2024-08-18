@@ -122,15 +122,10 @@ export type Trade = {
   avatar: string;
   name: string;
   settings: { [key: string]: number };
+  scoring_settings: { [key: string]: number };
   roster_positions: string[];
   managers: string[];
-  rosters: {
-    roster_id: number;
-    username: string;
-    user_id: string;
-    avatar: string;
-    players: string[];
-  }[];
+  rosters: Roster[];
   league_id: string;
   tips?: {
     for: { league_id: string; leaguemate_id: string; player_id: string }[];

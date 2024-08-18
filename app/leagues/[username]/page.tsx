@@ -198,14 +198,10 @@ const Leagues: React.FC<LeaguesProps> = ({ params }) => {
           <Standings
             type={2}
             league={league}
-            standingsColumn={standingsColumn}
-            setStandingsColumn={(col) => dispatch(setStandingsColumn(col))}
             standingsTab={standingsTab}
             standingsTab2={standingsTab2}
             setStandingsTab={(tab) => dispatch(setStandingsTab(tab))}
             setStandingsTab2={(tab) => dispatch(setStandingsTab2(tab))}
-            teamColumn={teamColumn}
-            setTeamColumn={(col) => dispatch(setTeamColumn(col))}
           />
         ),
       };

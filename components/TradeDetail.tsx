@@ -1,24 +1,26 @@
 import { Trade } from "@/lib/types";
 import TableMain from "./TableMain";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
+import { useSelector, useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store";
 import Avatar from "./Avatar";
+import Standings from "./Standings";
+import { setDetailTab, setRostersTab } from "@/redux/actions/tradesActions";
 
 interface TradeDetailProps {
   trade: Trade;
 }
 const TradeDetail: React.FC<TradeDetailProps> = ({ trade }) => {
+  const dispatch: AppDispatch = useDispatch();
   const { allplayers } = useSelector((state: RootState) => state.common);
   const { leagues, leaguemates } = useSelector(
     (state: RootState) => state.user
   );
+  const { detailTab, rostersTab1, rostersTab2 } = useSelector(
+    (state: RootState) => state.trades
+  );
 
-  return (
+  const tipsTables = (
     <>
-      <div className="trades_nav">
-        <div className="button">Tips</div>
-        <div className="button">Rosters</div>
-      </div>
       <TableMain
         type={2}
         headers={[
@@ -117,6 +119,37 @@ const TradeDetail: React.FC<TradeDetailProps> = ({ trade }) => {
           []
         }
       />
+    </>
+  );
+
+  return (
+    <>
+      <div className="trades_nav">
+        <div
+          onClick={() => dispatch(setDetailTab("Tips"))}
+          className={"button" + (detailTab === "Tips" ? " active" : "")}
+        >
+          Tips
+        </div>
+        <div
+          onClick={() => dispatch(setDetailTab("Rosters"))}
+          className={"button" + (detailTab === "Rosters" ? " active" : "")}
+        >
+          Rosters
+        </div>
+      </div>
+      {detailTab === "Tips" ? (
+        tipsTables
+      ) : (
+        <Standings
+          type={2}
+          league={trade}
+          standingsTab={rostersTab1}
+          standingsTab2={rostersTab2}
+          setStandingsTab={(value) => dispatch(setRostersTab(1, value))}
+          setStandingsTab2={(value) => dispatch(setRostersTab(2, value))}
+        />
+      )}
     </>
   );
 };

@@ -1,4 +1,4 @@
-import { League, Roster } from "@/lib/types";
+import { Roster } from "@/lib/types";
 import "@/styles/detailnav.css";
 import TableMain from "./TableMain";
 import Avatar from "./Avatar";
@@ -12,63 +12,70 @@ import {
 } from "@/helpers/getStandingsColumn";
 import { syncLeague } from "@/redux/actions/userActions";
 import { getPlayerProjection } from "@/helpers/getPlayerShares";
+import {
+  setStandingsColumn,
+  setTeamColumn,
+} from "@/redux/actions/leaguesActions";
 
 type setColumn = (column: string) => void;
 type setTab = (tab: string) => void;
 
 interface StandingsProps {
   type: number;
-  league: League;
-  standingsColumn: string;
+  league: {
+    league_id: string;
+    userRoster?: Roster;
+    rosters: Roster[];
+    scoring_settings: { [key: string]: number };
+    roster_positions: string[];
+  };
   standingsTab: string;
   standingsTab2: string;
-  setStandingsColumn: setColumn;
   setStandingsTab: setTab;
   setStandingsTab2: setTab;
-  teamColumn: string;
-  setTeamColumn: setColumn;
 }
 
 const Standings: React.FC<StandingsProps> = ({
   type,
   league,
-  standingsColumn,
   standingsTab,
   standingsTab2,
-  setStandingsColumn,
   setStandingsTab,
   setStandingsTab2,
-  teamColumn,
-  setTeamColumn,
 }) => {
   const dispatch: AppDispatch = useDispatch();
   const { allplayers, ktc_current, fpseason } = useSelector(
     (state: RootState) => state.common
   );
   const { leagues, isSyncing } = useSelector((state: RootState) => state.user);
+  const { standingsColumn, teamColumn } = useSelector(
+    (state: RootState) => state.leagues
+  );
 
   useEffect(() => {
-    if (
-      !["Standings", "Settings", league.userRoster.username].includes(
-        standingsTab
-      )
-    ) {
-      if (standingsTab2 === "Standings") {
-        setStandingsTab(league.userRoster.username);
-      } else {
-        setStandingsTab("Standings");
+    if (league.userRoster) {
+      if (
+        !["Standings", "Settings", league.userRoster.username].includes(
+          standingsTab
+        )
+      ) {
+        if (standingsTab2 === "Standings") {
+          setStandingsTab(league.userRoster.username);
+        } else {
+          setStandingsTab("Standings");
+        }
       }
-    }
 
-    if (
-      !["Standings", "Settings", league.userRoster.username].includes(
-        standingsTab2
-      )
-    ) {
-      if (standingsTab === league.userRoster.username) {
-        setStandingsTab2("Standings");
-      } else {
-        setStandingsTab2(league.userRoster.username);
+      if (
+        !["Standings", "Settings", league.userRoster.username].includes(
+          standingsTab2
+        )
+      ) {
+        if (standingsTab === league.userRoster.username) {
+          setStandingsTab2("Standings");
+        } else {
+          setStandingsTab2(league.userRoster.username);
+        }
       }
     }
   }, []);
@@ -126,7 +133,7 @@ const Standings: React.FC<StandingsProps> = ({
             { text: "Starters KTC Value", abbrev: "S KTC" },
           ]}
           columnText={standingsColumn}
-          setColumnText={setStandingsColumn}
+          setColumnText={(col) => dispatch(setStandingsColumn(col))}
         />
       ),
       colspan: 2,
@@ -201,7 +208,7 @@ const Standings: React.FC<StandingsProps> = ({
             { text: "ROS Proj", abbrev: "Proj" },
           ]}
           columnText={teamColumn}
-          setColumnText={setTeamColumn}
+          setColumnText={(col) => dispatch(setTeamColumn(col))}
         />
       ),
       colspan: 2,

@@ -228,37 +228,59 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                               ).toLocaleTimeString("en-US")}
                             </div>
                           </td>
-                          <td colSpan={8}>
+                          <td colSpan={9}>
                             <Avatar
                               id={lmTrade.avatar}
                               type={"L"}
                               text={lmTrade.name}
                             />
                           </td>
-                          <td colSpan={3}>
+                          <td colSpan={6}>
                             <div>
-                              {lmTrade.settings.type === 2
-                                ? "Dynasty"
-                                : lmTrade.settings.type === 1
-                                ? "Keeper"
-                                : "Redraft"}
+                              <span>
+                                {lmTrade.settings.type === 2
+                                  ? "Dynasty"
+                                  : lmTrade.settings.type === 1
+                                  ? "Keeper"
+                                  : "Redraft"}
+                              </span>
+                              <span>
+                                {lmTrade.settings.best_ball === 1
+                                  ? "Bestball"
+                                  : "Lineup"}
+                              </span>
                             </div>
                             <div>
-                              {lmTrade.settings.best_ball === 1
-                                ? "Bestball"
-                                : "Lineup"}
-                            </div>
-                          </td>
-                          <td colSpan={4}>
-                            <div>
-                              {lmTrade.roster_positions
-                                .filter((rp) => rp === "QB")
-                                .length.toString()}{" "}
-                              QB{" "}
-                              {lmTrade.roster_positions
-                                .filter((rp) => rp === "SUPER_FLEX")
-                                .length.toString()}{" "}
-                              SF
+                              <span>
+                                Start{" "}
+                                {
+                                  lmTrade.roster_positions.filter(
+                                    (rp) => rp !== "BN"
+                                  ).length
+                                }
+                              </span>
+                              <span>
+                                {lmTrade.roster_positions
+                                  .filter((rp) => rp === "QB")
+                                  .length.toString()}{" "}
+                                QB
+                              </span>
+                              <span>
+                                {lmTrade.roster_positions
+                                  .filter((rp) => rp === "SUPER_FLEX")
+                                  .length.toString()}{" "}
+                                SF
+                              </span>
+                              <span>
+                                {lmTrade.roster_positions
+                                  .filter((rp) => rp === "TE")
+                                  .length.toString()}{" "}
+                                TE
+                              </span>
+                              <span>
+                                {lmTrade.scoring_settings.bonus_rec_te || "0"}{" "}
+                                Prem
+                              </span>
                             </div>
                           </td>
                         </tr>
@@ -399,6 +421,8 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                             </tr>
                           );
                         })}
+                      </tbody>
+                      <tbody>
                         {activeTrade === lmTrade.transaction_id && (
                           <tr>
                             <td colSpan={18}>
@@ -414,6 +438,52 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
             );
           })}
       </table>
+      <div className="page_numbers_wrapper">
+        <ol className="page_numbers">
+          {Array.from(
+            Array(Math.ceil(tradesDisplay.length / 25 || 0)).keys()
+          ).map((key) => {
+            return (
+              <li
+                key={key + 1}
+                className={page === key + 1 ? "active" : ""}
+                onClick={() => dispatch(setTradesPage(key + 1))}
+              >
+                {key + 1}
+              </li>
+            );
+          })}
+          {leagues && tradesCount > cur_trade_length ? (
+            <li
+              onClick={
+                searchedManager || searchedPlayer
+                  ? () =>
+                      dispatch(
+                        fetchFilteredLmTrades(
+                          Object.keys(leaguemates),
+                          cur_trade_length,
+                          cur_trade_length + 125,
+                          leagues,
+                          searchedManager,
+                          searchedPlayer
+                        )
+                      )
+                  : () =>
+                      dispatch(
+                        fetchLmTrades(
+                          Object.keys(leaguemates),
+                          cur_trade_length,
+                          cur_trade_length + 125,
+                          leagues
+                        )
+                      )
+              }
+            >
+              ...
+            </li>
+          ) : null}
+        </ol>
+      </div>
     </>
   );
 
