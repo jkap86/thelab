@@ -77,6 +77,9 @@ const Standings: React.FC<StandingsProps> = ({
           setStandingsTab2(league.userRoster.username);
         }
       }
+    } else {
+      setStandingsTab("Standings");
+      setStandingsTab2("Settings");
     }
   }, []);
 
@@ -518,23 +521,25 @@ const Standings: React.FC<StandingsProps> = ({
             </select>
           </div>
         </div>
-        <div className="sync">
-          <i
-            className={
-              "fa-solid fa-arrows-rotate " +
-              (isSyncing === league.league_id ? "rotate" : "")
-            }
-            onClick={() =>
-              leagues &&
-              allplayers &&
-              fpseason &&
-              !isSyncing &&
-              dispatch(
-                syncLeague(league.league_id, leagues, allplayers, fpseason)
-              )
-            }
-          ></i>
-        </div>
+        {league.userRoster && (
+          <div className="sync">
+            <i
+              className={
+                "fa-solid fa-arrows-rotate " +
+                (isSyncing === league.league_id ? "rotate" : "")
+              }
+              onClick={() =>
+                leagues &&
+                allplayers &&
+                fpseason &&
+                !isSyncing &&
+                dispatch(
+                  syncLeague(league.league_id, leagues, allplayers, fpseason)
+                )
+              }
+            ></i>
+          </div>
+        )}
         <div>
           <div className={"button active"}>
             {standingsTab2}

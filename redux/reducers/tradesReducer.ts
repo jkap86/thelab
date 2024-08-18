@@ -18,7 +18,7 @@ const initialState: TradesState = {
   page: 1,
   activeTrade: false,
   searchedManager: false,
-  detailTab: "Rosters",
+  detailTab: "League",
   rostersTab1: "Standings",
   rostersTab2: "Settings",
 };

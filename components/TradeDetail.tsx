@@ -132,10 +132,10 @@ const TradeDetail: React.FC<TradeDetailProps> = ({ trade }) => {
           Tips
         </div>
         <div
-          onClick={() => dispatch(setDetailTab("Rosters"))}
-          className={"button" + (detailTab === "Rosters" ? " active" : "")}
+          onClick={() => dispatch(setDetailTab("League"))}
+          className={"button" + (detailTab === "League" ? " active" : "")}
         >
-          Rosters
+          League
         </div>
       </div>
       {detailTab === "Tips" ? (

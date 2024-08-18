@@ -94,7 +94,8 @@ export async function POST(req: NextRequest) {
         const countLmTradesQuery = `
             SELECT COUNT(*) 
             FROM trades
-            WHERE players && $1
+            WHERE managers && $1
+              AND players && $2
           `;
 
         const result = await pool.query(getLmTradesQuery, [
@@ -104,7 +105,10 @@ export async function POST(req: NextRequest) {
           [player],
         ]);
 
-        const count = await pool.query(countLmTradesQuery, [[player]]);
+        const count = await pool.query(countLmTradesQuery, [
+          [leaguemate_ids],
+          [player],
+        ]);
 
         return NextResponse.json(
           {

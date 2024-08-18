@@ -66,13 +66,11 @@ button.sw.active {
   border: 0.5rem ridge var(--color1);
 }
 
-h2 {
-  color: var(--color1);
-  font-size: 3rem;
-}
+h2,
 h2 > select {
   background: none;
-
+  color: var(--color1);
+  font-size: 3rem;
   margin-bottom: 2rem;
   text-align: center;
 }

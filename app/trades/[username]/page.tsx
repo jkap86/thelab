@@ -43,6 +43,20 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
 
   console.log({ lmTrades });
 
+  const getSuffix = (number: number) => {
+    switch (number) {
+      case 1:
+        return "st";
+      case 2:
+        return "nd";
+      case 3:
+        return "rd";
+      case 4:
+        return "th";
+      default:
+        return "";
+    }
+  };
   const tradesDisplay =
     searchedManager || searchedPlayer
       ? lmTradeSearches.find(
@@ -131,6 +145,8 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
 
   const content = (
     <>
+      <h1>{tradesCount}</h1>
+      <h1>{cur_trade_length}</h1>
       <div className="searches">
         <Search
           searched={searchedManager}
@@ -216,7 +232,7 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                         }
                       >
                         <tr>
-                          <td colSpan={3} className="timestamp">
+                          <td colSpan={6} className="timestamp">
                             <div>
                               {new Date(
                                 parseInt(lmTrade.status_updated)
@@ -228,59 +244,65 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                               ).toLocaleTimeString("en-US")}
                             </div>
                           </td>
-                          <td colSpan={9}>
+                          <td colSpan={12}>
                             <Avatar
                               id={lmTrade.avatar}
                               type={"L"}
                               text={lmTrade.name}
                             />
                           </td>
-                          <td colSpan={6}>
+                        </tr>
+                        <tr>
+                          <td colSpan={3}>
                             <div>
-                              <span>
-                                {lmTrade.settings.type === 2
-                                  ? "Dynasty"
-                                  : lmTrade.settings.type === 1
-                                  ? "Keeper"
-                                  : "Redraft"}
-                              </span>
-                              <span>
-                                {lmTrade.settings.best_ball === 1
-                                  ? "Bestball"
-                                  : "Lineup"}
-                              </span>
+                              {lmTrade.settings.type === 2
+                                ? "Dynasty"
+                                : lmTrade.settings.type === 1
+                                ? "Keeper"
+                                : "Redraft"}
                             </div>
+                          </td>
+                          <td colSpan={3}>
                             <div>
-                              <span>
-                                Start{" "}
-                                {
-                                  lmTrade.roster_positions.filter(
-                                    (rp) => rp !== "BN"
-                                  ).length
-                                }
-                              </span>
-                              <span>
-                                {lmTrade.roster_positions
-                                  .filter((rp) => rp === "QB")
-                                  .length.toString()}{" "}
-                                QB
-                              </span>
-                              <span>
-                                {lmTrade.roster_positions
-                                  .filter((rp) => rp === "SUPER_FLEX")
-                                  .length.toString()}{" "}
-                                SF
-                              </span>
-                              <span>
-                                {lmTrade.roster_positions
-                                  .filter((rp) => rp === "TE")
-                                  .length.toString()}{" "}
-                                TE
-                              </span>
-                              <span>
-                                {lmTrade.scoring_settings.bonus_rec_te || "0"}{" "}
-                                Prem
-                              </span>
+                              {lmTrade.settings.best_ball === 1
+                                ? "Bestball"
+                                : "Lineup"}
+                            </div>
+                          </td>
+                          <td colSpan={3}>
+                            <div>
+                              Start{" "}
+                              {
+                                lmTrade.roster_positions.filter(
+                                  (rp) => rp !== "BN"
+                                ).length
+                              }
+                            </div>
+                          </td>
+                          <td colSpan={3}>
+                            <div>
+                              {lmTrade.roster_positions
+                                .filter((rp) => rp === "QB")
+                                .length.toString()}{" "}
+                              QB{" "}
+                              {lmTrade.roster_positions
+                                .filter((rp) => rp === "SUPER_FLEX")
+                                .length.toString()}{" "}
+                              SF
+                            </div>
+                          </td>
+                          <td colSpan={3}>
+                            <div>
+                              {lmTrade.roster_positions
+                                .filter((rp) => rp === "TE")
+                                .length.toString()}{" "}
+                              TE
+                            </div>
+                          </td>
+                          <td colSpan={3}>
+                            <div>
+                              {lmTrade.scoring_settings.bonus_rec_te || "0"}{" "}
+                              Prem
                             </div>
                           </td>
                         </tr>
@@ -345,6 +367,20 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                                           dp.new === manager_roster?.user_id
                                       )
                                       .map((dp) => {
+                                        const ktc_pick_type =
+                                          (dp.order &&
+                                            (dp.order <= 4
+                                              ? "Early"
+                                              : dp.order >= 9
+                                              ? "Late"
+                                              : "Mid")) ||
+                                          "Mid";
+
+                                        const ktc_pick_name = `${
+                                          dp.season
+                                        } ${ktc_pick_type} ${
+                                          dp.round
+                                        }${getSuffix(dp.round)}`;
                                         return (
                                           <tr
                                             key={`${dp.season}_${dp.round}_${dp.original}_${index}`}
@@ -361,6 +397,18 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                                                   )}`
                                                 : `${dp.season} Round ${dp.round}`}
                                             </td>
+                                            <td>
+                                              <em>
+                                                {ktc_current &&
+                                                  (ktc_current[
+                                                    `${dp.season} ${dp.round}.${dp.order}`
+                                                  ] ||
+                                                    ktc_current[
+                                                      ktc_pick_name
+                                                    ] ||
+                                                    "0")}
+                                              </em>
+                                            </td>
                                           </tr>
                                         );
                                       })}
@@ -368,55 +416,67 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                                 </table>
                               </td>
                               <td colSpan={6} className="drops">
-                                {Object.keys(lmTrade.drops)
-                                  .filter(
-                                    (drops) =>
-                                      lmTrade.drops[drops] ===
-                                      manager_roster?.user_id
-                                  )
-                                  .map((drop, index) => {
-                                    return (
-                                      <div
-                                        key={`${drop}_${index}`}
-                                        className={
-                                          lmTrade.tips?.for?.some(
-                                            (tip) =>
-                                              tip.player_id === drop &&
-                                              lmTrade.drops[drop] ===
-                                                tip.leaguemate_id
-                                          )
-                                            ? "greenb"
-                                            : ""
-                                        }
-                                      >
-                                        {allplayers &&
-                                          allplayers[drop]?.full_name}
-                                      </div>
-                                    );
-                                  })}
+                                <table className="drops">
+                                  <tbody>
+                                    {Object.keys(lmTrade.drops)
+                                      .filter(
+                                        (drops) =>
+                                          lmTrade.drops[drops] ===
+                                          manager_roster?.user_id
+                                      )
+                                      .map((drop, index) => {
+                                        return (
+                                          <tr key={`${drop}_${index}`}>
+                                            <td>
+                                              <div
+                                                className={
+                                                  lmTrade.tips?.for?.some(
+                                                    (tip) =>
+                                                      tip.player_id === drop &&
+                                                      lmTrade.drops[drop] ===
+                                                        tip.leaguemate_id
+                                                  )
+                                                    ? "greenb"
+                                                    : ""
+                                                }
+                                              >
+                                                {allplayers &&
+                                                  allplayers[drop]?.full_name}
+                                              </div>
+                                            </td>
+                                          </tr>
+                                        );
+                                      })}
 
-                                {lmTrade.draft_picks
-                                  .filter(
-                                    (dp) => dp.old === manager_roster?.user_id
-                                  )
-                                  .map((dp, index) => {
-                                    return (
-                                      <div
-                                        key={`${dp.season}_${dp.round}_${dp.original}_${index}`}
-                                      >
-                                        {dp.order
-                                          ? `${dp.season} ${
-                                              dp.round
-                                            }.${dp.order.toLocaleString(
-                                              "en-US",
-                                              {
-                                                minimumIntegerDigits: 2,
-                                              }
-                                            )}`
-                                          : `${dp.season} Round ${dp.round}`}
-                                      </div>
-                                    );
-                                  })}
+                                    {lmTrade.draft_picks
+                                      .filter(
+                                        (dp) =>
+                                          dp.old === manager_roster?.user_id
+                                      )
+                                      .map((dp, index) => {
+                                        return (
+                                          <tr
+                                            key={`${dp.season}_${dp.round}_${dp.original}_${index}`}
+                                          >
+                                            <td>
+                                              <div>
+                                                {dp.order
+                                                  ? `${dp.season} ${
+                                                      dp.round
+                                                    }.${dp.order.toLocaleString(
+                                                      "en-US",
+                                                      {
+                                                        minimumIntegerDigits: 2,
+                                                      }
+                                                    )}`
+                                                  : `${dp.season} Round ${dp.round}`}
+                                              </div>
+                                            </td>
+                                          </tr>
+                                        );
+                                      })}
+                                  </tbody>
+                                </table>
                               </td>
                             </tr>
                           );
