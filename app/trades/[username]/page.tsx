@@ -145,7 +145,7 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
 
   const content = (
     <>
-      <h1>{tradesCount.toLocaleString("en-US")} Leaguemates' Trades</h1>
+      <h1>{tradesCount.toLocaleString("en-US")} Leaguemate Trades</h1>
       <div className="searches">
         <Search
           searched={searchedManager}
