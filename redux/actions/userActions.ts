@@ -482,7 +482,9 @@ export const fetchLmTrades =
     leaguemate_ids: string[],
     offset: number,
     limit: number,
-    leagues: { [key: string]: League }
+    leagues: { [key: string]: League },
+    fpseason: { [key: string]: { [key: string]: number } },
+    allplayers: { [key: string]: Allplayer }
   ) =>
   async (dispatch: AppDispatch) => {
     dispatch({
@@ -497,7 +499,12 @@ export const fetchLmTrades =
           offset,
         });
 
-      const trades_w_tips = getTradeTips(response.data.rows, leagues);
+      const trades_w_tips = getTradeTips(
+        response.data.rows,
+        leagues,
+        fpseason,
+        allplayers
+      );
 
       dispatch({
         type: "SET_STATE_LMTRADES",
@@ -522,7 +529,9 @@ export const fetchFilteredLmTrades =
     limit: number,
     leagues: { [key: string]: League },
     manager: string | false,
-    player: string | false
+    player: string | false,
+    fpseason: { [key: string]: { [key: string]: number } },
+    allplayers: { [key: string]: Allplayer }
   ) =>
   async (dispatch: AppDispatch) => {
     dispatch({
@@ -545,7 +554,12 @@ export const fetchFilteredLmTrades =
         player,
       });
 
-      const trades_w_tips = getTradeTips(response.data.rows, leagues);
+      const trades_w_tips = getTradeTips(
+        response.data.rows,
+        leagues,
+        fpseason,
+        allplayers
+      );
 
       dispatch({
         type: "FETCH_FILTERED_LMTRADES_END",

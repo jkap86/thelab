@@ -24,9 +24,9 @@ const TradeDetail: React.FC<TradeDetailProps> = ({ trade }) => {
       <TableMain
         type={2}
         headers={[
-          { text: "Manager", colspan: 1 },
           { text: "Acquire", colspan: 1 },
-          { text: "League", colspan: 1 },
+          { text: "From", colspan: 1 },
+          { text: "In", colspan: 1 },
         ]}
         data={
           (leagues &&
@@ -36,12 +36,6 @@ const TradeDetail: React.FC<TradeDetailProps> = ({ trade }) => {
               return {
                 id: `${tip.player_id}_${tip.league_id}_${tip.leaguemate_id}`,
                 columns: [
-                  {
-                    text: (
-                      <Avatar id={lm.avatar} type={"U"} text={lm.username} />
-                    ),
-                    colspan: 1,
-                  },
                   {
                     text: (
                       <Avatar
@@ -55,6 +49,13 @@ const TradeDetail: React.FC<TradeDetailProps> = ({ trade }) => {
                     ),
                     colspan: 1,
                   },
+                  {
+                    text: (
+                      <Avatar id={lm.avatar} type={"U"} text={lm.username} />
+                    ),
+                    colspan: 1,
+                  },
+
                   {
                     text: (
                       <Avatar
@@ -73,9 +74,9 @@ const TradeDetail: React.FC<TradeDetailProps> = ({ trade }) => {
       <TableMain
         type={2}
         headers={[
-          { text: "Manager", colspan: 1 },
           { text: "Flip", colspan: 1 },
-          { text: "League", colspan: 1 },
+          { text: "To", colspan: 1 },
+          { text: "In", colspan: 1 },
         ]}
         data={
           (leagues &&
@@ -87,12 +88,6 @@ const TradeDetail: React.FC<TradeDetailProps> = ({ trade }) => {
                 columns: [
                   {
                     text: (
-                      <Avatar id={lm.avatar} type={"U"} text={lm.username} />
-                    ),
-                    colspan: 1,
-                  },
-                  {
-                    text: (
                       <Avatar
                         id={tip.player_id}
                         type="P"
@@ -101,6 +96,12 @@ const TradeDetail: React.FC<TradeDetailProps> = ({ trade }) => {
                           "-"
                         }
                       />
+                    ),
+                    colspan: 1,
+                  },
+                  {
+                    text: (
+                      <Avatar id={lm.avatar} type={"U"} text={lm.username} />
                     ),
                     colspan: 1,
                   },

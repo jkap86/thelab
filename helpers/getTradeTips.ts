@@ -1,8 +1,11 @@
-import { Trade, League } from "@/lib/types";
+import { Trade, League, Allplayer } from "@/lib/types";
+import { getOptimalStarters } from "./getPlayerShares";
 
 export const getTradeTips = (
   trades: Trade[],
-  leagues: { [key: string]: League }
+  leagues: { [key: string]: League },
+  fpseason: { [key: string]: { [key: string]: number } },
+  allplayers: { [key: string]: Allplayer }
 ) => {
   const trades_w_tips: Trade[] = [];
 
@@ -69,6 +72,21 @@ export const getTradeTips = (
 
     trades_w_tips.push({
       ...trade,
+      rosters: trade.rosters.map((r) => {
+        const { starters, proj_ros_s, proj_ros_t } = getOptimalStarters(
+          r,
+          trade.roster_positions,
+          fpseason,
+          allplayers,
+          trade.scoring_settings
+        );
+        return {
+          ...r,
+          starters,
+          proj_ros_s,
+          proj_ros_t,
+        };
+      }),
       tips: {
         for: acquire,
         away: trade_away,

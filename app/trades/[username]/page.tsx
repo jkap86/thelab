@@ -25,7 +25,7 @@ interface TradesProps {
 
 const Trades: React.FC<TradesProps> = ({ params }) => {
   const dispatch: AppDispatch = useDispatch();
-  const { allplayers, ktc_current } = useSelector(
+  const { allplayers, ktc_current, fpseason } = useSelector(
     (state: RootState) => state.common
   );
   const {
@@ -76,14 +76,25 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
   useEffect(() => {
     if (
       leagues &&
+      fpseason &&
+      allplayers &&
       Object.keys(leaguemates).length > 0 &&
       !lmTrades.trades &&
       !isLoadingLmTrades
     ) {
-      dispatch(fetchLmTrades(Object.keys(leaguemates), 0, 125, leagues));
+      dispatch(
+        fetchLmTrades(
+          Object.keys(leaguemates),
+          0,
+          125,
+          leagues,
+          fpseason,
+          allplayers
+        )
+      );
     }
 
-    if (searchedManager || searchedPlayer) {
+    if ((searchedManager || searchedPlayer) && fpseason && allplayers) {
       leagues &&
         dispatch(
           fetchFilteredLmTrades(
@@ -92,7 +103,9 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
             125,
             leagues,
             searchedManager,
-            searchedPlayer
+            searchedPlayer,
+            fpseason,
+            allplayers
           )
         );
     }
@@ -103,6 +116,8 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
     leagues,
     searchedManager,
     searchedPlayer,
+    fpseason,
+    allplayers,
     dispatch,
   ]);
 
@@ -175,7 +190,10 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
               </li>
             );
           })}
-          {leagues && tradesCount > cur_trade_length ? (
+          {leagues &&
+          fpseason &&
+          allplayers &&
+          tradesCount > cur_trade_length ? (
             <li
               onClick={
                 searchedManager || searchedPlayer
@@ -187,7 +205,9 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                           cur_trade_length + 125,
                           leagues,
                           searchedManager,
-                          searchedPlayer
+                          searchedPlayer,
+                          fpseason,
+                          allplayers
                         )
                       )
                   : () =>
@@ -196,7 +216,9 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                           Object.keys(leaguemates),
                           cur_trade_length,
                           cur_trade_length + 125,
-                          leagues
+                          leagues,
+                          fpseason,
+                          allplayers
                         )
                       )
               }
@@ -278,7 +300,7 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                               }
                             </div>
                           </td>
-                          <td colSpan={3}>
+                          <td colSpan={4}>
                             <div>
                               {lmTrade.roster_positions
                                 .filter((rp) => rp === "QB")
@@ -290,17 +312,13 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                               SF
                             </div>
                           </td>
-                          <td colSpan={3}>
+                          <td colSpan={5}>
                             <div>
                               {lmTrade.roster_positions
                                 .filter((rp) => rp === "TE")
                                 .length.toString()}{" "}
-                              TE
-                            </div>
-                          </td>
-                          <td colSpan={3}>
-                            <div>
-                              {lmTrade.scoring_settings.bonus_rec_te || "0"}{" "}
+                              TE {lmTrade.scoring_settings.bonus_rec_te || "0"}
+                              {"pt "}
                               Prem
                             </div>
                           </td>
@@ -512,7 +530,10 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
               </li>
             );
           })}
-          {leagues && tradesCount > cur_trade_length ? (
+          {leagues &&
+          fpseason &&
+          allplayers &&
+          tradesCount > cur_trade_length ? (
             <li
               onClick={
                 searchedManager || searchedPlayer
@@ -524,7 +545,9 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                           cur_trade_length + 125,
                           leagues,
                           searchedManager,
-                          searchedPlayer
+                          searchedPlayer,
+                          fpseason,
+                          allplayers
                         )
                       )
                   : () =>
@@ -533,7 +556,9 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                           Object.keys(leaguemates),
                           cur_trade_length,
                           cur_trade_length + 125,
-                          leagues
+                          leagues,
+                          fpseason,
+                          allplayers
                         )
                       )
               }
