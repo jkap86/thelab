@@ -101,7 +101,7 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
 
   useEffect(() => {
     if (
-      navTab.toLowerCase() === "matchups" &&
+      navTab.toLowerCase() === "lineupcheck" &&
       allplayers &&
       leagues &&
       fpweek &&
@@ -112,7 +112,7 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
   }, [navTab, leagues, matchups, allplayers, fpweek, week, dispatch]);
 
   useEffect(() => {
-    if (navTab.toLowerCase() === "matchups" && !fpweek && !isLoadingFpWeek) {
+    if (navTab.toLowerCase() === "lineupcheck" && !fpweek && !isLoadingFpWeek) {
       dispatch(fetchFpWeek(week));
     }
   }, [week, navTab, fpweek, isLoadingFpWeek, dispatch]);

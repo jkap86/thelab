@@ -55,6 +55,7 @@ const Search: React.FC<SearchProps> = ({
         value={searchText}
         onChange={(e) => handleSearch(e.target.value)}
         placeholder={placeholder}
+        autoFocus={false}
       />
       {(searchText !== "" && (
         <button className="clear" onClick={() => handleSearch("")}>

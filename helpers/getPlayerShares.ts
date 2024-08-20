@@ -248,7 +248,7 @@ export const getOptimalStartersMatchup = (
 ) => {
   const optimal_starters: {
     slot_index: number;
-    optimal_player: string;
+    player_id: string;
     proj: number;
   }[] = [];
 
@@ -300,7 +300,7 @@ export const getOptimalStartersMatchup = (
 
       optimal_starters.push({
         slot_index: slot.index,
-        optimal_player: optimal_player.player_id,
+        player_id: optimal_player.player_id,
         proj: optimal_player.proj,
       });
     });
@@ -311,9 +311,9 @@ export const getOptimalStartersMatchup = (
   );
 
   return {
-    optimal_starters: optimal_starters
-      .sort((a, b) => a.slot_index - b.slot_index)
-      .map((s) => s.optimal_player),
+    optimal_starters: optimal_starters.sort(
+      (a, b) => a.slot_index - b.slot_index
+    ),
     optimal_proj: optimal_starters.reduce((acc, cur) => acc + cur.proj, 0),
     actual_proj: actual_proj,
     players_projections,

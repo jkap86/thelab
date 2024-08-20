@@ -52,10 +52,6 @@ img {
   border-radius: 50%;
 }
 
-input {
-  font-size: inherit;
-}
-
 table {
   width: 100%;
   table-layout: fixed;

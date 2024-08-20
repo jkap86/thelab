@@ -24,7 +24,7 @@ const Hompage: React.FC = () => {
             <option>Leagues</option>
             <option>Trades</option>
             <option>Leaguemates</option>
-            <option>Matchups</option>
+            <option>LineupCheck</option>
             <option>Picktracker</option>
           </select>
           <div>

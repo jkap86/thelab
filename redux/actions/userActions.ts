@@ -386,7 +386,7 @@ export const fetchMatchups =
           ...matchup,
           starters:
             leagues[matchup.league_id].settings.best_ball === 1
-              ? optimal_starters
+              ? optimal_starters.map((os) => os.player_id)
               : matchup.starters,
           optimal_starters,
           optimal_proj,
@@ -453,7 +453,7 @@ export const syncMatchup =
           ...matchup,
           starters:
             leagues[league_id].settings.best_ball === 1
-              ? optimal_starters
+              ? optimal_starters.map((os) => os.player_id)
               : matchup.starters,
           optimal_starters,
           optimal_proj,

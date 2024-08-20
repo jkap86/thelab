@@ -12,11 +12,11 @@ import {
 import { AppDispatch, RootState } from "@/redux/store";
 import { useSelector, useDispatch } from "react-redux";
 
-interface MatchupProps {
+interface LineupcheckProps {
   params: { username: string };
 }
 
-const Matchups: React.FC<MatchupProps> = ({ params }) => {
+const Matchups: React.FC<LineupcheckProps> = ({ params }) => {
   const dispatch: AppDispatch = useDispatch();
   const { type1, type2, fpweek } = useSelector(
     (state: RootState) => state.common
@@ -46,10 +46,13 @@ const Matchups: React.FC<MatchupProps> = ({ params }) => {
           const delta =
             user_matchup &&
             (user_matchup.starters.some(
-              (s) => !user_matchup.optimal_starters.includes(s)
+              (s) =>
+                !user_matchup.optimal_starters
+                  .map((os) => os.player_id)
+                  .includes(s)
             ) ||
               user_matchup.optimal_starters.some(
-                (os) => !user_matchup.starters.includes(os)
+                (os) => !user_matchup.starters.includes(os.player_id)
               ))
               ? user_matchup.optimal_proj - user_matchup.actual_proj
               : <>&#10003;</> || "-";

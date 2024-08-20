@@ -56,6 +56,7 @@ div.user_input > input {
   opacity: 0.8;
   padding: 1rem 2rem;
   box-shadow: 0 0 3rem var(--color1);
+  font-size: 5rem;
 }
 div.user_input > a {
   font-size: 4rem;

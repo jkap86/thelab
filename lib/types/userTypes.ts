@@ -100,7 +100,9 @@ export type MatchupOptimal = {
   league_id: string;
   players: string[];
   starters: string[];
-  optimal_starters: string[];
+  optimal_starters: {
+    player_id: string;
+  }[];
   optimal_proj: number;
   actual_proj: number;
   players_projections: { player_id: string; proj: number }[];

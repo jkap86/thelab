@@ -70,7 +70,7 @@ const Heading: React.FC<HeadingProps> = ({ navTab, week }) => {
             </div>
           </div>
         </div>
-        <h2>{navTab === "Matchups" && `Week ${week}`}</h2>
+        <h2>{navTab === "Lineupcheck" && `Week ${week}`}</h2>
         <h2>
           <select
             value={navTab}
@@ -82,7 +82,7 @@ const Heading: React.FC<HeadingProps> = ({ navTab, week }) => {
             <option>Players</option>
             <option>Leaguemates</option>
             <option>Trades</option>
-            <option>Matchups</option>
+            <option>Lineupcheck</option>
           </select>
         </h2>
       </div>
