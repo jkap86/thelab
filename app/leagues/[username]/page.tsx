@@ -15,6 +15,7 @@ import {
   setStandingsTab2,
 } from "@/redux/actions/leaguesActions";
 import {
+  columnOptions,
   getLeaguesColumn,
   getLeaguesSortValue,
 } from "@/helpers/getLeaguesColumn";
@@ -44,22 +45,6 @@ const Leagues: React.FC<LeaguesProps> = ({ params }) => {
     searchedLeague,
     page,
   } = useSelector((state: RootState) => state.leagues);
-
-  const columnOptions = [
-    { text: "League ID", abbrev: "L ID" },
-    { text: "Wins", abbrev: "Wins" },
-    { text: "Losses", abbrev: "Losses" },
-    { text: "Ties", abbrev: "Ties" },
-    { text: "Fantasy Points", abbrev: "FP" },
-    { text: "Fantasy Points Against", abbrev: "FPA" },
-    { text: "Open Roster Spots", abbrev: "O R S" },
-    { text: "Open Taxi Spots", abbrev: "O T S" },
-    { text: "Open IR Spots", abbrev: "O IR S" },
-    { text: "Total Projected Points Rank", abbrev: "T Proj Rk" },
-    { text: "Starter Projected Points Rank", abbrev: "S Proj Rk" },
-    { text: "Total KTC Rank", abbrev: "T KTC Rk" },
-    { text: "Starters KTC Rank", abbrev: "S KTC Rk" },
-  ];
 
   const headers_sort = [
     {

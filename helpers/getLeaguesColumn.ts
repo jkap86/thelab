@@ -15,6 +15,22 @@ export const isIrEligible = (
   }
 };
 
+export const columnOptions = [
+  { text: "League ID", abbrev: "L ID" },
+  { text: "Wins", abbrev: "Wins" },
+  { text: "Losses", abbrev: "Losses" },
+  { text: "Ties", abbrev: "Ties" },
+  { text: "Fantasy Points", abbrev: "FP" },
+  { text: "Fantasy Points Against", abbrev: "FPA" },
+  { text: "Open Roster Spots", abbrev: "O R S" },
+  { text: "Open Taxi Spots", abbrev: "O T S" },
+  { text: "Open IR Spots", abbrev: "O IR S" },
+  { text: "Total Projected Points Rank", abbrev: "T Proj Rk" },
+  { text: "Starter Projected Points Rank", abbrev: "S Proj Rk" },
+  { text: "Total KTC Rank", abbrev: "T KTC Rk" },
+  { text: "Starters KTC Rank", abbrev: "S KTC Rk" },
+];
+
 export const getLeaguesColumn = (
   col: string,
   league: League,
@@ -61,7 +77,7 @@ export const getLeaguesColumn = (
           return {
             roster_id: roster.roster_id,
             value: roster.players?.reduce(
-              (acc, cur) => acc + ktc_current?.[cur] || 0,
+              (acc, cur) => acc + (ktc_current?.[cur] || 0),
               0
             ),
           };

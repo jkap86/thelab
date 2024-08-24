@@ -5,8 +5,9 @@ import {
   SleeperUser,
   SleeperDraft,
   SleeperDraftpick,
+  SleeperMatchup,
 } from "@/lib/types/sleeperApiRawTypes";
-import { LeagueDb, Draftpick, UserDb } from "@/lib/types";
+import { LeagueDb, Draftpick, UserDb, Matchup } from "@/lib/types";
 import axios from "axios";
 
 export const updateLeagues = async (
@@ -17,6 +18,8 @@ export const updateLeagues = async (
   const users_db: UserDb[] = [];
   const userLeagues_db: { user_id: string; league_id: string }[] = [];
   const updatedLeagues: LeagueDb[] = [];
+  const matchupsBatch: Matchup[] = [];
+
   const batchSize = 10;
 
   for (let i = 0; i < leaguesToUpdate.length; i += batchSize) {
@@ -39,6 +42,18 @@ export const updateLeagues = async (
             const matchups = await axios.get(
               `https://api.sleeper.app/v1/league/${leagueToUpdate.league_id}/matchups/${week}`
             );
+
+            matchups.data.forEach((matchup: SleeperMatchup) => {
+              matchupsBatch.push({
+                week: parseInt(week),
+                league_id: league.data.league_id,
+                matchup_id: matchup.matchup_id,
+                roster_id: matchup.roster_id,
+                players: matchup.players,
+                starters: matchup.starters,
+                updatedat: new Date(),
+              });
+            });
           }
           if (leagueToUpdate.settings.type === 2) {
             const drafts = await axios.get(
@@ -109,6 +124,7 @@ export const updateLeagues = async (
       await upsertLeagues(db, updatedLeagues);
       await upsertUsers(db, users_db);
       await upsertUserLeagues(db, userLeagues_db);
+      await upsertMatchups(db, matchupsBatch);
       await db.query("COMMIT");
     } catch (err) {
       await db.query("ROLLBACK");
@@ -371,5 +387,42 @@ export const upsertUserLeagues = async (
     } catch (err: any) {
       console.log(err.message);
     }
+  }
+};
+
+export const upsertMatchups = async (db: PoolClient, matchups: Matchup[]) => {
+  if (matchups.length === 0) return;
+
+  const upsertMatchupsQuery = `
+    INSERT INTO matchups (week, matchup_id, roster_id, players, starters, league_id, updatedat)
+    VALUES ${matchups
+      .map(
+        (_, i) =>
+          `($${i * 7 + 1}, $${i * 7 + 2}, $${i * 7 + 3}, $${i * 7 + 4}, $${
+            i * 7 + 5
+          }, $${i * 7 + 6}, $${i * 7 + 7})`
+      )
+      .join(", ")}
+    ON CONFLICT (week, roster_id, league_id) DO UPDATE SET
+      matchup_id = EXCLUDED.matchup_id,
+      players = EXCLUDED.players,
+      starters = EXCLUDED.starters,
+      updatedat = EXCLUDED.updatedat
+  `;
+
+  const values = matchups.flatMap((matchup) => [
+    matchup.week,
+    matchup.matchup_id,
+    matchup.roster_id,
+    matchup.players,
+    matchup.starters,
+    matchup.league_id,
+    matchup.updatedat,
+  ]);
+
+  try {
+    await db.query(upsertMatchupsQuery, values);
+  } catch (err: any) {
+    console.log(err.message + " MATCHUPS");
   }
 };

@@ -54,3 +54,10 @@ export type SleeperPlayerStat = {
   stats: { [key: string]: number };
   player: { injury_status: string };
 };
+
+export type SleeperMatchup = {
+  matchup_id: number;
+  roster_id: number;
+  players: string[];
+  starters: string[];
+};

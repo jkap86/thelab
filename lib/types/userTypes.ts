@@ -92,6 +92,8 @@ export type Matchup = {
   league_id: string;
   players: string[];
   starters: string[];
+  week: number;
+  updatedat: Date;
 };
 
 export type MatchupOptimal = {
