@@ -58,54 +58,55 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
     { text: "Player", colspan: 3 },
     { text: "Proj", colspan: 1 },
   ];
-  const dataStarters =
-    (leagues &&
-      user_matchup &&
-      leagues[league_id].roster_positions
-        .filter((rp) => rp !== "BN")
-        .map((rp, index) => {
-          const classname = !user_matchup.optimal_starters
-            .map((os) => os.player_id)
-            .includes(user_matchup.starters[index])
-            ? "red"
-            : "";
-          return {
-            id: `${rp}__${index}`,
-            columns: [
-              { text: rp, colspan: 1, classname },
-              {
-                text: (
-                  <div className="">
-                    {(allplayers &&
-                      allplayers[user_matchup.starters[index]]?.full_name) ||
-                      "-"}
-                    <em className="inj">
-                      {fpweek &&
-                        fpweek[
-                          user_matchup.starters[index]
-                        ]?.injury_status?.slice(0, 1)}
-                    </em>
-                  </div>
-                ),
-                colspan: 3,
-                classname: classname + " relative",
-              },
-              {
-                text:
-                  user_matchup.players_projections
-                    .find((pp) => pp.player_id === user_matchup.starters[index])
-                    ?.proj?.toFixed(1) || "-",
-                colspan: 2,
-                classname,
-              },
-            ],
-          };
-        })) ||
-    [];
-
+  const getDataStarters = (matchup: MatchupOptimal) => {
+    return (
+      (leagues &&
+        matchup &&
+        leagues[league_id].roster_positions
+          .filter((rp) => rp !== "BN")
+          .map((rp, index) => {
+            const classname = !matchup.optimal_starters
+              .map((os) => os.player_id)
+              .includes(matchup.starters[index])
+              ? "red"
+              : "";
+            return {
+              id: `${rp}__${index}`,
+              columns: [
+                { text: rp, colspan: 1, classname },
+                {
+                  text: (
+                    <div className="">
+                      {(allplayers &&
+                        allplayers[matchup.starters[index]]?.full_name) ||
+                        "-"}
+                      <em className="inj">
+                        {fpweek &&
+                          fpweek[matchup.starters[index]]?.injury_status?.slice(
+                            0,
+                            1
+                          )}
+                      </em>
+                    </div>
+                  ),
+                  colspan: 3,
+                  classname: classname + " relative",
+                },
+                {
+                  text:
+                    matchup.players_projections
+                      .find((pp) => pp.player_id === matchup.starters[index])
+                      ?.proj?.toFixed(1) || "-",
+                  colspan: 2,
+                  classname,
+                },
+              ],
+            };
+          })) ||
+      []
+    );
+  };
   const activeSlot = activePlayer?.split("__")[0];
-
-  console.log({ activeSlot });
 
   const options =
     user_matchup &&
@@ -150,7 +151,12 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
   return (
     <>
       <div className="nav nav2">
-        <div></div>
+        <div>
+          {user_matchup && leagues[league_id].userRoster.username}
+
+          <strong>{user_matchup && user_matchup.actual_proj.toFixed(1)}</strong>
+          <em>({user_matchup && user_matchup.optimal_proj.toFixed(1)})</em>
+        </div>
         <div className="sync">
           <i
             className={
@@ -167,19 +173,34 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
             }
           ></i>
         </div>
-        <div></div>
+        <div>
+          {!activePlayer && opp_matchup && (
+            <>
+              {opp_roster && opp_roster.username}
+              <strong>{opp_matchup.actual_proj.toFixed(1)}</strong>
+              <em>({opp_matchup.optimal_proj.toFixed(1)})</em>
+            </>
+          )}
+        </div>
       </div>
       <TableMain
         type={2}
         half={true}
         headers={headersStarters}
-        data={dataStarters}
+        data={(user_matchup && getDataStarters(user_matchup)) || []}
         active={activePlayer}
         setActive={setActivePlayer}
       />
       {activePlayer ? (
         <TableMain type={2} half={true} headers={[]} data={dataOptions} />
-      ) : null}
+      ) : (
+        <TableMain
+          type={2}
+          half={true}
+          headers={headersStarters}
+          data={(opp_matchup && getDataStarters(opp_matchup)) || []}
+        />
+      )}
     </>
   );
 };
