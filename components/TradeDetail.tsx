@@ -77,6 +77,16 @@ const TradeDetail: React.FC<TradeDetailProps> = ({ trade }) => {
                     ),
                   },
                 ],
+                secondaryTable: (
+                  <Standings
+                    type={3}
+                    league={tip_league}
+                    standingsTab={standingsTab}
+                    standingsTab2={standingsTab2}
+                    setStandingsTab={(tab) => dispatch(setStandingsTab(tab))}
+                    setStandingsTab2={(tab) => dispatch(setStandingsTab2(tab))}
+                  />
+                ),
               };
             })) ||
           []
