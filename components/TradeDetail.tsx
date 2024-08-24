@@ -4,7 +4,15 @@ import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import Avatar from "./Avatar";
 import Standings from "./Standings";
-import { setDetailTab, setRostersTab } from "@/redux/actions/tradesActions";
+import {
+  setActiveTip,
+  setDetailTab,
+  setRostersTab,
+} from "@/redux/actions/tradesActions";
+import {
+  setStandingsTab,
+  setStandingsTab2,
+} from "@/redux/actions/leaguesActions";
 
 interface TradeDetailProps {
   trade: Trade;
@@ -15,8 +23,11 @@ const TradeDetail: React.FC<TradeDetailProps> = ({ trade }) => {
   const { leagues, leaguemates } = useSelector(
     (state: RootState) => state.user
   );
-  const { detailTab, rostersTab1, rostersTab2 } = useSelector(
+  const { detailTab, rostersTab1, rostersTab2, activeTip } = useSelector(
     (state: RootState) => state.trades
+  );
+  const { standingsTab, standingsTab2 } = useSelector(
+    (state: RootState) => state.leagues
   );
 
   const tipsTables = (
@@ -70,6 +81,8 @@ const TradeDetail: React.FC<TradeDetailProps> = ({ trade }) => {
             })) ||
           []
         }
+        active={activeTip}
+        setActive={(tip) => dispatch(setActiveTip(tip))}
       />
       <TableMain
         type={2}
@@ -115,10 +128,22 @@ const TradeDetail: React.FC<TradeDetailProps> = ({ trade }) => {
                     ),
                   },
                 ],
+                secondaryTable: (
+                  <Standings
+                    type={3}
+                    league={tip_league}
+                    standingsTab={standingsTab}
+                    standingsTab2={standingsTab2}
+                    setStandingsTab={(tab) => dispatch(setStandingsTab(tab))}
+                    setStandingsTab2={(tab) => dispatch(setStandingsTab2(tab))}
+                  />
+                ),
               };
             })) ||
           []
         }
+        active={activeTip}
+        setActive={(tip) => dispatch(setActiveTip(tip))}
       />
     </>
   );

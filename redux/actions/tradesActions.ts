@@ -31,13 +31,19 @@ interface setRostersTabAction {
   };
 }
 
+interface setActiveTipAction {
+  type: "SET_ACTIVE_TIP";
+  payload: string | false;
+}
+
 export type TradesActionTypes =
   | setTradesPageAction
   | setActiveTradeAction
   | setSearchedManagerAction
   | setSearchedPlayerAction
   | setRostersTabAction
-  | setDetailTabAction;
+  | setDetailTabAction
+  | setActiveTipAction;
 
 export const setTradesPage = (page: number): setTradesPageAction => ({
   type: "SET_TRADES_PAGE",
@@ -76,4 +82,9 @@ export const setRostersTab = (
 ): setRostersTabAction => ({
   type: "SET_ROSTERS_TAB",
   payload: { num, value },
+});
+
+export const setActiveTip = (id: string | false): setActiveTipAction => ({
+  type: "SET_ACTIVE_TIP",
+  payload: id,
 });
