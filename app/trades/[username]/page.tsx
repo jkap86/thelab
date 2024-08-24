@@ -202,7 +202,7 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                         fetchFilteredLmTrades(
                           Object.keys(leaguemates),
                           cur_trade_length,
-                          cur_trade_length + 125,
+                          125,
                           leagues,
                           searchedManager,
                           searchedPlayer,
@@ -215,7 +215,7 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                         fetchLmTrades(
                           Object.keys(leaguemates),
                           cur_trade_length,
-                          cur_trade_length + 125,
+                          125,
                           leagues,
                           fpseason,
                           allplayers
@@ -555,7 +555,7 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                         fetchLmTrades(
                           Object.keys(leaguemates),
                           cur_trade_length,
-                          cur_trade_length + 125,
+                          125,
                           leagues,
                           fpseason,
                           allplayers

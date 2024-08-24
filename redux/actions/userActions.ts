@@ -457,7 +457,10 @@ export const syncMatchup =
               : matchup.starters,
           optimal_starters,
           optimal_proj,
-          actual_proj,
+          actual_proj:
+            leagues[matchup.league_id].settings.best_ball === 1
+              ? optimal_proj
+              : actual_proj,
           players_projections,
         });
       });
