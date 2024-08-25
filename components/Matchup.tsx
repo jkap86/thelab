@@ -9,7 +9,7 @@ import { syncMatchup } from "@/redux/actions/userActions";
 
 interface MatchupProps {
   league_id: string;
-  matchups: MatchupOptimal[];
+  matchups: { user: MatchupOptimal; opp: MatchupOptimal; median?: number };
 }
 
 const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
@@ -23,19 +23,9 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
   const [activePlayer, setActivePlayer] = useState("");
 
   const week = (state && Math.max(state.leg, 1)) || 1;
-  const user_matchup =
-    leagues &&
-    matchups.find(
-      (m) => m.roster_id === leagues[league_id].userRoster.roster_id
-    );
+  const user_matchup = leagues && matchups.user;
 
-  const opp_matchup =
-    user_matchup &&
-    matchups.find(
-      (m) =>
-        m.matchup_id === user_matchup.matchup_id &&
-        m.roster_id !== user_matchup.roster_id
-    );
+  const opp_matchup = user_matchup && matchups.opp;
 
   const opp_roster =
     opp_matchup &&
@@ -151,12 +141,6 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
   return (
     <>
       <div className="nav nav2">
-        <div>
-          {user_matchup && leagues[league_id].userRoster.username}
-
-          <strong>{user_matchup && user_matchup.actual_proj.toFixed(1)}</strong>
-          <em>({user_matchup && user_matchup.optimal_proj.toFixed(1)})</em>
-        </div>
         <div className="sync">
           <i
             className={
@@ -172,6 +156,16 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
               )
             }
           ></i>
+        </div>
+      </div>
+      <div className="nav nav2">
+        <div>
+          <strong>{user_matchup && user_matchup.actual_proj.toFixed(1)}</strong>
+          <em>({user_matchup && user_matchup.optimal_proj.toFixed(1)})</em>
+          {user_matchup && leagues[league_id].userRoster.username}
+        </div>
+        <div className="sync">
+          <strong>{matchups.median?.toFixed(1)}</strong>
         </div>
         <div>
           {!activePlayer && opp_matchup && (

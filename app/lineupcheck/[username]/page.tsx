@@ -40,9 +40,7 @@ const Matchups: React.FC<LineupcheckProps> = ({ params }) => {
       filterLeagueIds(Object.keys(matchups), leagues, type1, type2)
         .sort((a, b) => leagues[a].index - leagues[b].index)
         .map((league_id) => {
-          const user_matchup = matchups[league_id].find(
-            (m) => m.roster_id === leagues[league_id].userRoster.roster_id
-          );
+          const user_matchup = matchups[league_id].user;
           const delta =
             user_matchup &&
             (user_matchup.starters.some(
@@ -100,8 +98,79 @@ const Matchups: React.FC<LineupcheckProps> = ({ params }) => {
         })) ||
     [];
 
+  console.log({ matchups });
+
+  const wins =
+    (leagues &&
+      matchups &&
+      filterLeagueIds(Object.keys(matchups), leagues, type1, type2).filter(
+        (league_id) => {
+          return (
+            matchups[league_id].user.actual_proj >
+            matchups[league_id].opp.actual_proj
+          );
+        }
+      ).length) ||
+    0;
+
+  const losses =
+    (leagues &&
+      matchups &&
+      filterLeagueIds(Object.keys(matchups), leagues, type1, type2).filter(
+        (league_id) => {
+          return (
+            matchups[league_id].user.actual_proj <
+            matchups[league_id].opp.actual_proj
+          );
+        }
+      ).length) ||
+    0;
+
+  const ties =
+    (leagues &&
+      matchups &&
+      filterLeagueIds(Object.keys(matchups), leagues, type1, type2).filter(
+        (league_id) => {
+          return (
+            matchups[league_id].user.actual_proj ===
+            matchups[league_id].opp.actual_proj
+          );
+        }
+      ).length) ||
+    0;
+
+  const median_wins =
+    (leagues &&
+      matchups &&
+      filterLeagueIds(Object.keys(matchups), leagues, type1, type2).filter(
+        (league_id) => {
+          return (
+            matchups[league_id].median &&
+            matchups[league_id].user.actual_proj > matchups[league_id].median
+          );
+        }
+      ).length) ||
+    0;
+
+  const median_losses =
+    (leagues &&
+      matchups &&
+      filterLeagueIds(Object.keys(matchups), leagues, type1, type2).filter(
+        (league_id) => {
+          return (
+            matchups[league_id].median &&
+            matchups[league_id].user.actual_proj < matchups[league_id].median
+          );
+        }
+      ).length) ||
+    0;
+
   const content = (
     <>
+      <h2>
+        {wins + median_wins}-{losses + median_losses}
+        {ties ? `-${ties}` : ""}
+      </h2>
       <TableMain
         type={1}
         headers={headers}

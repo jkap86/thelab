@@ -32,6 +32,7 @@ export type LeagueSettings = {
   type: number;
   reserve_allow_na: number;
   reserve_allow_doubtful: number;
+  league_average_match: number;
 };
 
 export type League = {

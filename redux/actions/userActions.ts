@@ -101,7 +101,13 @@ interface fetchMatchupsStartAction {
 
 interface fetchMatchupsEndAction {
   type: "FETCH_MATCHUPS_END";
-  payload: { [key: string]: MatchupOptimal[] };
+  payload: {
+    [key: string]: {
+      user: MatchupOptimal;
+      opp: MatchupOptimal;
+      median?: number;
+    };
+  };
 }
 
 interface fetchMatchupsErrorAction {
@@ -117,7 +123,7 @@ interface syncMatchupStartAction {
 interface syncMatchupEndAction {
   type: "SYNC_MATCHUP_END";
   payload: {
-    matchups: MatchupOptimal[];
+    matchups: { user: MatchupOptimal; opp: MatchupOptimal; median?: number };
     league_id: string;
   };
 }
@@ -363,39 +369,112 @@ export const fetchMatchups =
         week,
       });
 
-      const matchups_obj: { [key: string]: MatchupOptimal[] } = {};
+      const matchups_obj: {
+        [league_id: string]: {
+          user: MatchupOptimal;
+          opp: MatchupOptimal;
+          median?: number;
+        };
+      } = {};
 
-      response.data.forEach((matchup) => {
-        if (!matchups_obj[matchup.league_id]) {
-          matchups_obj[matchup.league_id] = [];
-        }
+      const matchup_league_ids = Array.from(
+        new Set(response.data.map((matchup) => matchup.league_id))
+      );
 
-        const {
-          optimal_starters,
-          optimal_proj,
-          actual_proj,
-          players_projections,
-        } = getOptimalStartersMatchup(
-          matchup,
-          leagues[matchup.league_id].roster_positions,
-          fpweek,
-          allplayers,
-          leagues[matchup.league_id].scoring_settings
+      matchup_league_ids.forEach((league_id) => {
+        const league_matchups = response.data.filter(
+          (matchup) => matchup.league_id === league_id
         );
-        matchups_obj[matchup.league_id].push({
-          ...matchup,
-          starters:
-            leagues[matchup.league_id].settings.best_ball === 1
-              ? optimal_starters.map((os) => os.player_id)
-              : matchup.starters,
-          optimal_starters,
-          optimal_proj,
-          actual_proj:
-            leagues[matchup.league_id].settings.best_ball === 1
-              ? optimal_proj
-              : actual_proj,
-          players_projections,
-        });
+
+        const user_matchup = league_matchups.find(
+          (matchup) =>
+            matchup.roster_id === leagues[league_id].userRoster.roster_id
+        );
+
+        const opp_matchup = league_matchups.find(
+          (matchup) =>
+            matchup.matchup_id === user_matchup?.matchup_id &&
+            matchup.roster_id !== user_matchup.roster_id
+        );
+
+        if (user_matchup && opp_matchup) {
+          const u = getOptimalStartersMatchup(
+            user_matchup,
+            leagues[user_matchup.league_id].roster_positions,
+            fpweek,
+            allplayers,
+            leagues[user_matchup.league_id].scoring_settings
+          );
+
+          const o = getOptimalStartersMatchup(
+            opp_matchup,
+            leagues[opp_matchup.league_id].roster_positions,
+            fpweek,
+            allplayers,
+            leagues[opp_matchup.league_id].scoring_settings
+          );
+
+          const scores = [u.actual_proj, o.actual_proj];
+
+          let median;
+          if (leagues[league_id].settings.league_average_match === 1) {
+            league_matchups
+              .filter(
+                (m) =>
+                  ![user_matchup.roster_id, opp_matchup.roster_id].includes(
+                    m.roster_id
+                  )
+              )
+              .forEach((m) => {
+                const { actual_proj } = getOptimalStartersMatchup(
+                  m,
+                  leagues[league_id].roster_positions,
+                  fpweek,
+                  allplayers,
+                  leagues[league_id].scoring_settings
+                );
+                scores.push(actual_proj);
+              });
+
+            const scores_sorted = scores.sort((a, b) => a - b);
+
+            const middle = Math.floor(scores.length / 2);
+
+            median = (scores_sorted[middle - 1] + scores_sorted[middle]) / 2;
+          }
+
+          matchups_obj[league_id] = {
+            user: {
+              ...user_matchup,
+              starters:
+                leagues[league_id].settings.best_ball === 1
+                  ? u.optimal_starters.map((os) => os.player_id)
+                  : user_matchup.starters,
+              optimal_starters: u.optimal_starters,
+              optimal_proj: u.optimal_proj,
+              actual_proj:
+                leagues[league_id].settings.best_ball === 1
+                  ? u.optimal_proj
+                  : u.actual_proj,
+              players_projections: u.players_projections,
+            },
+            opp: {
+              ...opp_matchup,
+              starters:
+                leagues[league_id].settings.best_ball === 1
+                  ? o.optimal_starters.map((os) => os.player_id)
+                  : opp_matchup.starters,
+              optimal_starters: o.optimal_starters,
+              optimal_proj: o.optimal_proj,
+              actual_proj:
+                leagues[league_id].settings.best_ball === 1
+                  ? o.optimal_proj
+                  : o.actual_proj,
+              players_projections: o.players_projections,
+            },
+            median,
+          };
+        }
       });
 
       dispatch({
@@ -433,37 +512,66 @@ export const syncMatchup =
         }
       );
 
-      const league_matchups: MatchupOptimal[] = [];
+      const user_matchup = response.data.find(
+        (matchup) =>
+          matchup.roster_id === leagues[league_id].userRoster.roster_id
+      );
 
-      response.data.forEach((matchup) => {
-        const {
-          optimal_starters,
-          optimal_proj,
-          actual_proj,
-          players_projections,
-        } = getOptimalStartersMatchup(
-          matchup,
+      const opp_matchup = response.data.find(
+        (matchup) =>
+          matchup.matchup_id === user_matchup?.matchup_id &&
+          matchup.roster_id !== user_matchup.roster_id
+      );
+
+      let league_matchups;
+      if (user_matchup && opp_matchup) {
+        const u = getOptimalStartersMatchup(
+          user_matchup,
           leagues[league_id].roster_positions,
           fpweek,
           allplayers,
           leagues[league_id].scoring_settings
         );
 
-        league_matchups.push({
-          ...matchup,
-          starters:
-            leagues[league_id].settings.best_ball === 1
-              ? optimal_starters.map((os) => os.player_id)
-              : matchup.starters,
-          optimal_starters,
-          optimal_proj,
-          actual_proj:
-            leagues[matchup.league_id].settings.best_ball === 1
-              ? optimal_proj
-              : actual_proj,
-          players_projections,
-        });
-      });
+        const o = getOptimalStartersMatchup(
+          opp_matchup,
+          leagues[league_id].roster_positions,
+          fpweek,
+          allplayers,
+          leagues[league_id].scoring_settings
+        );
+
+        league_matchups = {
+          user: {
+            ...user_matchup,
+            starters:
+              leagues[league_id].settings.best_ball === 1
+                ? u.optimal_starters.map((os) => os.player_id)
+                : user_matchup.starters,
+            optimal_starters: u.optimal_starters,
+            optimal_proj: u.optimal_proj,
+            actual_proj:
+              leagues[league_id].settings.best_ball === 1
+                ? u.optimal_proj
+                : u.actual_proj,
+            players_projections: u.players_projections,
+          },
+          opp: {
+            ...opp_matchup,
+            starters:
+              leagues[league_id].settings.best_ball === 1
+                ? o.optimal_starters.map((os) => os.player_id)
+                : opp_matchup.starters,
+            optimal_starters: o.optimal_starters,
+            optimal_proj: o.optimal_proj,
+            actual_proj:
+              leagues[league_id].settings.best_ball === 1
+                ? o.optimal_proj
+                : o.actual_proj,
+            players_projections: o.players_projections,
+          },
+        };
+      }
 
       dispatch({
         type: "SYNC_MATCHUP_END",

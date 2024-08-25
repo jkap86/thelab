@@ -38,7 +38,15 @@ export interface UserState {
   }[];
   errorLmTrades: string | false;
   isLoadingMatchups: boolean;
-  matchups: { [key: string]: MatchupOptimal[] } | false;
+  matchups:
+    | {
+        [key: string]: {
+          user: MatchupOptimal;
+          opp: MatchupOptimal;
+          median?: number;
+        };
+      }
+    | false;
   errorMatchups: string | false;
   isSyncingMatchup: string | false;
   errorSyncingMatchup: string | false;
