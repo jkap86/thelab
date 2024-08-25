@@ -541,6 +541,34 @@ export const syncMatchup =
           leagues[league_id].scoring_settings
         );
 
+        const scores = [u.actual_proj, o.actual_proj];
+        let median;
+        if (leagues[league_id].settings.league_average_match === 1) {
+          response.data
+            .filter(
+              (m) =>
+                ![user_matchup.roster_id, opp_matchup.roster_id].includes(
+                  m.roster_id
+                )
+            )
+            .forEach((m) => {
+              const { actual_proj } = getOptimalStartersMatchup(
+                m,
+                leagues[league_id].roster_positions,
+                fpweek,
+                allplayers,
+                leagues[league_id].scoring_settings
+              );
+
+              scores.push(actual_proj);
+            });
+
+          const scores_sorted = scores.sort((a, b) => a - b);
+
+          const middle = Math.floor(scores.length / 2);
+
+          median = (scores_sorted[middle - 1] + scores_sorted[middle]) / 2;
+        }
         league_matchups = {
           user: {
             ...user_matchup,
@@ -570,6 +598,7 @@ export const syncMatchup =
                 : o.actual_proj,
             players_projections: o.players_projections,
           },
+          median,
         };
       }
 

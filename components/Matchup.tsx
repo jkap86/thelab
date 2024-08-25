@@ -160,8 +160,11 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
       </div>
       <div className="nav nav2">
         <div>
-          <strong>{user_matchup && user_matchup.actual_proj.toFixed(1)}</strong>
-          <em>({user_matchup && user_matchup.optimal_proj.toFixed(1)})</em>
+          <strong>
+            {user_matchup && user_matchup.actual_proj.toFixed(1)}{" "}
+            <em>({user_matchup && user_matchup.optimal_proj.toFixed(1)})</em>
+          </strong>
+
           {user_matchup && leagues[league_id].userRoster.username}
         </div>
         <div className="sync">
@@ -171,8 +174,10 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
           {!activePlayer && opp_matchup && (
             <>
               {opp_roster && opp_roster.username}
-              <strong>{opp_matchup.actual_proj.toFixed(1)}</strong>
-              <em>({opp_matchup.optimal_proj.toFixed(1)})</em>
+              <strong>
+                {opp_matchup.actual_proj.toFixed(1)}
+                <em>({opp_matchup.optimal_proj.toFixed(1)})</em>
+              </strong>
             </>
           )}
         </div>
