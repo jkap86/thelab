@@ -104,6 +104,16 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
     );
   };
   const activeSlot = activePlayer?.split("__")[0];
+  const activeSlot_index = activePlayer?.split("__")[1];
+
+  const activeOptimalPlayer =
+    (user_matchup &&
+      user_matchup.optimal_starters.find(
+        (os) =>
+          os.slot === activeSlot &&
+          os.slot_index.toString() === activeSlot_index
+      )) ||
+    false;
 
   const options =
     user_matchup &&
@@ -116,8 +126,18 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
         )
     );
 
-  const dataOptions =
-    (options &&
+  const dataOptions = [
+    {
+      id: "info",
+      columns:
+        activeOptimalPlayer &&
+        (activeOptimalPlayer.move_into_flex
+          ? [{ text: "Move into Flex", colspan: 6, classname: "yellow" }]
+          : activeOptimalPlayer.move_outof_flex
+          ? [{ text: "Move out of Flex", colspan: 6, classname: "yellow" }]
+          : []),
+    },
+    ...((options &&
       options
         .sort((a, b) => getUserPlayerProjection(b) - getUserPlayerProjection(a))
         .map((option, index) => {
@@ -143,8 +163,10 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
             ],
           };
         })) ||
-    [];
+      []),
+  ];
 
+  console.log({ activePlayer });
   return (
     <>
       <div className="nav nav2">

@@ -332,7 +332,7 @@ export const getOptimalStartersMatchup = (
             return (
               position_map[os.player_id_slot]?.length <
                 position_map[os2.player_id_slot]?.length &&
-              os.kickoff_slot > os2.kickoff_slot &&
+              os.kickoff_slot - os2.kickoff_slot > 60 * 60 * 1000 &&
               position_map[os.player_id_slot].includes(
                 allplayers[os2.player_id]?.position
               ) &&
