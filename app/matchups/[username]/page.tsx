@@ -42,34 +42,37 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
     const opp: { [key: string]: { start: string[]; bench: string[] } } = {};
 
     matchups &&
-      Object.keys(matchups).forEach((league_id) => {
-        matchups[league_id].user.players.forEach((player_id) => {
-          if (!user[player_id]) {
-            user[player_id] = { start: [], bench: [] };
-          }
+      leagues &&
+      filterLeagueIds(Object.keys(matchups), leagues, type1, type2).forEach(
+        (league_id) => {
+          matchups[league_id].user.players.forEach((player_id) => {
+            if (!user[player_id]) {
+              user[player_id] = { start: [], bench: [] };
+            }
 
-          if (matchups[league_id].user.starters.includes(player_id)) {
-            user[player_id].start.push(league_id);
-          } else {
-            user[player_id].bench.push(league_id);
-          }
-        });
+            if (matchups[league_id].user.starters.includes(player_id)) {
+              user[player_id].start.push(league_id);
+            } else {
+              user[player_id].bench.push(league_id);
+            }
+          });
 
-        matchups[league_id].opp.players.forEach((player_id) => {
-          if (!opp[player_id]) {
-            opp[player_id] = { start: [], bench: [] };
-          }
+          matchups[league_id].opp.players.forEach((player_id) => {
+            if (!opp[player_id]) {
+              opp[player_id] = { start: [], bench: [] };
+            }
 
-          if (matchups[league_id].opp.starters.includes(player_id)) {
-            opp[player_id].start.push(league_id);
-          } else {
-            opp[player_id].bench.push(league_id);
-          }
-        });
-      });
+            if (matchups[league_id].opp.starters.includes(player_id)) {
+              opp[player_id].start.push(league_id);
+            } else {
+              opp[player_id].bench.push(league_id);
+            }
+          });
+        }
+      );
 
     return { user, opp };
-  }, [matchups]);
+  }, [matchups, leagues, type1, type2]);
 
   const player_ids = Array.from(
     new Set([
