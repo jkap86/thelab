@@ -307,7 +307,9 @@ export const getOptimalStartersMatchup = (
         slot: slot.slot,
         player_id: optimal_player.player_id,
         player_id_slot:
-          roster_positions[matchup.starters.indexOf(optimal_player.player_id)],
+          roster_positions[
+            matchup.starters.indexOf(optimal_player.player_id)
+          ] || "BN",
         proj: optimal_player.proj,
         kickoff_slot: fpweek[optimal_player.player_id]?.kickoff_slot,
       });
@@ -346,7 +348,7 @@ export const getOptimalStartersMatchup = (
             (os2) =>
               position_map[os.player_id_slot]?.length >
                 position_map[os2.player_id_slot]?.length &&
-              os.kickoff_slot < os2.kickoff_slot &&
+              os2.kickoff_slot - os.kickoff_slot > 60 * 60 * 1000 &&
               position_map[os.player_id_slot]?.includes(
                 allplayers[os2.player_id].position
               ) &&

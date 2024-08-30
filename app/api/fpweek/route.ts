@@ -5,7 +5,7 @@ import { SleeperPlayerStat } from "@/lib/types/sleeperApiRawTypes";
 import { Allplayer } from "@/lib/types";
 
 type MflMatchup = {
-  kickoff: number;
+  kickoff: string;
   team: {
     id: string;
   }[];
@@ -86,21 +86,7 @@ export async function GET(req: NextRequest) {
 
       schedule_week.data.nflSchedule.matchup.forEach((matchup: MflMatchup) => {
         matchup.team.forEach((team) => {
-          let kickoff_day = new Date(matchup.kickoff * 1000).getUTCDay();
-
-          if (kickoff_day < 3) {
-            kickoff_day += 8;
-          }
-
-          let kickoff_hour =
-            Math.round(new Date(matchup.kickoff * 1000).getUTCHours() / 10) *
-            10;
-
-          kickoffs_obj[team.id] = parseFloat(
-            `${kickoff_day}.${kickoff_hour.toLocaleString("en-US", {
-              minimumIntegerDigits: 2,
-            })}`
-          );
+          kickoffs_obj[team.id] = parseInt(matchup.kickoff) * 1000;
         });
       });
 
