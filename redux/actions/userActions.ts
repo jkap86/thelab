@@ -406,6 +406,8 @@ export const fetchMatchups =
             leagues[user_matchup.league_id].scoring_settings
           );
 
+          console.log({ u });
+
           const o = getOptimalStartersMatchup(
             opp_matchup,
             leagues[opp_matchup.league_id].roster_positions,

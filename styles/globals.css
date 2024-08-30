@@ -94,6 +94,10 @@ ol.page_numbers > li.active {
   color: rgb(255, 0, 0);
 }
 
+.yellow {
+  color: yellow;
+}
+
 .relative {
   position: relative;
 }

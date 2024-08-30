@@ -196,6 +196,7 @@ export const fetchFpWeek = (week: number) => async (dispatch: AppDispatch) => {
           {
             projection: player_stat.stats,
             injury_status: player_stat.injury_status,
+            kickoff_slot: player_stat.kickoff,
           },
         ])
       ),

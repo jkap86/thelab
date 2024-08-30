@@ -33,6 +33,8 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
       (r) => r.roster_id === opp_matchup.roster_id
     );
 
+  console.log({ matchups });
+
   const getUserPlayerProjection = (player_id: string) => {
     return (
       (user_matchup &&
@@ -55,10 +57,15 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
         leagues[league_id].roster_positions
           .filter((rp) => rp !== "BN")
           .map((rp, index) => {
-            const classname = !matchup.optimal_starters
-              .map((os) => os.player_id)
-              .includes(matchup.starters[index])
+            const optimal_starter = matchup.optimal_starters.find(
+              (os) => os.player_id === matchup.starters[index]
+            );
+
+            const classname = !optimal_starter
               ? "red"
+              : optimal_starter.move_into_flex ||
+                optimal_starter.move_outof_flex
+              ? "yellow"
               : "";
             return {
               id: `${rp}__${index}`,

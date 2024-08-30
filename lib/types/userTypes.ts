@@ -104,7 +104,12 @@ export type MatchupOptimal = {
   players: string[];
   starters: string[];
   optimal_starters: {
+    slot_index: number;
+    slot: string;
     player_id: string;
+    kickoff_slot: number;
+    move_into_flex: boolean;
+    move_outof_flex: boolean;
   }[];
   optimal_proj: number;
   actual_proj: number;
@@ -142,9 +147,11 @@ export type PlayerStat = {
   player_id: string;
   stats: { [key: string]: number };
   injury_status: string;
+  kickoff: number;
 };
 
 export type PlayerProjection = {
   projection: { [key: string]: number };
   injury_status: string;
+  kickoff_slot: number;
 };

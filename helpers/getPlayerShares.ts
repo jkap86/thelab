@@ -30,7 +30,7 @@ const getPosLen = (pos: string) => {
     pos === "REC_FLEX" ||
     pos === "DEF"
   ) {
-    return position_map[pos].length;
+    return position_map[pos]?.length || 999;
   } else {
     return 999;
   }
@@ -246,10 +246,14 @@ export const getOptimalStartersMatchup = (
   allplayers: { [key: string]: Allplayer },
   scoring_settings: { [key: string]: number }
 ) => {
+  console.log({ roster_positions });
   const optimal_starters: {
     slot_index: number;
+    slot: string;
     player_id: string;
+    player_id_slot: string;
     proj: number;
+    kickoff_slot: number;
   }[] = [];
 
   const players_projections = (matchup.players || []).map((player_id) => {
@@ -300,8 +304,12 @@ export const getOptimalStartersMatchup = (
 
       optimal_starters.push({
         slot_index: slot.index,
+        slot: slot.slot,
         player_id: optimal_player.player_id,
+        player_id_slot:
+          roster_positions[matchup.starters.indexOf(optimal_player.player_id)],
         proj: optimal_player.proj,
+        kickoff_slot: fpweek[optimal_player.player_id]?.kickoff_slot,
       });
     });
 
@@ -311,9 +319,51 @@ export const getOptimalStartersMatchup = (
   );
 
   return {
-    optimal_starters: optimal_starters.sort(
-      (a, b) => a.slot_index - b.slot_index
-    ),
+    optimal_starters: optimal_starters
+      .sort((a, b) => a.slot_index - b.slot_index)
+      .map((os) => {
+        let move_into_flex = false;
+        let move_outof_flex = false;
+
+        if (
+          optimal_starters.find((os2) => {
+            return (
+              position_map[os.player_id_slot]?.length <
+                position_map[os2.player_id_slot]?.length &&
+              os.kickoff_slot > os2.kickoff_slot &&
+              position_map[os.player_id_slot].includes(
+                allplayers[os2.player_id]?.position
+              ) &&
+              position_map[os2.player_id_slot].includes(
+                allplayers[os.player_id]?.position
+              )
+            );
+          })
+        ) {
+          move_into_flex = true;
+        } else if (
+          optimal_starters.find(
+            (os2) =>
+              position_map[os.player_id_slot]?.length >
+                position_map[os2.player_id_slot]?.length &&
+              os.kickoff_slot < os2.kickoff_slot &&
+              position_map[os.player_id_slot]?.includes(
+                allplayers[os2.player_id].position
+              ) &&
+              position_map[os2.player_id_slot]?.includes(
+                allplayers[os.player_id].position
+              )
+          )
+        ) {
+          move_outof_flex = true;
+        }
+
+        return {
+          ...os,
+          move_into_flex,
+          move_outof_flex,
+        };
+      }),
     optimal_proj: optimal_starters.reduce((acc, cur) => acc + cur.proj, 0),
     actual_proj: actual_proj,
     players_projections,
