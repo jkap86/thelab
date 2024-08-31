@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "@/styles/search.css";
 type SetSearched = (searched: string) => void;
 
@@ -23,6 +23,10 @@ const Search: React.FC<SearchProps> = ({
 }) => {
   const [searchText, setSearchText] = useState<string>("");
   const [searchOptions, setSearchOptions] = useState<Option[]>([]);
+
+  useEffect(() => {
+    setSearchText(searched || "");
+  }, []);
 
   const handleSearch = (input: string) => {
     const match = options.find(

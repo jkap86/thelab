@@ -77,7 +77,10 @@ const TableMain: React.FC<TableMainProps> = ({
             return (
               <div key={search.placeholder}>
                 <Search
-                  searched={search.searched}
+                  searched={
+                    search.options.find((o) => o.id === search.searched)
+                      ?.text || ""
+                  }
                   setSearched={search.setSearched}
                   options={search.options}
                   placeholder={search.placeholder}
