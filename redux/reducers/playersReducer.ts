@@ -36,6 +36,9 @@ export interface PlayersState {
     asc: boolean;
   };
   page: number;
+  page_owned: number;
+  page_taken: number;
+  page_available: number;
 }
 
 const initialState: PlayersState = {
@@ -74,6 +77,9 @@ const initialState: PlayersState = {
     asc: false,
   },
   page: 1,
+  page_owned: 1,
+  page_taken: 1,
+  page_available: 1,
 };
 
 const playersReducer = (state = initialState, action: PlayersActionTypes) => {
@@ -144,6 +150,21 @@ const playersReducer = (state = initialState, action: PlayersActionTypes) => {
       return {
         ...state,
         activePlayerLeague: action.payload,
+      };
+    case "SET_PLAYERS_OWNED_PAGE":
+      return {
+        ...state,
+        page_owned: action.payload,
+      };
+    case "SET_PLAYERS_TAKEN_PAGE":
+      return {
+        ...state,
+        page_taken: action.payload,
+      };
+    case "SET_PLAYERS_AVAILABLE_PAGE":
+      return {
+        ...state,
+        page_available: action.payload,
       };
     default:
       return state;

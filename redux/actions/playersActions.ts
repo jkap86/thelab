@@ -55,6 +55,21 @@ interface setPlayersPageAction {
   payload: number;
 }
 
+interface setPlayersOwnedPageAction {
+  type: "SET_PLAYERS_OWNED_PAGE";
+  payload: number;
+}
+
+interface setPlayersTakenPageAction {
+  type: "SET_PLAYERS_TAKEN_PAGE";
+  payload: number;
+}
+
+interface setPlayersAvailablePageAction {
+  type: "SET_PLAYERS_AVAILABLE_PAGE";
+  payload: number;
+}
+
 interface setPlayersDetailTabAction {
   type: "SET_PLAYERS_DETAIL_TAB";
   payload: string;
@@ -79,6 +94,9 @@ export type PlayersActionTypes =
   | setSearchedPlayerAction
   | setActivePlayerAction
   | setPlayersPageAction
+  | setPlayersOwnedPageAction
+  | setPlayersTakenPageAction
+  | setPlayersAvailablePageAction
   | setActivePlayerLeagueAction
   | setDetailColumnAction
   | setPlayersDetailTabAction
@@ -162,6 +180,27 @@ export const setActivePlayerLeague = (
 
 export const setPlayersPage = (page: number): setPlayersPageAction => ({
   type: "SET_PLAYERS_PAGE",
+  payload: page,
+});
+
+export const setPlayersOwnedPage = (
+  page: number
+): setPlayersOwnedPageAction => ({
+  type: "SET_PLAYERS_OWNED_PAGE",
+  payload: page,
+});
+
+export const setPlayersTakenPage = (
+  page: number
+): setPlayersTakenPageAction => ({
+  type: "SET_PLAYERS_TAKEN_PAGE",
+  payload: page,
+});
+
+export const setPlayersAvailablePage = (
+  page: number
+): setPlayersAvailablePageAction => ({
+  type: "SET_PLAYERS_AVAILABLE_PAGE",
   payload: page,
 });
 

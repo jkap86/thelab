@@ -235,7 +235,8 @@ export const getLeaguesSortValue = (
   ktc_current: { [key: string]: number },
   fpseason: { [key: string]: { [key: string]: number } },
   allplayers: { [key: string]: Allplayer },
-  owned_by?: string
+  owned_by?: string,
+  lmroster?: Roster
 ) => {
   let sortValue;
 
@@ -270,6 +271,7 @@ export const getLeaguesSortValue = (
           };
         })
         .sort((a, b) => (b.value || 0) - (a.value || 0));
+
       sortValue =
         values.findIndex((v) => v.roster_id === league.userRoster.roster_id) +
         1;
@@ -289,6 +291,22 @@ export const getLeaguesSortValue = (
       sortValue =
         values_s.findIndex((v) => v.roster_id === league.userRoster.roster_id) +
         1;
+      break;
+    case "LmT Proj":
+      const lm_t_rank =
+        [...(league.rosters || [])]
+          .sort((a, b) => (b?.proj_ros_t || 0) - (a.proj_ros_t || 0))
+          .findIndex((roster) => roster.roster_id === lmroster?.roster_id) + 1;
+
+      sortValue = lm_t_rank;
+      break;
+    case "LmS Proj":
+      const lm_s_rank =
+        [...(league.rosters || [])]
+          .sort((a, b) => (b?.proj_ros_s || 0) - (a?.proj_ros_s || 0))
+          .findIndex((roster) => roster.roster_id === lmroster?.roster_id) + 1;
+
+      sortValue = lm_s_rank;
       break;
     case "League":
       sortValue = asc ? league.name : league.index;

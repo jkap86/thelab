@@ -10,6 +10,9 @@ import {
   setSortOwnedBy,
   setSortTakenBy,
   setSortAvailableBy,
+  setPlayersOwnedPage,
+  setPlayersTakenPage,
+  setPlayersAvailablePage,
 } from "@/redux/actions/playersActions";
 import { User } from "@/lib/types";
 import Avatar from "./Avatar";
@@ -25,6 +28,7 @@ import {
   setStandingsTab2,
   setTeamColumn,
 } from "@/redux/actions/leaguesActions";
+import { columnOptions } from "@/helpers/getLeaguesColumn";
 
 interface PlayerLeaguesProps {
   type: number;
@@ -68,19 +72,12 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
     availableColumn3,
     availableColumn4,
     sortAvailableBy,
+    page_owned,
+    page_taken,
+    page_available,
   } = useSelector((state: RootState) => state.players);
 
-  const ownedOptions = [
-    { text: "Wins", abbrev: "Wins" },
-    { text: "Losses", abbrev: "Losses" },
-    { text: "Ties", abbrev: "Ties" },
-    { text: "Fantasy Points", abbrev: "FP" },
-    { text: "Fantasy Points Against", abbrev: "FPA" },
-    { text: "Total Projected Points Rank", abbrev: "T Proj Rk" },
-    { text: "Starter Projected Points Rank", abbrev: "S Proj Rk" },
-    { text: "KTC Total Rank", abbrev: "T KTC Rk" },
-    { text: "KTC Starters Rank", abbrev: "S KTC Rk" },
-  ];
+  const ownedOptions = columnOptions;
 
   const takenOptions = [
     ...ownedOptions,
@@ -147,6 +144,7 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
             />
           ),
           colspan: 1,
+          classname: sortOwnedBy.column === 1 ? "sort" : "",
         },
         {
           text: (
@@ -159,6 +157,7 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
             />
           ),
           colspan: 1,
+          classname: sortOwnedBy.column === 2 ? "sort" : "",
         },
         {
           text: (
@@ -171,6 +170,7 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
             />
           ),
           colspan: 1,
+          classname: sortOwnedBy.column === 3 ? "sort" : "",
         },
         {
           text: (
@@ -183,6 +183,7 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
             />
           ),
           colspan: 1,
+          classname: sortOwnedBy.column === 4 ? "sort" : "",
         },
       ]}
       data={owned
@@ -269,6 +270,8 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
         )}
       active={activePlayerLeague}
       setActive={(league_id) => dispatch(setActivePlayerLeague(league_id))}
+      page={page_owned}
+      setPage={(page) => dispatch(setPlayersOwnedPage(page))}
     />
   );
 
@@ -366,7 +369,10 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
                 ktc_current || {},
                 fpseason || {},
                 allplayers || {},
-                lm.lm.username
+                lm.lm.username,
+                leagues[lm.league].rosters.find(
+                  (r) => r.roster_id === lm.lm_roster_id
+                )
               ),
             columns: [
               {
@@ -437,6 +443,8 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
         )}
       active={activePlayerLeague}
       setActive={(league_id) => dispatch(setActivePlayerLeague(league_id))}
+      page={page_taken}
+      setPage={(page) => dispatch(setPlayersTakenPage(page))}
     />
   );
 
@@ -479,6 +487,7 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
         {
           text: <div>League</div>,
           colspan: 3,
+          classname: sortAvailableBy.column === 0 ? "sort" : "",
         },
         {
           text: (
@@ -491,6 +500,7 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
             />
           ),
           colspan: 1,
+          classname: sortAvailableBy.column === 1 ? "sort" : "",
         },
         {
           text: (
@@ -503,6 +513,7 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
             />
           ),
           colspan: 1,
+          classname: sortAvailableBy.column === 2 ? "sort" : "",
         },
         {
           text: (
@@ -515,6 +526,7 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
             />
           ),
           colspan: 1,
+          classname: sortAvailableBy.column === 3 ? "sort" : "",
         },
         {
           text: (
@@ -527,67 +539,108 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
             />
           ),
           colspan: 1,
+          classname: sortAvailableBy.column === 4 ? "sort" : "",
         },
       ]}
       data={
         (leagues &&
-          available.map((league_id) => {
-            return {
-              id: league_id,
-              columns: [
-                {
-                  text: (
-                    <Avatar
-                      id={leagues[league_id].avatar}
-                      type={"L"}
-                      text={leagues[league_id].name}
-                    />
-                  ),
-                  colspan: 3,
-                },
-                ...[
-                  availableColumn1,
-                  availableColumn2,
-                  availableColumn3,
-                  availableColumn4,
-                ].map((col, index) => {
-                  let text, trendColor;
+          available
+            .map((league_id) => {
+              let sortCol;
 
-                  if (leagues && leagues[league_id]) {
-                    ({ text, trendColor } = getLeaguesColumn(
-                      col,
-                      leagues[league_id],
-                      ktc_current || {},
-                      fpseason || {},
-                      allplayers || {}
-                    ));
-                  } else {
-                    text = "-";
-                    trendColor = {};
-                  }
-                  return {
-                    text: text,
-                    colspan: 1,
-                    style: { ...trendColor },
-                  };
-                }),
-              ],
-              secondaryTable: leagues && (
-                <Standings
-                  type={3}
-                  league={leagues[league_id]}
-                  standingsTab={standingsTab}
-                  standingsTab2={standingsTab2}
-                  setStandingsTab={(tab) => dispatch(setStandingsTab(tab))}
-                  setStandingsTab2={(tab) => dispatch(setStandingsTab2(tab))}
-                />
-              ),
-            };
-          })) ||
+              if (sortAvailableBy.column === 0 && sortAvailableBy.asc) {
+                sortCol = "League";
+              } else {
+                sortCol =
+                  [
+                    availableColumn1,
+                    availableColumn2,
+                    availableColumn3,
+                    availableColumn4,
+                  ].find(
+                    (col, index) => sortAvailableBy.column === index + 1
+                  ) || "Index";
+              }
+              return {
+                id: league_id,
+                sortby:
+                  leagues &&
+                  getLeaguesSortValue(
+                    sortCol,
+                    sortAvailableBy.asc,
+                    leagues[league_id],
+                    ktc_current || {},
+                    fpseason || {},
+                    allplayers || {}
+                  ),
+                columns: [
+                  {
+                    text: (
+                      <Avatar
+                        id={leagues[league_id].avatar}
+                        type={"L"}
+                        text={leagues[league_id].name}
+                      />
+                    ),
+                    colspan: 3,
+                    classname: sortAvailableBy.column === 0 ? "sort" : "",
+                  },
+                  ...[
+                    availableColumn1,
+                    availableColumn2,
+                    availableColumn3,
+                    availableColumn4,
+                  ].map((col, index) => {
+                    let text, trendColor;
+
+                    if (leagues && leagues[league_id]) {
+                      ({ text, trendColor } = getLeaguesColumn(
+                        col,
+                        leagues[league_id],
+                        ktc_current || {},
+                        fpseason || {},
+                        allplayers || {}
+                      ));
+                    } else {
+                      text = "-";
+                      trendColor = {};
+                    }
+                    return {
+                      text: text,
+                      colspan: 1,
+                      style: { ...trendColor },
+                      classname:
+                        sortAvailableBy.column === index + 1 ? "sort" : "",
+                    };
+                  }),
+                ],
+                secondaryTable: leagues && (
+                  <Standings
+                    type={3}
+                    league={leagues[league_id]}
+                    standingsTab={standingsTab}
+                    standingsTab2={standingsTab2}
+                    setStandingsTab={(tab) => dispatch(setStandingsTab(tab))}
+                    setStandingsTab2={(tab) => dispatch(setStandingsTab2(tab))}
+                  />
+                ),
+              };
+            })
+            .sort((a, b) =>
+              sortAvailableBy.asc
+                ? a.sortby > b.sortby
+                  ? 1
+                  : -1
+                : a.sortby < b.sortby
+                ? 1
+                : -1
+            )) ||
         []
       }
       active={activePlayerLeague}
       setActive={(league_id) => dispatch(setActivePlayerLeague(league_id))}
+      page={page_available}
+      setPage={(page) => dispatch(setPlayersAvailablePage(page))}
     />
   );
 
