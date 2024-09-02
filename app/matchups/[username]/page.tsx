@@ -1,16 +1,24 @@
 "use client";
 
 import Avatar from "@/components/Avatar";
+import HeaderDropdown from "@/components/HeaderDropdown";
 import Layout from "@/components/Layout";
 import Matchup from "@/components/Matchup";
 import TableMain from "@/components/TableMain";
 import { filterLeagueIds } from "@/helpers/filterLeagues";
+import {
+  columnOptions_lc,
+  getLineupcheckColumn,
+} from "@/helpers/getLineupcheckColumn";
 import { getSortIcon } from "@/helpers/getSortIcon";
 import {
   setActiveMatchup,
   setMatchupsPage,
   setMatchupsTab,
   setSortStartersBy,
+  setLineupcheckColumn,
+  setSearchedStarter,
+  setStartersPage,
 } from "@/redux/actions/matchupsActions";
 import { AppDispatch, RootState } from "@/redux/store";
 import { useMemo } from "react";
@@ -32,9 +40,12 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
     column3,
     column4,
     sortStartersBy,
+    sortLineupcheckBy,
     activeMatchup,
     page,
+    page_starters,
     tab,
+    searchedStarter,
   } = useSelector((state: RootState) => state.matchups);
 
   const starters_obj = useMemo(() => {
@@ -81,14 +92,48 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
     ])
   );
 
-  console.log({ player_ids });
-
   const headers_lineupcheck = [
     { text: "League", colspan: 3 },
-    { text: "Opt-Act", colspan: 1 },
-    { text: "Mv to FLX", colspan: 1 },
-    { text: "Mv frm FLX", colspan: 1 },
-    { text: "Proj Result", colspan: 1 },
+    {
+      text: (
+        <HeaderDropdown
+          options={columnOptions_lc}
+          columnText={column1}
+          setColumnText={(col) => dispatch(setLineupcheckColumn(1, col))}
+        />
+      ),
+      colspan: 1,
+    },
+    {
+      text: (
+        <HeaderDropdown
+          options={columnOptions_lc}
+          columnText={column2}
+          setColumnText={(col) => dispatch(setLineupcheckColumn(2, col))}
+        />
+      ),
+      colspan: 1,
+    },
+    {
+      text: (
+        <HeaderDropdown
+          options={columnOptions_lc}
+          columnText={column3}
+          setColumnText={(col) => dispatch(setLineupcheckColumn(3, col))}
+        />
+      ),
+      colspan: 1,
+    },
+    {
+      text: (
+        <HeaderDropdown
+          options={columnOptions_lc}
+          columnText={column4}
+          setColumnText={(col) => dispatch(setLineupcheckColumn(4, col))}
+        />
+      ),
+      colspan: 1,
+    },
   ];
 
   const data_lineupcheck =
@@ -112,14 +157,6 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
               ? user_matchup.optimal_proj - user_matchup.actual_proj
               : <>&#10003;</> || "-";
 
-          const move_into_flex = (user_matchup?.optimal_starters || []).filter(
-            (os) => os.move_into_flex
-          ).length;
-
-          const move_outof_flex = (user_matchup?.optimal_starters || []).filter(
-            (os) => os.move_outof_flex
-          ).length;
-
           return {
             id: league_id,
             columns: [
@@ -133,8 +170,32 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                 ),
                 colspan: 3,
               },
+              ...[column1, column2, column3, column4].map((col, index) => {
+                const { text, trendColor } = getLineupcheckColumn(
+                  col,
+                  sortLineupcheckBy.asc,
+                  matchups[league_id],
+                  leagues[league_id]
+                );
+
+                return {
+                  text: text,
+                  style: { ...trendColor },
+                  colspan: 1,
+                };
+              }),
+              /*
               {
-                text: (typeof delta === "number" && delta.toFixed(2)) || delta,
+                text: (
+                  <>
+                    {getLineupcheckColumn(
+                      column1,
+                      sortLineupcheckBy.asc,
+                      matchups[league_id],
+                      leagues[league_id]
+                    )}
+                  </>
+                ), //(typeof delta === "number" && delta.toFixed(2)) || delta,
                 colspan: 1,
                 classname: typeof delta === "number" ? "red" : "green",
               },
@@ -182,6 +243,7 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                 ),
                 colspan: 1,
               },
+              */
             ],
             secondaryTable: (
               <Matchup matchups={matchups[league_id]} league_id={league_id} />
@@ -331,6 +393,9 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
             { text: "Opp Bench", colspan: 1 },
           ]}
           data={player_ids
+            .filter(
+              (player_id) => !searchedStarter || searchedStarter === player_id
+            )
             .map((player_id) => {
               return {
                 id: player_id,
@@ -394,6 +459,38 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                 ? 1
                 : -1
             )}
+          searches={[
+            {
+              placeholder: "Search Starters",
+              searched: searchedStarter,
+              setSearched: (searched) => dispatch(setSearchedStarter(searched)),
+              options: Array.from(
+                new Set([
+                  ...Object.keys(starters_obj.user),
+                  ...Object.keys(starters_obj.opp),
+                ])
+              ).map((player_id) => {
+                return {
+                  id: player_id,
+                  text:
+                    (allplayers && allplayers[player_id]?.full_name) ||
+                    player_id,
+                  display: (
+                    <Avatar
+                      id={player_id}
+                      type="P"
+                      text={
+                        (allplayers && allplayers[player_id]?.full_name) ||
+                        player_id
+                      }
+                    />
+                  ),
+                };
+              }),
+            },
+          ]}
+          page={page_starters}
+          setPage={(page) => dispatch(setStartersPage(page))}
         />
       )}
     </>

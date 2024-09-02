@@ -3,8 +3,8 @@ interface setMatchupsTabAction {
   payload: string;
 }
 
-interface setStartersColumnAction {
-  type: "SET_STARTERS_COLUMN";
+interface setLcColumnAction {
+  type: "SET_LC_COLUMN";
   payload: {
     col: 0 | 1 | 2 | 3 | 4;
     value: string;
@@ -29,18 +29,30 @@ interface setMatchupsPageAction {
   payload: number;
 }
 
+interface setStartersPageAction {
+  type: "SET_STARTERS_PAGE";
+  payload: number;
+}
+
+interface setSearchedStarterAction {
+  type: "SET_SEARCHED_STARTER";
+  payload: string | false;
+}
+
 export type MatchupActionTypes =
   | setActiveMatchupAction
   | setMatchupsPageAction
   | setMatchupsTabAction
-  | setStartersColumnAction
-  | setSortStartersByAction;
+  | setLcColumnAction
+  | setSortStartersByAction
+  | setSearchedStarterAction
+  | setStartersPageAction;
 
-export const setStartersColumn = (
+export const setLineupcheckColumn = (
   col: 0 | 1 | 2 | 3 | 4,
   value: string
-): setStartersColumnAction => ({
-  type: "SET_STARTERS_COLUMN",
+): setLcColumnAction => ({
+  type: "SET_LC_COLUMN",
   payload: { col, value },
 });
 
@@ -67,7 +79,19 @@ export const setMatchupsPage = (page: number): setMatchupsPageAction => ({
   payload: page,
 });
 
+export const setStartersPage = (page: number): setStartersPageAction => ({
+  type: "SET_STARTERS_PAGE",
+  payload: page,
+});
+
 export const setMatchupsTab = (tab: string): setMatchupsTabAction => ({
   type: "SET_MATCHUPS_TAB",
   payload: tab,
+});
+
+export const setSearchedStarter = (
+  searched: string | false
+): setSearchedStarterAction => ({
+  type: "SET_SEARCHED_STARTER",
+  payload: searched,
 });

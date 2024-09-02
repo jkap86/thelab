@@ -1,6 +1,7 @@
 import { League, Allplayer, LeagueSettings, Roster } from "@/lib/types";
 import { getTrendColor_Percentage, getTrendColor_Range } from "./getTrendColor";
 
+/*
 export const isIrEligible = (
   injury_status: string,
   settings: LeagueSettings
@@ -14,6 +15,7 @@ export const isIrEligible = (
       return 0;
   }
 };
+*/
 
 export const columnOptions = [
   { text: "League ID", abbrev: "L ID" },
@@ -265,7 +267,7 @@ export const getLeaguesSortValue = (
           return {
             roster_id: roster.roster_id,
             value: roster.players?.reduce(
-              (acc, cur) => acc + ktc_current?.[cur] || 0,
+              (acc, cur) => acc + (ktc_current?.[cur] || 0),
               0
             ),
           };
@@ -282,7 +284,7 @@ export const getLeaguesSortValue = (
           return {
             roster_id: roster.roster_id,
             value: roster.starters?.reduce(
-              (acc, cur) => acc + ktc_current?.[cur] || 0,
+              (acc, cur) => acc + (ktc_current?.[cur] || 0),
               0
             ),
           };
