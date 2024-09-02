@@ -92,3 +92,19 @@ table.trade > tbody.active > tr:nth-child(2) {
   top: 7rem;
   z-index: 9;
 }
+
+em.stat {
+  font-weight: 900;
+  position: relative;
+  display: block;
+  font-family: var(--fontChill);
+  letter-spacing: 0.25rem;
+}
+
+em.stat > select {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  display: block;
+  opacity: 0;
+}

@@ -15,9 +15,11 @@ import {
   setSearchedManager,
   setSearchedPlayer,
   setTradesPage,
+  setValueType,
 } from "@/redux/actions/tradesActions";
 import TradeDetail from "@/components/TradeDetail";
 import Search from "@/components/Search";
+import { getPlayerProjection } from "@/helpers/getPlayerShares";
 
 interface TradesProps {
   params: { username: string };
@@ -37,9 +39,8 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
     lmTradeSearches,
     playershares,
   } = useSelector((state: RootState) => state.user);
-  const { activeTrade, page, searchedManager, searchedPlayer } = useSelector(
-    (state: RootState) => state.trades
-  );
+  const { activeTrade, page, searchedManager, searchedPlayer, valueType } =
+    useSelector((state: RootState) => state.trades);
 
   console.log({ lmTrades });
 
@@ -175,6 +176,7 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
           placeholder={"Search Player"}
         />
       </div>
+
       <div className="page_numbers_wrapper">
         <ol className="page_numbers">
           {Array.from(
@@ -368,10 +370,38 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                                               </div>
                                             </td>
                                             <td>
-                                              <em>
-                                                {(ktc_current &&
-                                                  ktc_current[add]) ||
-                                                  "0"}
+                                              <em className="stat">
+                                                <select
+                                                  value={valueType}
+                                                  onChange={(e) =>
+                                                    dispatch(
+                                                      setValueType(
+                                                        e.target.value
+                                                      )
+                                                    )
+                                                  }
+                                                  onClick={(e) =>
+                                                    e.stopPropagation()
+                                                  }
+                                                >
+                                                  <option value={"KTC"}>
+                                                    KTC Value
+                                                  </option>
+                                                  <option value={"ROS"}>
+                                                    Rest of Season Projection
+                                                  </option>
+                                                </select>
+                                                {valueType === "KTC"
+                                                  ? (ktc_current &&
+                                                      ktc_current[add]) ||
+                                                    "0"
+                                                  : leagues &&
+                                                    fpseason &&
+                                                    getPlayerProjection(
+                                                      add,
+                                                      lmTrade.scoring_settings,
+                                                      fpseason
+                                                    ).toFixed(1)}
                                               </em>
                                             </td>
                                           </tr>
@@ -415,15 +445,17 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                                                 : `${dp.season} Round ${dp.round}`}
                                             </td>
                                             <td>
-                                              <em>
-                                                {ktc_current &&
-                                                  (ktc_current[
-                                                    `${dp.season} ${dp.round}.${dp.order}`
-                                                  ] ||
-                                                    ktc_current[
-                                                      ktc_pick_name
+                                              <em className="stat">
+                                                {valueType === "KTC"
+                                                  ? ktc_current &&
+                                                    (ktc_current[
+                                                      `${dp.season} ${dp.round}.${dp.order}`
                                                     ] ||
-                                                    "0")}
+                                                      ktc_current[
+                                                        ktc_pick_name
+                                                      ] ||
+                                                      "0")
+                                                  : "-"}
                                               </em>
                                             </td>
                                           </tr>

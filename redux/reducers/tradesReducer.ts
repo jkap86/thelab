@@ -11,6 +11,7 @@ export interface TradesState {
   rostersTab1: string;
   rostersTab2: string;
   activeTip: string | false;
+  valueType: string;
 }
 
 const initialState: TradesState = {
@@ -23,6 +24,7 @@ const initialState: TradesState = {
   rostersTab1: "Standings",
   rostersTab2: "Settings",
   activeTip: false,
+  valueType: "KTC",
 };
 
 const tradesReducer = (state = initialState, action: TradesActionTypes) => {
@@ -57,6 +59,9 @@ const tradesReducer = (state = initialState, action: TradesActionTypes) => {
         break;
       case "SET_ACTIVE_TIP":
         draft.activeTip = action.payload;
+        break;
+      case "SET_VALUE_TYPE":
+        draft.valueType = action.payload;
         break;
       default:
         break;
