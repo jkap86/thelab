@@ -63,8 +63,9 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
 
             const classname = !optimal_starter
               ? "red"
-              : optimal_starter.move_into_flex ||
-                optimal_starter.move_outof_flex
+              : (optimal_starter.move_into_flex ||
+                  optimal_starter.move_outof_flex) &&
+                leagues[league_id].settings.best_ball !== 1
               ? "yellow"
               : "";
             return {

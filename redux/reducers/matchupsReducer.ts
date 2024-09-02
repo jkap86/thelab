@@ -9,6 +9,7 @@ export interface MatchupsState {
   page: number;
   page_starters: number;
   activeMatchup: string | false;
+  activeStarter: string | false;
   searchedStarter: string | false;
   tab: string;
   sortStartersBy: {
@@ -19,6 +20,7 @@ export interface MatchupsState {
     column: 0 | 1 | 2 | 3 | 4;
     asc: boolean;
   };
+  secondaryTabStarters: string;
 }
 
 const initialState: MatchupsState = {
@@ -30,6 +32,7 @@ const initialState: MatchupsState = {
   page_starters: 1,
   searchedStarter: false,
   activeMatchup: false,
+  activeStarter: false,
   tab: "LineupCheck",
   sortStartersBy: {
     column: 1,
@@ -39,6 +42,7 @@ const initialState: MatchupsState = {
     column: 1,
     asc: false,
   },
+  secondaryTabStarters: "Start",
 };
 
 const matchupsReducer = (state = initialState, action: MatchupActionTypes) => {
@@ -77,11 +81,17 @@ const matchupsReducer = (state = initialState, action: MatchupActionTypes) => {
       case "SET_ACTIVE_MATCHUP":
         draft.activeMatchup = action.payload;
         break;
+      case "SET_ACTIVE_STARTER":
+        draft.activeStarter = action.payload;
+        break;
       case "SET_SEARCHED_STARTER":
         draft.searchedStarter = action.payload;
         break;
       case "SET_STARTERS_PAGE":
         draft.page_starters = action.payload;
+        break;
+      case "SET_SECONDARYTAB_STARTERS":
+        draft.secondaryTabStarters = action.payload;
         break;
       default:
         break;

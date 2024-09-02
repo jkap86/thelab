@@ -24,6 +24,11 @@ interface setActiveMatchupAction {
   payload: string | false;
 }
 
+interface setActiveStarterAction {
+  type: "SET_ACTIVE_STARTER";
+  payload: string | false;
+}
+
 interface setMatchupsPageAction {
   type: "SET_MATCHUPS_PAGE";
   payload: number;
@@ -39,6 +44,11 @@ interface setSearchedStarterAction {
   payload: string | false;
 }
 
+interface setSecondaryTabStartersAction {
+  type: "SET_SECONDARYTAB_STARTERS";
+  payload: string;
+}
+
 export type MatchupActionTypes =
   | setActiveMatchupAction
   | setMatchupsPageAction
@@ -46,7 +56,9 @@ export type MatchupActionTypes =
   | setLcColumnAction
   | setSortStartersByAction
   | setSearchedStarterAction
-  | setStartersPageAction;
+  | setStartersPageAction
+  | setSecondaryTabStartersAction
+  | setActiveStarterAction;
 
 export const setLineupcheckColumn = (
   col: 0 | 1 | 2 | 3 | 4,
@@ -74,6 +86,13 @@ export const setActiveMatchup = (
   payload: league_id,
 });
 
+export const setActiveStarter = (
+  player_id: string | false
+): setActiveStarterAction => ({
+  type: "SET_ACTIVE_STARTER",
+  payload: player_id,
+});
+
 export const setMatchupsPage = (page: number): setMatchupsPageAction => ({
   type: "SET_MATCHUPS_PAGE",
   payload: page,
@@ -94,4 +113,11 @@ export const setSearchedStarter = (
 ): setSearchedStarterAction => ({
   type: "SET_SEARCHED_STARTER",
   payload: searched,
+});
+
+export const setSecondaryTabStarters = (
+  tab: string
+): setSecondaryTabStartersAction => ({
+  type: "SET_SECONDARYTAB_STARTERS",
+  payload: tab,
 });

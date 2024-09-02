@@ -4,6 +4,7 @@ import Avatar from "@/components/Avatar";
 import HeaderDropdown from "@/components/HeaderDropdown";
 import Layout from "@/components/Layout";
 import Matchup from "@/components/Matchup";
+import PlayerMatchups from "@/components/PlayerMatchups";
 import TableMain from "@/components/TableMain";
 import { filterLeagueIds } from "@/helpers/filterLeagues";
 import {
@@ -19,6 +20,7 @@ import {
   setLineupcheckColumn,
   setSearchedStarter,
   setStartersPage,
+  setActiveStarter,
 } from "@/redux/actions/matchupsActions";
 import { AppDispatch, RootState } from "@/redux/store";
 import { useMemo } from "react";
@@ -42,6 +44,7 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
     sortStartersBy,
     sortLineupcheckBy,
     activeMatchup,
+    activeStarter,
     page,
     page_starters,
     tab,
@@ -448,6 +451,12 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                     classname: sortStartersBy.column === 4 ? "sort" : "",
                   },
                 ],
+                secondaryTable: (
+                  <PlayerMatchups
+                    starters_obj={starters_obj}
+                    player_id={player_id}
+                  />
+                ),
               };
             })
             .sort((a, b) =>
@@ -491,6 +500,8 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
           ]}
           page={page_starters}
           setPage={(page) => dispatch(setStartersPage(page))}
+          active={activeStarter}
+          setActive={(starter) => dispatch(setActiveStarter(starter))}
         />
       )}
     </>
