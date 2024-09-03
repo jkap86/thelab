@@ -38,6 +38,7 @@ export type SleeperDraft = {
   status: string;
   settings: {
     rounds: number;
+    slots_k: number;
   };
 };
 
@@ -60,4 +61,12 @@ export type SleeperMatchup = {
   roster_id: number;
   players: string[];
   starters: string[];
+};
+
+export type SleeperDraftpickPicktracker = {
+  player_id: string;
+  picked_by: string;
+  metadata: {
+    position: string;
+  };
 };

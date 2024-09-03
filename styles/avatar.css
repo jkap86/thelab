@@ -1,5 +1,6 @@
 div.avatar {
-  width: 100%;
+  width: fit-content;
+  margin: auto;
   text-align: left;
 }
 img.avatar {
