@@ -65,7 +65,7 @@ const TableMain: React.FC<TableMainProps> = ({
   return (
     <>
       {filters1 && (
-        <span>
+        <span className="filters1">
           {filters1.map((filter, index) => {
             return <span key={index}>{filter}</span>;
           })}
@@ -73,6 +73,10 @@ const TableMain: React.FC<TableMainProps> = ({
       )}
       {searches && (
         <div className="searches">
+          {filters1 &&
+            filters1.map((filter, index) => {
+              return <span key={index}>{filter}</span>;
+            })}
           {searches.map((search) => {
             return (
               <div key={search.placeholder}>

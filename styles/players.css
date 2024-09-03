@@ -1,1 +1,19 @@
+table.filters {
+  width: 50%;
+  margin: auto;
+}
 
+table.filters td {
+  text-align: center;
+}
+
+table.filters,
+table.filters select {
+  font-size: 2.5rem;
+}
+
+table.filters select {
+  background-color: transparent;
+  color: var(--color1);
+  font-weight: 900;
+}

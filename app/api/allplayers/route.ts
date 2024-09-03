@@ -37,6 +37,7 @@ export async function GET(req: NextRequest) {
               : player_obj.full_name,
           age: player_obj.age,
           fantasy_positions: player_obj.fantasy_positions,
+          years_exp: player_obj.years_exp,
         });
       });
 

@@ -109,3 +109,7 @@ em.inj {
   top: 1%;
   font-size: 75%;
 }
+
+.flex {
+  display: flex;
+}

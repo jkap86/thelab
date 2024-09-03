@@ -88,6 +88,21 @@ interface setDetailColumnAction {
   };
 }
 
+interface setFilterTeamAction {
+  type: "SET_FILTER_TEAM";
+  payload: string;
+}
+
+interface setFilterDraftClassAction {
+  type: "SET_FILTER_DRAFTCLASS";
+  payload: string;
+}
+
+interface setFilterPositionAction {
+  type: "SET_FILTER_POSITION";
+  payload: string;
+}
+
 export type PlayersActionTypes =
   | setPlayersColumnAction
   | setSortPlayersByAction
@@ -102,7 +117,10 @@ export type PlayersActionTypes =
   | setPlayersDetailTabAction
   | setSortOwnedByAction
   | setSortTakenByAction
-  | setSortAvailableByAction;
+  | setSortAvailableByAction
+  | setFilterTeamAction
+  | setFilterDraftClassAction
+  | setFilterPositionAction;
 
 export const setPlayersColumn = (
   col: 1 | 2 | 3 | 4,
@@ -217,4 +235,23 @@ export const setDetailColumn = (
 ): setDetailColumnAction => ({
   type: "SET_DETAIL_COLUMN",
   payload: { key, value },
+});
+
+export const setFilterTeam = (team: string): setFilterTeamAction => ({
+  type: "SET_FILTER_TEAM",
+  payload: team,
+});
+
+export const setFilterDraftClass = (
+  draftyear: string
+): setFilterDraftClassAction => ({
+  type: "SET_FILTER_DRAFTCLASS",
+  payload: draftyear,
+});
+
+export const setFilterPosition = (
+  position: string
+): setFilterPositionAction => ({
+  type: "SET_FILTER_POSITION",
+  payload: position,
 });

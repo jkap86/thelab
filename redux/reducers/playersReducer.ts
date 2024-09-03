@@ -39,6 +39,9 @@ export interface PlayersState {
   page_owned: number;
   page_taken: number;
   page_available: number;
+  filterTeam: string;
+  filterDraftYear: string;
+  filterPosition: string;
 }
 
 const initialState: PlayersState = {
@@ -80,6 +83,9 @@ const initialState: PlayersState = {
   page_owned: 1,
   page_taken: 1,
   page_available: 1,
+  filterTeam: "All",
+  filterDraftYear: "All",
+  filterPosition: "All",
 };
 
 const playersReducer = (state = initialState, action: PlayersActionTypes) => {
@@ -165,6 +171,21 @@ const playersReducer = (state = initialState, action: PlayersActionTypes) => {
       return {
         ...state,
         page_available: action.payload,
+      };
+    case "SET_FILTER_TEAM":
+      return {
+        ...state,
+        filterTeam: action.payload,
+      };
+    case "SET_FILTER_DRAFTCLASS":
+      return {
+        ...state,
+        filterDraftYear: action.payload,
+      };
+    case "SET_FILTER_POSITION":
+      return {
+        ...state,
+        filterPosition: action.payload,
       };
     default:
       return state;

@@ -5,6 +5,7 @@ export type Allplayer = {
   full_name: string;
   age: number;
   fantasy_positions: string[];
+  years_exp: number;
 };
 
 export type SleeperState = {

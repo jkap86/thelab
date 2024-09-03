@@ -4,6 +4,9 @@ import Layout from "@/components/Layout";
 import TableMain from "@/components/TableMain";
 import {
   setActivePlayer,
+  setFilterDraftClass,
+  setFilterPosition,
+  setFilterTeam,
   setPlayersColumn,
   setPlayersPage,
   setSearchedPlayer,
@@ -24,6 +27,7 @@ import {
   filterLmLeagues,
 } from "@/helpers/filterLeagues";
 import "@/styles/players.css";
+import { nfl_teams } from "@/helpers/miscVariables";
 
 interface PlayersProps {
   params: { username: string };
@@ -46,6 +50,9 @@ const Players: React.FC<PlayersProps> = ({ params }) => {
     searchedPlayer,
     activePlayer,
     page,
+    filterTeam,
+    filterDraftYear,
+    filterPosition,
   } = useSelector((state: RootState) => state.players);
 
   const columnOptions = [
@@ -147,7 +154,14 @@ const Players: React.FC<PlayersProps> = ({ params }) => {
       (player_id) =>
         allplayers &&
         allplayers[player_id]?.full_name &&
-        (!searchedPlayer || searchedPlayer === player_id)
+        (!searchedPlayer || searchedPlayer === player_id) &&
+        (filterTeam === "All" || allplayers[player_id].team === filterTeam) &&
+        (filterDraftYear === "All" ||
+          (
+            new Date().getFullYear() - allplayers[player_id].years_exp
+          ).toString() === filterDraftYear) &&
+        (filterPosition === "All" ||
+          allplayers[player_id].fantasy_positions.includes(filterPosition))
     )
     .map((player_id, index) => {
       let sortCol;
@@ -278,6 +292,52 @@ const Players: React.FC<PlayersProps> = ({ params }) => {
 
   const content = (
     <div className="players">
+      <table className="filters">
+        <thead>
+          <tr>
+            <th>Team</th>
+            <th>Draft Year</th>
+            <th>Position</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <select
+                value={filterTeam}
+                onChange={(e) => dispatch(setFilterTeam(e.target.value))}
+              >
+                <option>All</option>
+                {nfl_teams.map((team) => {
+                  return <option key={team}>{team}</option>;
+                })}
+              </select>
+            </td>
+            <td>
+              <select
+                value={filterDraftYear}
+                onChange={(e) => dispatch(setFilterDraftClass(e.target.value))}
+              >
+                <option>All</option>
+                {Array.from(Array(25).keys()).map((key) => {
+                  return <option key={key}>{key + 2000}</option>;
+                })}
+              </select>
+            </td>
+            <td>
+              <select
+                value={filterPosition}
+                onChange={(e) => dispatch(setFilterPosition(e.target.value))}
+              >
+                <option>All</option>
+                {["QB", "RB", "WR", "TE"].map((pos) => {
+                  return <option key={pos}>{pos}</option>;
+                })}
+              </select>
+            </td>
+          </tr>
+        </tbody>
+      </table>
       <TableMain
         type={1}
         headers_sort={headers_sort}
