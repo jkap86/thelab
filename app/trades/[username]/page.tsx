@@ -20,6 +20,7 @@ import {
 import TradeDetail from "@/components/TradeDetail";
 import Search from "@/components/Search";
 import { getPlayerProjection } from "@/helpers/getPlayerShares";
+import { getTrendColor_Percentage } from "@/helpers/getTrendColor";
 
 interface TradesProps {
   params: { username: string };
@@ -230,11 +231,44 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
           ) : null}
         </ol>
       </div>
+      <div className="valuetype">
+        <span>
+          <input
+            checked={valueType === "KTC"}
+            onChange={() => dispatch(setValueType("KTC"))}
+            type="radio"
+          />
+          <label>KTC</label>
+        </span>
+        <span>
+          <input
+            checked={valueType === "ROS"}
+            onChange={() => dispatch(setValueType("ROS"))}
+            type="radio"
+          />
+          <label>Rest of Season Projected Points</label>
+        </span>
+      </div>
       <table className="trades">
         {[...tradesDisplay]
           .sort((a, b) => (b.status_updated > a.status_updated ? 1 : -1))
           .slice((page - 1) * 25, (page - 1) * 25 + 25)
           .map((lmTrade, index) => {
+            const player_values = Object.keys(lmTrade.adds).map((a) => {
+              if (valueType === "KTC") {
+                return (ktc_current && ktc_current[a]) || 0;
+              } else {
+                return (
+                  (fpseason &&
+                    getPlayerProjection(
+                      a,
+                      lmTrade.scoring_settings,
+                      fpseason
+                    )) ||
+                  0
+                );
+              }
+            });
             return (
               <tbody key={`${lmTrade.transaction_id}_${index}`}>
                 <tr>
@@ -349,6 +383,18 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                                           manager_roster?.user_id
                                       )
                                       .map((add, index) => {
+                                        const value =
+                                          valueType === "KTC"
+                                            ? (ktc_current &&
+                                                ktc_current[add]) ||
+                                              0
+                                            : (fpseason &&
+                                                getPlayerProjection(
+                                                  add,
+                                                  lmTrade.scoring_settings,
+                                                  fpseason
+                                                )) ||
+                                              0;
                                         return (
                                           <tr key={`${add}_${index}`}>
                                             <td
@@ -370,7 +416,13 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                                               </div>
                                             </td>
                                             <td>
-                                              <em className="stat">
+                                              <em
+                                                className="stat"
+                                                style={getTrendColor_Percentage(
+                                                  value,
+                                                  player_values
+                                                )}
+                                              >
                                                 <select
                                                   value={valueType}
                                                   onChange={(e) =>

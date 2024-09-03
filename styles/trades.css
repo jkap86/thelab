@@ -108,3 +108,9 @@ em.stat > select {
   display: block;
   opacity: 0;
 }
+
+div.valuetype {
+  font-size: 3rem;
+  display: flex;
+  justify-content: space-evenly;
+}
