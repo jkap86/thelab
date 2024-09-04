@@ -16,20 +16,11 @@ export const position_map: { [key: string]: string[] } = {
   SUPER_FLEX: ["QB", "RB", "FB", "WR", "TE"],
   WRRB_FLEX: ["RB", "FB", "WR"],
   REC_FLEX: ["WR", "TE"],
+  K: ["K"],
   DEF: ["DEF"],
 };
 const getPosLen = (pos: string) => {
-  if (
-    pos === "QB" ||
-    pos === "RB" ||
-    pos === "WR" ||
-    pos === "TE" ||
-    pos === "FLEX" ||
-    pos === "SUPER_FLEX" ||
-    pos === "WRRB_FLEX" ||
-    pos === "REC_FLEX" ||
-    pos === "DEF"
-  ) {
+  if (Object.keys(position_map).includes(pos)) {
     return position_map[pos]?.length || 999;
   } else {
     return 999;
@@ -102,18 +93,7 @@ export const getOptimalStarters = (
   const proj_ros_t = players.reduce((acc, cur) => acc + cur.proj, 0);
 
   const starting_slots = roster_positions
-    .filter(
-      (rp) =>
-        rp === "QB" ||
-        rp === "RB" ||
-        rp === "WR" ||
-        rp === "TE" ||
-        rp === "FLEX" ||
-        rp === "SUPER_FLEX" ||
-        rp === "WRRB_FLEX" ||
-        rp === "REC_FLEX" ||
-        rp === "DEF"
-    )
+    .filter((rp) => Object.keys(position_map).includes(rp))
     .map((slot, index) => {
       return {
         slot,
@@ -266,18 +246,7 @@ export const getOptimalStartersMatchup = (
   let players = [...players_projections];
 
   const starting_slots = roster_positions
-    .filter(
-      (rp) =>
-        rp === "QB" ||
-        rp === "RB" ||
-        rp === "WR" ||
-        rp === "TE" ||
-        rp === "FLEX" ||
-        rp === "SUPER_FLEX" ||
-        rp === "WRRB_FLEX" ||
-        rp === "REC_FLEX" ||
-        rp === "DEF"
-    )
+    .filter((rp) => Object.keys(position_map).includes(rp))
     .map((slot, index) => {
       return {
         slot,
