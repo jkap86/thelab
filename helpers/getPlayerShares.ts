@@ -18,6 +18,10 @@ export const position_map: { [key: string]: string[] } = {
   REC_FLEX: ["WR", "TE"],
   K: ["K"],
   DEF: ["DEF"],
+  DL: ["DL"],
+  LB: ["LB"],
+  DB: ["DB"],
+  IDP_FLEX: ["DL", "LB", "DB"],
 };
 const getPosLen = (pos: string) => {
   if (Object.keys(position_map).includes(pos)) {
@@ -106,8 +110,8 @@ export const getOptimalStarters = (
     .forEach((slot) => {
       const slot_options = players
         ?.filter((player) =>
-          position_map[slot.slot]?.includes(
-            allplayers[player.player_id]?.position
+          position_map[slot.slot]?.some((p) =>
+            allplayers[player.player_id].fantasy_positions.includes(p)
           )
         )
         .sort((a, b) => b.proj - a.proj);
@@ -297,36 +301,36 @@ export const getOptimalStartersMatchup = (
         let move_outof_flex = false;
 
         if (
-          optimal_starters.find((os2) => {
-            return (
-              position_map[os.player_id_slot]?.length <
-                position_map[os2.player_id_slot]?.length &&
-              os.kickoff_slot - os2.kickoff_slot > 60 * 60 * 1000 &&
-              position_map[os.player_id_slot].includes(
-                allplayers[os2.player_id]?.position
-              ) &&
-              position_map[os2.player_id_slot].includes(
-                allplayers[os.player_id]?.position
-              )
-            );
-          })
-        ) {
-          move_into_flex = true;
-        } else if (
           optimal_starters.find(
             (os2) =>
               position_map[os.player_id_slot]?.length >
                 position_map[os2.player_id_slot]?.length &&
               os2.kickoff_slot - os.kickoff_slot > 60 * 60 * 1000 &&
-              position_map[os.player_id_slot]?.includes(
-                allplayers[os2.player_id].position
+              position_map[os.player_id_slot]?.some((p) =>
+                allplayers[os2.player_id]?.fantasy_positions?.includes(p)
               ) &&
-              position_map[os2.player_id_slot]?.includes(
-                allplayers[os.player_id].position
+              position_map[os2.player_id_slot]?.some((p) =>
+                allplayers[os.player_id]?.fantasy_positions?.includes(p)
               )
           )
         ) {
           move_outof_flex = true;
+        } else if (
+          optimal_starters.find((os2) => {
+            return (
+              position_map[os.player_id_slot]?.length <
+                position_map[os2.player_id_slot]?.length &&
+              os.kickoff_slot - os2.kickoff_slot > 60 * 60 * 1000 &&
+              position_map[os.player_id_slot].some((p) =>
+                allplayers[os2.player_id]?.fantasy_positions?.includes(p)
+              ) &&
+              position_map[os2.player_id_slot].some((p) =>
+                allplayers[os.player_id]?.fantasy_positions?.includes(p)
+              )
+            );
+          })
+        ) {
+          move_into_flex = true;
         }
 
         return {

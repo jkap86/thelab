@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
 
     try {
       const fpseason = await axiosInstance.get(
-        "https://api.sleeper.com/projections/nfl/2024/?season_type=regular&position[]=RB&position[]=QB&position[]=WR&position[]=TE"
+        "https://api.sleeper.com/projections/nfl/2024/?season_type=regular"
       );
 
       const fp = fpseason.data
