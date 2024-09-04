@@ -126,7 +126,7 @@ export const getOptimalStarters = (
     .forEach((slot) => {
       const slot_options = players
         ?.filter((player) =>
-          position_map[slot.slot].includes(
+          position_map[slot.slot]?.includes(
             allplayers[player.player_id]?.position
           )
         )
@@ -291,7 +291,7 @@ export const getOptimalStartersMatchup = (
       const slot_options = players
         ?.filter((player) =>
           position_map[slot.slot].some((p) =>
-            allplayers[player.player_id]?.fantasy_positions.includes(p)
+            allplayers[player.player_id]?.fantasy_positions?.includes(p)
           )
         )
         .sort((a, b) => b.proj - a.proj);
