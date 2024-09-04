@@ -13,6 +13,11 @@ import {
 } from "@/helpers/getLineupcheckColumn";
 import { getSortIcon } from "@/helpers/getSortIcon";
 import {
+  setFilterDraftClass,
+  setFilterPosition,
+  setFilterTeam,
+} from "@/redux/actions/playersActions";
+import {
   setActiveMatchup,
   setMatchupsPage,
   setMatchupsTab,
@@ -25,6 +30,8 @@ import {
 import { AppDispatch, RootState } from "@/redux/store";
 import { useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { nfl_teams } from "@/helpers/miscVariables";
+import "@/styles/players.css";
 
 interface MatchupsProps {
   params: { username: string };
@@ -36,6 +43,9 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
     (state: RootState) => state.common
   );
   const { matchups, leagues } = useSelector((state: RootState) => state.user);
+  const { filterTeam, filterDraftYear, filterPosition } = useSelector(
+    (state: RootState) => state.players
+  );
   const {
     column1,
     column2,
@@ -342,7 +352,56 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
         {wins + median_wins}-{losses + median_losses}
         {ties ? `-${ties}` : ""}
       </h2>
-
+      {tab === "Starters" && (
+        <table className="filters">
+          <thead>
+            <tr>
+              <th>Team</th>
+              <th>Draft Year</th>
+              <th>Position</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <select
+                  value={filterTeam}
+                  onChange={(e) => dispatch(setFilterTeam(e.target.value))}
+                >
+                  <option>All</option>
+                  {nfl_teams.map((team) => {
+                    return <option key={team}>{team}</option>;
+                  })}
+                </select>
+              </td>
+              <td>
+                <select
+                  value={filterDraftYear}
+                  onChange={(e) =>
+                    dispatch(setFilterDraftClass(e.target.value))
+                  }
+                >
+                  <option>All</option>
+                  {Array.from(Array(25).keys()).map((key) => {
+                    return <option key={key}>{key + 2000}</option>;
+                  })}
+                </select>
+              </td>
+              <td>
+                <select
+                  value={filterPosition}
+                  onChange={(e) => dispatch(setFilterPosition(e.target.value))}
+                >
+                  <option>All</option>
+                  {["QB", "RB", "WR", "TE"].map((pos) => {
+                    return <option key={pos}>{pos}</option>;
+                  })}
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      )}
       {tab === "LineupCheck" ? (
         <TableMain
           type={1}
@@ -397,7 +456,19 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
           ]}
           data={player_ids
             .filter(
-              (player_id) => !searchedStarter || searchedStarter === player_id
+              (player_id) =>
+                allplayers &&
+                (!searchedStarter || searchedStarter === player_id) &&
+                (filterTeam === "All" ||
+                  allplayers[player_id].team === filterTeam) &&
+                (filterDraftYear === "All" ||
+                  (
+                    new Date().getFullYear() - allplayers[player_id].years_exp
+                  ).toString() === filterDraftYear) &&
+                (filterPosition === "All" ||
+                  allplayers[player_id].fantasy_positions.includes(
+                    filterPosition
+                  ))
             )
             .map((player_id) => {
               return {
