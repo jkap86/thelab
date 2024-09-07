@@ -244,6 +244,7 @@ export const getOptimalStartersMatchup = (
     return {
       player_id: player_id,
       proj: getPlayerProjectionWeek(player_id, scoring_settings, fpweek),
+      kickoff: fpweek[player_id]?.kickoff_slot || 0,
     };
   });
 
@@ -255,6 +256,12 @@ export const getOptimalStartersMatchup = (
       return {
         slot,
         index,
+        player_id: matchup.starters[index],
+        proj:
+          players_projections.find(
+            (p) => p.player_id === matchup.starters[index]
+          )?.proj || 0,
+        kickoff: fpweek[matchup.starters[index]]?.kickoff_slot || Infinity,
       };
     });
 
@@ -262,14 +269,20 @@ export const getOptimalStartersMatchup = (
     .sort((a, b) => getPosLen(a.slot) - getPosLen(b.slot))
     .forEach((slot) => {
       const slot_options = players
-        ?.filter((player) =>
-          position_map[slot.slot].some((p) =>
-            allplayers[player.player_id]?.fantasy_positions?.includes(p)
-          )
+        ?.filter(
+          (player) =>
+            player.kickoff > new Date().getTime() &&
+            position_map[slot.slot].some((p) =>
+              allplayers[player.player_id]?.fantasy_positions?.includes(p)
+            )
         )
         .sort((a, b) => b.proj - a.proj);
 
-      const optimal_player = slot_options?.[0] || "0";
+      const optimal_player = (slot.kickoff > new Date().getTime() &&
+        slot_options?.[0]) || {
+        player_id: slot.player_id,
+        proj: slot.proj,
+      };
 
       players =
         players?.filter((p) => p.player_id !== optimal_player.player_id) ||
