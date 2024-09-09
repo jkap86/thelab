@@ -403,7 +403,8 @@ export const fetchMatchups =
             leagues[user_matchup.league_id].roster_positions,
             fpweek,
             allplayers,
-            leagues[user_matchup.league_id].scoring_settings
+            leagues[user_matchup.league_id].scoring_settings,
+            leagues[user_matchup.league_id].settings.best_ball
           );
 
           console.log({ u });
@@ -413,7 +414,8 @@ export const fetchMatchups =
             leagues[opp_matchup.league_id].roster_positions,
             fpweek,
             allplayers,
-            leagues[opp_matchup.league_id].scoring_settings
+            leagues[opp_matchup.league_id].scoring_settings,
+            leagues[opp_matchup.league_id].settings.best_ball
           );
 
           const scores = [u.actual_proj, o.actual_proj];
@@ -433,7 +435,8 @@ export const fetchMatchups =
                   leagues[league_id].roster_positions,
                   fpweek,
                   allplayers,
-                  leagues[league_id].scoring_settings
+                  leagues[league_id].scoring_settings,
+                  leagues[league_id].settings.best_ball
                 );
                 scores.push(actual_proj);
               });
@@ -532,7 +535,8 @@ export const syncMatchup =
           leagues[league_id].roster_positions,
           fpweek,
           allplayers,
-          leagues[league_id].scoring_settings
+          leagues[league_id].scoring_settings,
+          leagues[league_id].settings.best_ball
         );
 
         const o = getOptimalStartersMatchup(
@@ -540,7 +544,8 @@ export const syncMatchup =
           leagues[league_id].roster_positions,
           fpweek,
           allplayers,
-          leagues[league_id].scoring_settings
+          leagues[league_id].scoring_settings,
+          leagues[league_id].settings.best_ball
         );
 
         const scores = [u.actual_proj, o.actual_proj];
@@ -559,7 +564,8 @@ export const syncMatchup =
                 leagues[league_id].roster_positions,
                 fpweek,
                 allplayers,
-                leagues[league_id].scoring_settings
+                leagues[league_id].scoring_settings,
+                leagues[league_id].settings.best_ball
               );
 
               scores.push(actual_proj);

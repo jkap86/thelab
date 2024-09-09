@@ -228,7 +228,8 @@ export const getOptimalStartersMatchup = (
   roster_positions: string[],
   fpweek: { [key: string]: PlayerProjection },
   allplayers: { [key: string]: Allplayer },
-  scoring_settings: { [key: string]: number }
+  scoring_settings: { [key: string]: number },
+  bestball: number
 ) => {
   console.log({ roster_positions });
   const optimal_starters: {
@@ -271,14 +272,15 @@ export const getOptimalStartersMatchup = (
       const slot_options = players
         ?.filter(
           (player) =>
-            player.kickoff > new Date().getTime() &&
+            (player.kickoff > new Date().getTime() || bestball === 1) &&
             position_map[slot.slot].some((p) =>
               allplayers[player.player_id]?.fantasy_positions?.includes(p)
             )
         )
         .sort((a, b) => b.proj - a.proj);
 
-      const optimal_player = (slot.kickoff > new Date().getTime() &&
+      const optimal_player = ((slot.kickoff > new Date().getTime() ||
+        bestball === 1) &&
         slot_options?.[0]) || {
         player_id: slot.player_id,
         proj: slot.proj,
