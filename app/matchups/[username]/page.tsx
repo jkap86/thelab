@@ -74,7 +74,7 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
               user[player_id] = { start: [], bench: [] };
             }
 
-            if (matchups[league_id].user.starters.includes(player_id)) {
+            if (matchups[league_id].user.starters?.includes(player_id)) {
               user[player_id].start.push(league_id);
             } else {
               user[player_id].bench.push(league_id);
@@ -86,7 +86,7 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
               opp[player_id] = { start: [], bench: [] };
             }
 
-            if (matchups[league_id].opp.starters.includes(player_id)) {
+            if (matchups[league_id].opp.starters?.includes(player_id)) {
               opp[player_id].start.push(league_id);
             } else {
               opp[player_id].bench.push(league_id);
@@ -165,7 +165,7 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                   .includes(s)
             ) ||
               user_matchup.optimal_starters.some(
-                (os) => !user_matchup.starters.includes(os.player_id)
+                (os) => !user_matchup.starters?.includes(os.player_id)
               ))
               ? user_matchup.optimal_proj - user_matchup.actual_proj
               : <>&#10003;</> || "-";
