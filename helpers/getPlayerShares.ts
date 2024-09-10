@@ -262,7 +262,8 @@ export const getOptimalStartersMatchup = (
           players_projections.find(
             (p) => p.player_id === matchup.starters[index]
           )?.proj || 0,
-        kickoff: fpweek[matchup.starters[index]]?.kickoff_slot || Infinity,
+        kickoff:
+          fpweek[matchup.starters[index] || "0"]?.kickoff_slot || Infinity,
       };
     });
 
@@ -296,14 +297,14 @@ export const getOptimalStartersMatchup = (
         player_id: optimal_player.player_id,
         player_id_slot:
           roster_positions[
-            matchup.starters.indexOf(optimal_player.player_id)
+            matchup.starters?.indexOf(optimal_player.player_id)
           ] || "BN",
         proj: optimal_player.proj,
         kickoff_slot: fpweek[optimal_player.player_id]?.kickoff_slot,
       });
     });
 
-  const actual_proj = matchup.starters.reduce(
+  const actual_proj = matchup.starters?.reduce(
     (acc, cur) => acc + getPlayerProjectionWeek(cur, scoring_settings, fpweek),
     0
   );
