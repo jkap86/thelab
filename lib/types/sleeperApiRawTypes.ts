@@ -61,7 +61,7 @@ export type SleeperMatchup = {
   matchup_id: number;
   roster_id: number;
   players: string[];
-  starters: string[];
+  starters: string[] | null;
 };
 
 export type SleeperDraftpickPicktracker = {
