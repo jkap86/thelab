@@ -8,7 +8,7 @@ import { setType1, setType2 } from "@/redux/actions/commonActions";
 
 interface HeadingProps {
   navTab: string;
-  week: number;
+  week: number | false;
 }
 
 const Heading: React.FC<HeadingProps> = ({ navTab, week }) => {
@@ -70,7 +70,7 @@ const Heading: React.FC<HeadingProps> = ({ navTab, week }) => {
             </div>
           </div>
         </div>
-        <h2>{navTab === "Lineupcheck" && `Week ${week}`}</h2>
+
         <h2>
           <select
             value={navTab}
@@ -85,6 +85,7 @@ const Heading: React.FC<HeadingProps> = ({ navTab, week }) => {
             <option>Matchups</option>
           </select>
         </h2>
+        <h2>{navTab === "Matchups" && `Week ${week}`}</h2>
       </div>
     )
   );

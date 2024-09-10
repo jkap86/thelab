@@ -49,7 +49,9 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
     pathname.split("/")[1].charAt(0).toUpperCase() +
     pathname.split("/")[1].slice(1);
 
-  const week = (state && Math.max(state.leg, 1)) || 1;
+  const week = state && Math.max(state.leg, 1);
+
+  console.log({ week });
 
   useEffect(() => {
     if (!allplayers && !isLoadingAllplayers) {
@@ -80,7 +82,8 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
       !leagues &&
       !isLoadingLeagues &&
       allplayers &&
-      fpseason
+      fpseason &&
+      week
     ) {
       dispatch(fetchLeagues(user.user_id, week, fpseason, allplayers));
     }
@@ -105,14 +108,20 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
       allplayers &&
       leagues &&
       fpweek &&
-      !matchups
+      !matchups &&
+      week
     ) {
       dispatch(fetchMatchups(leagues, week, allplayers, fpweek));
     }
   }, [navTab, leagues, matchups, allplayers, fpweek, week, dispatch]);
 
   useEffect(() => {
-    if (navTab.toLowerCase() === "matchups" && !fpweek && !isLoadingFpWeek) {
+    if (
+      navTab.toLowerCase() === "matchups" &&
+      !fpweek &&
+      !isLoadingFpWeek &&
+      week
+    ) {
       dispatch(fetchFpWeek(week));
     }
   }, [week, navTab, fpweek, isLoadingFpWeek, dispatch]);
