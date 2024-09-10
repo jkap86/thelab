@@ -257,7 +257,7 @@ export const getOptimalStartersMatchup = (
       return {
         slot,
         index,
-        player_id: matchup.starters[index],
+        player_id: matchup.starters?.[index] || "0",
         proj:
           players_projections.find(
             (p) => p.player_id === matchup.starters[index]
