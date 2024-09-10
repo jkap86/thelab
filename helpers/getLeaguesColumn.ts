@@ -18,6 +18,8 @@ export const isIrEligible = (
 */
 
 export const columnOptions = [
+  { text: "Rank", abbrev: "Rank" },
+  { text: "Pts Rank", abbrev: "Pts Rank" },
   { text: "League ID", abbrev: "L ID" },
   { text: "Wins", abbrev: "Wins" },
   { text: "Losses", abbrev: "Losses" },
@@ -49,6 +51,37 @@ export const getLeaguesColumn = (
   let trendColor;
 
   switch (col) {
+    case "Rank":
+      const rank =
+        [...league.rosters]
+          .sort(
+            (a, b) =>
+              (b.wins || 0) - (a.wins || 0) ||
+              (a.losses || 0) - (b.losses || 0) ||
+              (b.fp || 0) - (a.fp || 0)
+          )
+          .findIndex((r) => r.roster_id === league.userRoster.roster_id) + 1;
+
+      text = rank;
+
+      trendColor = getTrendColor_Range(rank, 1, league.rosters.length, true);
+      break;
+    case "Pts Rank":
+      const pts_rank =
+        [...league.rosters]
+          .sort((a, b) => (b.fp || 0) - (a.fp || 0))
+          .findIndex((r) => r.roster_id === league.userRoster.roster_id) + 1;
+
+      text = pts_rank;
+
+      trendColor = getTrendColor_Range(
+        pts_rank,
+        1,
+        league.rosters.length,
+        true
+      );
+
+      break;
     case "S Proj Rk":
       const s_rank =
         [...(league.rosters || [])]
@@ -243,6 +276,23 @@ export const getLeaguesSortValue = (
   let sortValue;
 
   switch (sortCol) {
+    case "Rank":
+      sortValue =
+        [...league.rosters]
+          .sort(
+            (a, b) =>
+              (b.wins || 0) - (a.wins || 0) ||
+              (a.losses || 0) - (b.losses || 0) ||
+              (b.fp || 0) - (a.fp || 0)
+          )
+          .findIndex((r) => r.roster_id === league.userRoster.roster_id) + 1;
+      break;
+    case "Pts Rank":
+      sortValue =
+        [...league.rosters]
+          .sort((a, b) => (b.fp || 0) - (a.fp || 0))
+          .findIndex((r) => r.roster_id === league.userRoster.roster_id) + 1;
+      break;
     case "Owned By":
       sortValue = owned_by || league.index;
       break;

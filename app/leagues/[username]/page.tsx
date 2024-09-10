@@ -131,6 +131,20 @@ const Leagues: React.FC<LeaguesProps> = ({ params }) => {
     },
   ];
 
+  const record = filterLeagues(
+    Object.values(leagues || {}),
+    type1,
+    type2
+  ).reduce(
+    (acc, cur) => {
+      acc.wins += cur.userRoster.wins;
+      acc.losses += cur.userRoster.losses;
+      acc.ties += cur.userRoster.ties;
+      return acc;
+    },
+    { wins: 0, losses: 0, ties: 0 }
+  );
+
   const data = filterLeagues(Object.values(leagues || {}), type1, type2)
     .filter((league) => !searchedLeague || searchedLeague === league.league_id)
     .map((league) => {
@@ -200,6 +214,10 @@ const Leagues: React.FC<LeaguesProps> = ({ params }) => {
   const content = (
     <>
       <h1>{data.length} Leagues</h1>
+      <br />
+      <h1>{`${record.wins}-${record.losses}${
+        record.ties ? `-${record.ties}` : ""
+      }`}</h1>
       <TableMain
         type={1}
         headers_sort={headers_sort}
