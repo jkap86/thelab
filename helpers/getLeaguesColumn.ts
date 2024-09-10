@@ -82,6 +82,26 @@ export const getLeaguesColumn = (
       );
 
       break;
+    case "Lm Rank":
+      const lm_rank =
+        (lmroster &&
+          [...league.rosters]
+            .sort(
+              (a, b) =>
+                (b.wins || 0) - (a.wins || 0) ||
+                (a.losses || 0) - (b.losses || 0) ||
+                (b.fp || 0) - (a.fp || 0)
+            )
+            .findIndex((r) => r.roster_id === lmroster.roster_id) + 1) ||
+        "-";
+
+      text = lm_rank;
+
+      trendColor =
+        (typeof lm_rank === "number" &&
+          getTrendColor_Range(lm_rank, 1, league.rosters.length, true)) ||
+        {};
+      break;
     case "S Proj Rk":
       const s_rank =
         [...(league.rosters || [])]
