@@ -58,7 +58,7 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
           .filter((rp) => rp !== "BN")
           .map((rp, index) => {
             const optimal_starter = matchup.optimal_starters.find(
-              (os) => os.player_id === matchup.starters[index]
+              (os) => os.player_id === matchup.starters?.[index]
             );
 
             const classname = !optimal_starter
@@ -76,14 +76,13 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
                   text: (
                     <div className="">
                       {(allplayers &&
-                        allplayers[matchup.starters[index]]?.full_name) ||
+                        allplayers[matchup.starters?.[index]]?.full_name) ||
                         "-"}
                       <em className="inj">
                         {fpweek &&
-                          fpweek[matchup.starters[index]]?.injury_status?.slice(
-                            0,
-                            1
-                          )}
+                          fpweek[
+                            matchup.starters?.[index]
+                          ]?.injury_status?.slice(0, 1)}
                       </em>
                     </div>
                   ),
@@ -93,7 +92,7 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
                 {
                   text:
                     matchup.players_projections
-                      .find((pp) => pp.player_id === matchup.starters[index])
+                      .find((pp) => pp.player_id === matchup.starters?.[index])
                       ?.proj?.toFixed(1) || "-",
                   colspan: 2,
                   classname,
@@ -121,7 +120,7 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
     allplayers &&
     user_matchup.players.filter(
       (player_id) =>
-        !user_matchup.starters.includes(player_id) &&
+        !user_matchup.starters?.includes(player_id) &&
         allplayers[player_id].fantasy_positions.some((fp) =>
           position_map[activeSlot]?.includes(fp)
         )
