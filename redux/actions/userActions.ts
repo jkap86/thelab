@@ -488,7 +488,10 @@ export const fetchMatchups =
       });
     } catch (err: any) {
       console.log({ err });
-      dispatch({ type: "FETCH_MATCHUPS_ERROR", payload: err.message });
+      dispatch({
+        type: "FETCH_MATCHUPS_ERROR",
+        payload: err.message + " FETCH MATCHUPS",
+      });
     }
   };
 
