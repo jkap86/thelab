@@ -256,7 +256,7 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
           .map((lmTrade, index) => {
             const player_values = Object.keys(lmTrade.adds).map((a) => {
               if (valueType === "KTC") {
-                return (ktc_current && ktc_current[a]) || 0;
+                return (ktc_current && ktc_current[a]?.value) || 0;
               } else {
                 return (
                   (fpseason &&
@@ -386,7 +386,7 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                                         const value =
                                           valueType === "KTC"
                                             ? (ktc_current &&
-                                                ktc_current[add]) ||
+                                                ktc_current[add]?.value) ||
                                               0
                                             : (fpseason &&
                                                 getPlayerProjection(
@@ -445,7 +445,8 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                                                 </select>
                                                 {valueType === "KTC"
                                                   ? (ktc_current &&
-                                                      ktc_current[add]) ||
+                                                      ktc_current[add]
+                                                        ?.value) ||
                                                     "0"
                                                   : leagues &&
                                                     fpseason &&
@@ -502,10 +503,9 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
                                                   ? ktc_current &&
                                                     (ktc_current[
                                                       `${dp.season} ${dp.round}.${dp.order}`
-                                                    ] ||
-                                                      ktc_current[
-                                                        ktc_pick_name
-                                                      ] ||
+                                                    ]?.value ||
+                                                      ktc_current[ktc_pick_name]
+                                                        ?.value ||
                                                       "0")
                                                   : "-"}
                                               </em>
