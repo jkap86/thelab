@@ -38,7 +38,9 @@ export const columnOptions = [
 export const getLeaguesColumn = (
   col: string,
   league: League,
-  ktc_current: { [key: string]: number },
+  ktc_current: {
+    [key: string]: { value: number; trend_week: number; trend_month: number };
+  },
   fpseason: { [key: string]: { [key: string]: number } },
   allplayers: { [key: string]: Allplayer },
   lmroster?: Roster
@@ -132,7 +134,7 @@ export const getLeaguesColumn = (
           return {
             roster_id: roster.roster_id,
             value: roster.players?.reduce(
-              (acc, cur) => acc + (ktc_current?.[cur] || 0),
+              (acc, cur) => acc + (ktc_current?.[cur]?.value || 0),
               0
             ),
           };
@@ -151,7 +153,7 @@ export const getLeaguesColumn = (
           return {
             roster_id: roster.roster_id,
             value: roster.starters?.reduce(
-              (acc, cur) => acc + ktc_current?.[cur] || 0,
+              (acc, cur) => acc + ktc_current?.[cur]?.value || 0,
               0
             ),
           };

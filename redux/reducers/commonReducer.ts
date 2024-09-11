@@ -9,7 +9,11 @@ export interface CommonState {
   errorAllplayers: Error | false;
   ktc_current:
     | {
-        [key: string]: number;
+        [key: string]: {
+          value: number;
+          trend_week: number;
+          trend_month: number;
+        };
       }
     | false;
   isLoadingKTC: boolean;

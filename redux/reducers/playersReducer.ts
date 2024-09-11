@@ -47,8 +47,8 @@ export interface PlayersState {
 const initialState: PlayersState = {
   column1: "# Own",
   column2: "KTC",
-  column3: "Age",
-  column4: "# Avail",
+  column3: "KTC 7",
+  column4: "KTC 30",
   sortPlayersBy: {
     column: 1,
     asc: false,

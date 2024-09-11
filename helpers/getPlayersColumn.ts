@@ -19,7 +19,9 @@ export const getPlayersColumn = (
     available: string[];
   },
   leagues: { [key: string]: League } | false,
-  ktc_current: { [key: string]: number },
+  ktc_current: {
+    [key: string]: { value: number; trend_week: number; trend_month: number };
+  },
   type1: string,
   type2: string
 ) => {
@@ -74,8 +76,20 @@ export const getPlayersColumn = (
       trendColor = getTrendColor_Range(text, 0, 0.25);
       break;
     case "KTC":
-      text = ktc_current[player_obj.player_id];
+      text = ktc_current[player_obj.player_id]?.value || 0;
       trendColor = getTrendColor_Range(text, 0, 10000);
+      break;
+    case "KTC 7":
+      text =
+        (ktc_current[player_obj.player_id]?.value || 0) -
+        (ktc_current[player_obj.player_id]?.trend_week || 0);
+      trendColor = getTrendColor_Range(text, -500, 500);
+      break;
+    case "KTC 30":
+      text =
+        (ktc_current[player_obj.player_id]?.value || 0) -
+        (ktc_current[player_obj.player_id]?.trend_month || 0);
+      trendColor = getTrendColor_Range(text, -1000, 1000);
       break;
     default:
       text = "-";
@@ -99,7 +113,9 @@ export const getPlayersSortValue = (
     available: string[];
   },
   leagues: { [key: string]: League } | false,
-  ktc_current: { [key: string]: number },
+  ktc_current: {
+    [key: string]: { value: number; trend_week: number; trend_month: number };
+  },
   type1: string,
   type2: string
 ) => {
@@ -120,7 +136,17 @@ export const getPlayersSortValue = (
       sortValue = player_obj.age || 999;
       break;
     case "KTC":
-      sortValue = ktc_current[player_obj.player_id] || 0;
+      sortValue = ktc_current[player_obj.player_id]?.value || 0;
+      break;
+    case "KTC 7":
+      sortValue =
+        (ktc_current[player_obj.player_id]?.value || 0) -
+        (ktc_current[player_obj.player_id]?.trend_week || 0);
+      break;
+    case "KTC 30":
+      sortValue =
+        (ktc_current[player_obj.player_id]?.value || 0) -
+        (ktc_current[player_obj.player_id]?.trend_month || 0);
       break;
     default:
       sortValue = playershare.owned.length;

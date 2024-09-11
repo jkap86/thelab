@@ -6,7 +6,9 @@ export const getStandingsColumn = (
   column: string,
   roster: Roster,
   rosters: Roster[],
-  ktc_current: { [key: string]: number },
+  ktc_current: {
+    [key: string]: { value: number; trend_week: number; trend_month: number };
+  },
   fpseason: { [key: string]: { [key: string]: number } },
   scoring_settings: { [key: string]: number },
   allplayers: { [key: string]: Allplayer }
@@ -40,7 +42,7 @@ export const getStandingsColumn = (
     case "T KTC":
       sortby =
         roster.players?.reduce(
-          (acc, cur) => acc + (ktc_current[cur] || 0),
+          (acc, cur) => acc + (ktc_current[cur]?.value || 0),
           0
         ) || 0;
 
@@ -48,7 +50,10 @@ export const getStandingsColumn = (
 
       const ktc_values_t = rosters.map(
         (r) =>
-          r.players?.reduce((acc, cur) => acc + (ktc_current[cur] || 0), 0) || 0
+          r.players?.reduce(
+            (acc, cur) => acc + (ktc_current[cur]?.value || 0),
+            0
+          ) || 0
       );
 
       trendColor = getTrendColor_Range(
@@ -59,14 +64,17 @@ export const getStandingsColumn = (
       break;
     case "S KTC":
       sortby = roster.starters?.reduce(
-        (acc, cur) => acc + (ktc_current[cur] || 0),
+        (acc, cur) => acc + (ktc_current[cur]?.value || 0),
         0
       );
 
       text = sortby.toLocaleString("en-US");
 
       const ktc_values_s = rosters.map((r) =>
-        r.starters?.reduce((acc, cur) => acc + (ktc_current[cur] || 0), 0)
+        r.starters?.reduce(
+          (acc, cur) => acc + (ktc_current[cur]?.value || 0),
+          0
+        )
       );
 
       trendColor = getTrendColor_Range(
@@ -134,7 +142,9 @@ export const getStandingsColumn = (
 export const getTeamColumn = (
   column: string,
   player: Allplayer,
-  ktc_current: { [key: string]: number },
+  ktc_current: {
+    [key: string]: { value: number; trend_week: number; trend_month: number };
+  },
   fpseason: { [key: string]: { [key: string]: number } },
   scoring_settings: { [key: string]: number },
   allplayers: { [key: string]: Allplayer },
@@ -166,8 +176,8 @@ export const getTeamColumn = (
       break;
     case "KTC":
       text =
-        (ktc_current?.[player?.player_id] && ktc_current[player.player_id]) ||
-        0;
+        (ktc_current?.[player?.player_id] && ktc_current[player.player_id])
+          ?.value || 0;
       trendColor = getTrendColor_Range(text, 0, 10000);
       break;
     case "Age":
