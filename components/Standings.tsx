@@ -130,8 +130,8 @@ const Standings: React.FC<StandingsProps> = ({
       text: (
         <HeaderDropdown
           options={[
-            { text: "Wins", abbrev: "W" },
-            { text: "Losses", abbrev: "L" },
+            { text: "Record", abbrev: "W/L" },
+            { text: "Fantasy Points", abbrev: "FP" },
             { text: "Total ROS Proj", abbrev: "T Proj" },
             { text: "Starters ROS Proj", abbrev: "S Proj" },
             { text: "Total KTC Value", abbrev: "T KTC" },

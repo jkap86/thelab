@@ -31,7 +31,7 @@ const initialState: LeagueState = {
     asc: false,
   },
   searchedLeague: false,
-  standingsColumn: "S Proj",
+  standingsColumn: "W/L",
   standingsTab: "Standings",
   standingsTab2: "",
   teamColumn: "Proj",

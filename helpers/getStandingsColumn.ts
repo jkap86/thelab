@@ -16,6 +16,27 @@ export const getStandingsColumn = (
   let sortby;
 
   switch (column) {
+    case "W/L":
+      sortby = parseFloat(
+        (roster.wins / (roster.wins + roster.losses + roster.ties)) * 1000 +
+          "." +
+          roster.fp
+      );
+      text = `${roster.wins}-${roster.losses}${
+        roster.ties ? `-${roster.ties}` : ""
+      }`;
+      trendColor = getTrendColor_Range(sortby, 0, 1);
+      break;
+    case "FP":
+      const fp_array = rosters.map((r) => r.fp);
+      sortby = roster.fp;
+      text = roster.fp;
+      trendColor = getTrendColor_Range(
+        sortby,
+        Math.min(...fp_array),
+        Math.max(...fp_array)
+      );
+      break;
     case "T KTC":
       sortby =
         roster.players?.reduce(
