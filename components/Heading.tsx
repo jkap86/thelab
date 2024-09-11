@@ -89,103 +89,110 @@ const Heading: React.FC<HeadingProps> = ({ navTab, week }) => {
             );
           })}
         </div>
-        <Link href={"/"} className="home">
-          The Lab Home
-        </Link>
-        <div className="heading">
-          <h1>
-            <Avatar id={user.avatar} type="U" text={user.username} />
-          </h1>
-          <div className="switch_wrapper">
-            <div className="switch">
-              <button
-                className={"sw " + (type1 === "Redraft" ? "active" : "")}
-                onClick={() => dispatch(setType1("Redraft"))}
-              >
-                Redraft
-              </button>
-              <button
-                className={"sw " + (type1 === "All" ? "active" : "")}
-                onClick={() => dispatch(setType1("All"))}
-              >
-                All
-              </button>
-              <button
-                className={"sw " + (type1 === "Dynasty" ? "active" : "")}
-                onClick={() => dispatch(setType1("Dynasty"))}
-              >
-                Dynasty
-              </button>
+        {navTab !== "homepage" && (
+          <>
+            <Link href={"/"} className="home">
+              The Lab Home
+            </Link>
+            <div className="heading">
+              <h1>
+                <Avatar id={user.avatar} type="U" text={user.username} />
+              </h1>
+              <div className="switch_wrapper">
+                <div className="switch">
+                  <button
+                    className={"sw " + (type1 === "Redraft" ? "active" : "")}
+                    onClick={() => dispatch(setType1("Redraft"))}
+                  >
+                    Redraft
+                  </button>
+                  <button
+                    className={"sw " + (type1 === "All" ? "active" : "")}
+                    onClick={() => dispatch(setType1("All"))}
+                  >
+                    All
+                  </button>
+                  <button
+                    className={"sw " + (type1 === "Dynasty" ? "active" : "")}
+                    onClick={() => dispatch(setType1("Dynasty"))}
+                  >
+                    Dynasty
+                  </button>
+                </div>
+                <div className="switch">
+                  <button
+                    className={"sw " + (type2 === "Bestball" ? "active" : "")}
+                    onClick={() => dispatch(setType2("Bestball"))}
+                  >
+                    Bestball
+                  </button>
+                  <button
+                    className={"sw " + (type2 === "All" ? "active" : "")}
+                    onClick={() => dispatch(setType2("All"))}
+                  >
+                    All
+                  </button>
+                  <button
+                    className={"sw " + (type2 === "Lineup" ? "active" : "")}
+                    onClick={() => dispatch(setType2("Lineup"))}
+                  >
+                    Lineup
+                  </button>
+                </div>
+              </div>
             </div>
-            <div className="switch">
-              <button
-                className={"sw " + (type2 === "Bestball" ? "active" : "")}
-                onClick={() => dispatch(setType2("Bestball"))}
+            <h2>
+              <select
+                value={navTab}
+                onChange={(e) =>
+                  router.push(
+                    `/${e.target.value.toLowerCase()}/${user.username}`
+                  )
+                }
               >
-                Bestball
-              </button>
-              <button
-                className={"sw " + (type2 === "All" ? "active" : "")}
-                onClick={() => dispatch(setType2("All"))}
-              >
-                All
-              </button>
-              <button
-                className={"sw " + (type2 === "Lineup" ? "active" : "")}
-                onClick={() => dispatch(setType2("Lineup"))}
-              >
-                Lineup
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <h2>
-          <select
-            value={navTab}
-            onChange={(e) =>
-              router.push(`/${e.target.value.toLowerCase()}/${user.username}`)
-            }
-          >
-            <option>Leagues</option>
-            <option>Players</option>
-            <option disabled>Leaguemates</option>
-            <option>Trades</option>
-            <option>Matchups</option>
-          </select>
-        </h2>
-        <h1>
-          {["Leagues", "Players", "Leaguemates"].includes(navTab) && (
-            <table className="record">
-              <thead>
-                <th>Record</th>
-                <th>Win %</th>
-                <th>FP</th>
-                <th>FPA</th>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    {`${record.wins}-${record.losses}${
-                      record.ties ? `-${record.ties}` : ""
-                    }`}
-                  </td>
-                  <td>
-                    <em>
-                      {(
-                        record.wins /
-                        (record.wins + record.losses + record.ties)
-                      ).toFixed(4)}
-                    </em>
-                  </td>
-                  <td>{record.fp.toLocaleString("en-US")}</td>
-                  <td>{record.fpa.toLocaleString("en-US")}</td>
-                </tr>
-              </tbody>
-            </table>
-          )}
-        </h1>
-        <h2>{navTab === "Matchups" && `Week ${week}`}</h2>
+                <option>Leagues</option>
+                <option>Players</option>
+                <option disabled>Leaguemates</option>
+                <option>Trades</option>
+                <option>Matchups</option>
+              </select>
+            </h2>
+            <h1>
+              {["Leagues", "Players", "Leaguemates"].includes(navTab) && (
+                <table className="record">
+                  <thead>
+                    <tr>
+                      <th>Record</th>
+                      <th>Win %</th>
+                      <th>FP</th>
+                      <th>FPA</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        {`${record.wins}-${record.losses}${
+                          record.ties ? `-${record.ties}` : ""
+                        }`}
+                      </td>
+                      <td>
+                        <em>
+                          {(
+                            record.wins /
+                            (record.wins + record.losses + record.ties)
+                          ).toFixed(4)}
+                        </em>
+                      </td>
+                      <td>{record.fp.toLocaleString("en-US")}</td>
+                      <td>{record.fpa.toLocaleString("en-US")}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              )}
+            </h1>
+            <h2>{navTab === "Matchups" && `Week ${week}`}</h2>
+          </>
+        )}
       </div>
     )
   );
