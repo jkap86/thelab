@@ -44,13 +44,15 @@ const Standings: React.FC<StandingsProps> = ({
   setStandingsTab2,
 }) => {
   const dispatch: AppDispatch = useDispatch();
-  const { allplayers, ktc_current, fpseason } = useSelector(
+  const { allplayers, ktc_current, fpseason, state } = useSelector(
     (state: RootState) => state.common
   );
   const { leagues, isSyncing } = useSelector((state: RootState) => state.user);
   const { standingsColumn, teamColumn } = useSelector(
     (state: RootState) => state.leagues
   );
+
+  const week = state && Math.max(state.leg, 1);
 
   useEffect(() => {
     if (league.userRoster) {
@@ -533,8 +535,15 @@ const Standings: React.FC<StandingsProps> = ({
                 allplayers &&
                 fpseason &&
                 !isSyncing &&
+                week &&
                 dispatch(
-                  syncLeague(league.league_id, leagues, allplayers, fpseason)
+                  syncLeague(
+                    league.league_id,
+                    leagues,
+                    allplayers,
+                    fpseason,
+                    week
+                  )
                 )
               }
             ></i>

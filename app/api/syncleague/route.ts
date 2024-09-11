@@ -11,13 +11,14 @@ export async function GET(req: NextRequest) {
 
   const league_id = searchParams.get("league_id");
   const userRoster_id = parseInt(searchParams.get("roster_id") || "0");
+  const week = searchParams.get("week");
 
   try {
     const league = await axiosInstance.get(
       `https://api.sleeper.app/v1/league/${league_id}`
     );
 
-    const updatedLeagues = await updateLeagues([league.data], null, db);
+    const updatedLeagues = await updateLeagues([league.data], week, db);
 
     const userRoster = updatedLeagues[0].rosters.find(
       (roster: Roster) =>

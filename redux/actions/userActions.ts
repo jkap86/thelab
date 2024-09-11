@@ -287,7 +287,8 @@ export const syncLeague =
     league_id: string,
     leagues: { [key: string]: League },
     allplayers: { [key: string]: Allplayer },
-    fpseason: { [key: string]: { [key: string]: number } }
+    fpseason: { [key: string]: { [key: string]: number } },
+    week: number
   ) =>
   async (dispatch: AppDispatch) => {
     dispatch({ type: "SYNC_LEAGUE_START", payload: league_id });
@@ -297,6 +298,7 @@ export const syncLeague =
         params: {
           league_id: league_id,
           roster_id: leagues[league_id].userRoster.roster_id,
+          week: week,
         },
       });
 
