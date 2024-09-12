@@ -172,11 +172,16 @@ const Standings: React.FC<StandingsProps> = ({
       const { text, trendColor, sortby } = standings[roster.roster_id];
 
       const rank =
-        Object.keys(standings)
-          .sort(
-            (a: string, b: string) => standings[b].sortby - standings[a].sortby
-          )
-          .indexOf(roster.roster_id.toString()) + 1;
+        standingsColumn === "W/L"
+          ? [...league.rosters]
+              ?.sort((a, b) => b.wins - a.wins || b.fp - a.fp)
+              ?.findIndex((r) => r.roster_id === roster.roster_id) + 1
+          : Object.keys(standings)
+              .sort(
+                (a: string, b: string) =>
+                  standings[b].sortby - standings[a].sortby
+              )
+              .indexOf(roster.roster_id.toString()) + 1;
 
       return {
         id:
