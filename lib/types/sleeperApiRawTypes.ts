@@ -71,3 +71,17 @@ export type SleeperDraftpickPicktracker = {
     position: string;
   };
 };
+
+export type SleeperTrade = {
+  type: string;
+  status: string;
+  adds: { [player_id: string]: number };
+  drops: { [player_id: string]: number };
+  draft_picks: {
+    round: number;
+    season: string;
+    roster_id: number;
+    owner_id: number;
+    previous_owner_id: number;
+  }[];
+};

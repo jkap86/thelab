@@ -39,7 +39,12 @@ export async function GET(req: NextRequest) {
       (league: SleeperLeague) => !upToDateLeagueIds.includes(league.league_id)
     );
 
-    const updatedLeagues = await updateLeagues(leaguesToUpdate, week, db);
+    const updatedLeagues = await updateLeagues(
+      leaguesToUpdate,
+      week,
+      db,
+      result.rows.map((r) => r.league_id)
+    );
 
     const leagues_to_send: League[] = [];
 

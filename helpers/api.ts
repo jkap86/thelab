@@ -6,19 +6,29 @@ import {
   SleeperDraft,
   SleeperDraftpick,
   SleeperMatchup,
+  SleeperTrade,
 } from "@/lib/types/sleeperApiRawTypes";
-import { LeagueDb, Draftpick, UserDb, Matchup } from "@/lib/types";
+import {
+  LeagueDb,
+  Draftpick,
+  UserDb,
+  Matchup,
+  Trade,
+  Roster,
+} from "@/lib/types";
 import axios from "axios";
 
 export const updateLeagues = async (
   leaguesToUpdate: SleeperLeague[],
   week: string | null,
-  db: PoolClient
+  db: PoolClient,
+  league_ids_db: string[]
 ) => {
   const users_db: UserDb[] = [];
   const userLeagues_db: { user_id: string; league_id: string }[] = [];
   const updatedLeagues: LeagueDb[] = [];
   const matchupsBatch: Matchup[] = [];
+  const tradesBatch: Trade[] = [];
 
   const batchSize = 10;
 
@@ -55,6 +65,9 @@ export const updateLeagues = async (
               });
             });
           }
+
+          let upcoming_draft: SleeperDraft | undefined = undefined;
+
           if (leagueToUpdate.settings.type === 2) {
             const drafts = await axios.get(
               `https://api.sleeper.app/v1/league/${leagueToUpdate.league_id}/drafts`
@@ -69,6 +82,12 @@ export const updateLeagues = async (
               users.data,
               drafts.data,
               traded_picks.data
+            );
+
+            upcoming_draft = drafts.data.find(
+              (d: SleeperDraft) =>
+                d.draft_order &&
+                d.settings.rounds === league.data.settings.rounds
             );
           } else {
             league_draftpicks_obj = {};
@@ -100,6 +119,47 @@ export const updateLeagues = async (
               });
             });
 
+          if (week && !league_ids_db.includes(leagueToUpdate.league_id)) {
+            const trades_current = await getTrades(
+              leagueToUpdate,
+              week,
+              rosters_w_username,
+              upcoming_draft
+            );
+
+            tradesBatch.push(...trades_current);
+            let prev_week = parseInt(week) - 1;
+
+            while (prev_week > 0) {
+              const matchups_prev = await axios.get(
+                `https://api.sleeper.app/v1/league/${leagueToUpdate.league_id}/matchups/${prev_week}`
+              );
+
+              matchups_prev.data.forEach((matchup: SleeperMatchup) => {
+                matchupsBatch.push({
+                  week: prev_week,
+                  league_id: league.data.league_id,
+                  matchup_id: matchup.matchup_id,
+                  roster_id: matchup.roster_id,
+                  players: matchup.players,
+                  starters: matchup.starters,
+                  updatedat: new Date(),
+                });
+              });
+
+              const trades_prev = await getTrades(
+                leagueToUpdate,
+                prev_week.toString(),
+                rosters_w_username,
+                upcoming_draft
+              );
+
+              tradesBatch.push(...trades_prev);
+
+              prev_week--;
+            }
+          }
+
           updatedLeagues.push({
             league_id: leagueToUpdate.league_id,
             name: league.data.name,
@@ -125,6 +185,7 @@ export const updateLeagues = async (
       await upsertUsers(db, users_db);
       await upsertUserLeagues(db, userLeagues_db);
       await upsertMatchups(db, matchupsBatch);
+      await upsertTrades(db, tradesBatch);
       await db.query("COMMIT");
     } catch (err) {
       await db.query("ROLLBACK");
@@ -298,6 +359,111 @@ export const getTeamDraftPicks = (
   return draft_picks_league;
 };
 
+export const getTrades = async (
+  leagueToUpdate: SleeperLeague,
+  week: string,
+  rosters_w_username: Roster[],
+  upcoming_draft: SleeperDraft | undefined
+) => {
+  const tradesBatch: Trade[] = [];
+
+  const transactions = await axios.get(
+    `https://api.sleeper.app/v1/league/${leagueToUpdate.league_id}/transactions/${week}`
+  );
+
+  tradesBatch.push(
+    ...transactions.data
+      .filter(
+        (t: SleeperTrade) => t.type === "trade" && t.status === "complete"
+      )
+      .map((t: SleeperTrade) => {
+        const adds: { [key: string]: string } = {};
+        const drops: { [key: string]: string } = {};
+
+        const price_check: string[] = [];
+
+        const draft_picks = t.draft_picks.map((dp) => {
+          const original_user_id = rosters_w_username.find(
+            (ru) => ru.roster_id === dp.roster_id
+          )?.user_id;
+
+          const order =
+            (upcoming_draft?.draft_order &&
+              original_user_id &&
+              parseInt(upcoming_draft.season) === parseInt(dp.season) &&
+              upcoming_draft.draft_order[original_user_id]) ||
+            null;
+
+          return {
+            round: dp.round,
+            season: dp.season,
+            new: rosters_w_username.find((ru) => ru.roster_id === dp.owner_id)
+              ?.user_id,
+            old: rosters_w_username.find(
+              (ru) => ru.roster_id === dp.previous_owner_id
+            )?.user_id,
+            original: rosters_w_username.find(
+              (ru) => ru.roster_id === dp.roster_id
+            )?.user_id,
+            order: order,
+          };
+        });
+
+        t.adds &&
+          Object.keys(t.adds).forEach((add) => {
+            const manager = rosters_w_username.find(
+              (ru) => ru.roster_id === t.adds[add]
+            );
+
+            adds[add] = manager?.user_id || "0";
+
+            const count =
+              Object.keys(t.adds).filter((a) => t.adds[a] === t.adds[add])
+                .length +
+              t.draft_picks.filter((dp) => dp.owner_id === t.adds[add]).length;
+
+            if (count === 1) {
+              price_check.push(add);
+            }
+          });
+
+        t.drops &&
+          Object.keys(t.drops).forEach((drop) => {
+            const manager = rosters_w_username.find(
+              (ru) => ru.roster_id === t.drops[drop]
+            );
+
+            drops[drop] = manager?.user_id || "0";
+          });
+
+        return {
+          ...t,
+          league_id: leagueToUpdate.league_id,
+          rosters: rosters_w_username,
+          draft_picks: draft_picks,
+          price_check: price_check,
+          managers: Array.from(
+            new Set([
+              ...Object.values(adds || {}),
+              ...Object.values(drops || {}),
+              ...draft_picks.map((dp) => dp.new),
+            ])
+          ),
+          players: [
+            ...Object.keys(t.adds || {}),
+            ...draft_picks.map(
+              (pick) => `${pick.season} ${pick.round}.${pick.order}`
+            ),
+          ],
+          adds: adds,
+          drops: drops,
+        };
+      })
+  );
+
+  return tradesBatch;
+};
+
 export const upsertLeagues = async (
   db: PoolClient,
   updatedLeagues: LeagueDb[]
@@ -424,5 +590,46 @@ export const upsertMatchups = async (db: PoolClient, matchups: Matchup[]) => {
     await db.query(upsertMatchupsQuery, values);
   } catch (err: any) {
     console.log(err.message + " MATCHUPS");
+  }
+};
+
+export const upsertTrades = async (db: PoolClient, trades: Trade[]) => {
+  if (trades.length === 0) return;
+
+  const upsertTradesQuery = `
+    INSERT INTO trades (transaction_id, status_updated, adds, drops, draft_picks, price_check, rosters, managers, players, league_id)
+     VALUES ${trades
+       .map(
+         (_, i) =>
+           `($${i * 10 + 1}, $${i * 10 + 2}, $${i * 10 + 3}, $${i * 10 + 4}, $${
+             i * 10 + 5
+           }, $${i * 10 + 6}, $${i * 10 + 7}, $${i * 10 + 8}, $${
+             i * 10 + 9
+           }, $${i * 10 + 10})`
+       )
+       .join(", ")}
+    ON CONFLICT (transaction_id) DO UPDATE SET
+      draft_picks = EXCLUDED.draft_picks,
+      price_check = EXCLUDED.price_check,
+      managers = EXCLUDED.managers;
+  `;
+
+  const values = trades.flatMap((trade) => [
+    trade.transaction_id,
+    trade.status_updated,
+    JSON.stringify(trade.adds),
+    JSON.stringify(trade.drops),
+    JSON.stringify(trade.draft_picks),
+    trade.price_check,
+    JSON.stringify(trade.rosters),
+    trade.managers,
+    trade.players,
+    trade.league_id,
+  ]);
+
+  try {
+    await db.query(upsertTradesQuery, values);
+  } catch (err: any) {
+    console.log(err.message + " TRADES");
   }
 };

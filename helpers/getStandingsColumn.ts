@@ -27,7 +27,11 @@ export const getStandingsColumn = (
       text = `${roster.wins}-${roster.losses}${
         roster.ties ? `-${roster.ties}` : ""
       }`;
-      trendColor = getTrendColor_Range(sortby, 0, 1);
+      trendColor = getTrendColor_Range(
+        (roster.wins / (roster.wins + roster.losses + roster.ties)) * 1000,
+        0,
+        1
+      );
       break;
     case "FP":
       const fp_array = rosters.map((r) => r.fp);

@@ -137,6 +137,8 @@ export type Trade = {
   managers: string[];
   rosters: Roster[];
   league_id: string;
+  price_check: string[];
+  players: string[];
   tips?: {
     for: { league_id: string; leaguemate_id: string; player_id: string }[];
     away: { league_id: string; leaguemate_id: string; player_id: string }[];
