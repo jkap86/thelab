@@ -51,8 +51,6 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
 
   const week = state && Math.max(state.leg, 1);
 
-  console.log({ week });
-
   useEffect(() => {
     if (!allplayers && !isLoadingAllplayers) {
       dispatch(fetchAllPlayers());

@@ -20,7 +20,12 @@ export const getPlayersColumn = (
   },
   leagues: { [key: string]: League } | false,
   ktc_current: {
-    [key: string]: { value: number; trend_week: number; trend_month: number };
+    [key: string]: {
+      value: number;
+      trend_week: number;
+      trend_month: number;
+      trend_season: number;
+    };
   },
   type1: string,
   type2: string
@@ -91,6 +96,12 @@ export const getPlayersColumn = (
         (ktc_current[player_obj.player_id]?.trend_month || 0);
       trendColor = getTrendColor_Range(text, -1000, 1000);
       break;
+    case "KTC Szn":
+      text =
+        (ktc_current[player_obj.player_id]?.value || 0) -
+        (ktc_current[player_obj.player_id]?.trend_season || 0);
+      trendColor = getTrendColor_Range(text, -1000, 1000);
+      break;
     default:
       text = "-";
       trendColor = { color: `rgb(255, 255, 255)` };
@@ -114,7 +125,12 @@ export const getPlayersSortValue = (
   },
   leagues: { [key: string]: League } | false,
   ktc_current: {
-    [key: string]: { value: number; trend_week: number; trend_month: number };
+    [key: string]: {
+      value: number;
+      trend_week: number;
+      trend_month: number;
+      trend_season: number;
+    };
   },
   type1: string,
   type2: string
@@ -147,6 +163,11 @@ export const getPlayersSortValue = (
       sortValue =
         (ktc_current[player_obj.player_id]?.value || 0) -
         (ktc_current[player_obj.player_id]?.trend_month || 0);
+      break;
+    case "KTC Szn":
+      sortValue =
+        (ktc_current[player_obj.player_id]?.value || 0) -
+        (ktc_current[player_obj.player_id]?.trend_season || 0);
       break;
     default:
       sortValue = playershare.owned.length;

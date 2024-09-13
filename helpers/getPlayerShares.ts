@@ -231,7 +231,6 @@ export const getOptimalStartersMatchup = (
   scoring_settings: { [key: string]: number },
   bestball: number
 ) => {
-  console.log({ roster_positions });
   const optimal_starters: {
     slot_index: number;
     slot: string;

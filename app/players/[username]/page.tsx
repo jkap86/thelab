@@ -64,6 +64,7 @@ const Players: React.FC<PlayersProps> = ({ params }) => {
     { text: "KTC Dynasty Value", abbrev: "KTC" },
     { text: "KTC 7 Day Trend", abbrev: "KTC 7" },
     { text: "KTC 30 Day Trend", abbrev: "KTC 30" },
+    { text: "KTC Season Trend", abbrev: "KTC Szn" },
   ];
 
   const headers_sort = [

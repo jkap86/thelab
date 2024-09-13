@@ -13,6 +13,7 @@ export interface CommonState {
           value: number;
           trend_week: number;
           trend_month: number;
+          trend_season: number;
         };
       }
     | false;

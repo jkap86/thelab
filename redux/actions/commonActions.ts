@@ -35,6 +35,7 @@ interface setKTC_datesAction {
       value: number;
       trend_week: number;
       trend_month: number;
+      trend_season: number;
     };
   };
 }
@@ -139,7 +140,12 @@ export const fetchKTC_dates = () => async (dispatch: AppDispatch) => {
     type: "FETCH_KTC_START",
   });
   try {
-    const [current, trend_week, trend_month] = await Promise.all([
+    const days_season: number = Math.floor(
+      (new Date().getTime() - new Date("2024-09-04").getTime()) /
+        (1000 * 60 * 60 * 24)
+    );
+
+    const [current, trend_week, trend_month, trend_season] = await Promise.all([
       await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ktc/current`),
       await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ktc/current`, {
         params: { days: 7 },
@@ -147,17 +153,22 @@ export const fetchKTC_dates = () => async (dispatch: AppDispatch) => {
       await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ktc/current`, {
         params: { days: 30 },
       }),
+      await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ktc/current`, {
+        params: { days: days_season },
+      }),
     ]);
 
     const current_obj = Object.fromEntries(current.data.values);
     const trend_week_obj = Object.fromEntries(trend_week.data.values);
     const trend_month_obj = Object.fromEntries(trend_month.data.values);
+    const trend_season_obj = Object.fromEntries(trend_season.data.values);
 
     const ktc_obj: {
       [player_id: string]: {
         value: number;
         trend_week: number;
         trend_month: number;
+        trend_season: number;
       };
     } = {};
 
@@ -166,6 +177,7 @@ export const fetchKTC_dates = () => async (dispatch: AppDispatch) => {
         value: current_obj[player_id],
         trend_week: trend_week_obj[player_id] || 0,
         trend_month: trend_month_obj[player_id] || 0,
+        trend_season: trend_season_obj[player_id] || 0,
       };
     });
 
