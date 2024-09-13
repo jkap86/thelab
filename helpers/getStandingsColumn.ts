@@ -20,7 +20,7 @@ export const getStandingsColumn = (
   switch (column) {
     case "W/L":
       sortby = parseFloat(
-        (roster.wins / (roster.wins + roster.losses + roster.ties)) * 1000 +
+        (roster.wins / (roster.wins + roster.losses + roster.ties)) * 10 +
           "." +
           roster.fp
       );
@@ -28,10 +28,15 @@ export const getStandingsColumn = (
         roster.ties ? `-${roster.ties}` : ""
       }`;
       trendColor = getTrendColor_Range(
-        (roster.wins / (roster.wins + roster.losses + roster.ties)) * 1000,
+        roster.wins / (roster.wins + roster.losses + roster.ties),
         0,
         1
       );
+
+      console.log({
+        sortby,
+        winpct: roster.wins / (roster.wins + roster.losses + roster.ties),
+      });
       break;
     case "FP":
       const fp_array = rosters.map((r) => r.fp);
