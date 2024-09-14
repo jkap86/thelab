@@ -111,7 +111,7 @@ export const getOptimalStarters = (
       const slot_options = players
         ?.filter((player) =>
           position_map[slot.slot]?.some((p) =>
-            allplayers[player.player_id].fantasy_positions?.includes(p)
+            allplayers[player.player_id]?.fantasy_positions?.includes(p)
           )
         )
         .sort((a, b) => b.proj - a.proj);
@@ -332,7 +332,8 @@ export const getOptimalStartersMatchup = (
           )
         ) {
           move_outof_flex = true;
-        } else if (
+        }
+        if (
           optimal_starters.find((os2) => {
             return (
               position_map[os.player_id_slot]?.length <
