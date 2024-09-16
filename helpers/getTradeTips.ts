@@ -74,7 +74,7 @@ export const getTradeTips = (
       ...trade,
       rosters: trade.rosters.map((r) => {
         const { starters, proj_ros_s, proj_ros_t } = getOptimalStarters(
-          r,
+          { players: r.players || [] },
           trade.roster_positions,
           fpseason,
           allplayers,
