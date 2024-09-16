@@ -75,7 +75,7 @@ export const getPlayerProjectionWeek = (
 };
 
 export const getOptimalStarters = (
-  roster: Roster,
+  roster: { players: string[] },
   roster_positions: string[],
   fpseason: { [key: string]: { [key: string]: number } },
   allplayers: { [key: string]: Allplayer },

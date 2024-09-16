@@ -9,10 +9,12 @@ import {
   Matchup,
   PlayerProjection,
   MatchupOptimal,
+  PlayerStat,
 } from "@/lib/types";
 import {
   getOptimalStarters,
   getOptimalStartersMatchup,
+  getPlayerProjection,
   getPlayerShares,
 } from "@/helpers/getPlayerShares";
 import { getTradeTips } from "@/helpers/getTradeTips";
@@ -106,6 +108,7 @@ interface fetchMatchupsEndAction {
       user: MatchupOptimal;
       opp: MatchupOptimal;
       median?: number;
+      league_matchups: Matchup[];
     };
   };
 }
@@ -123,7 +126,12 @@ interface syncMatchupStartAction {
 interface syncMatchupEndAction {
   type: "SYNC_MATCHUP_END";
   payload: {
-    matchups: { user: MatchupOptimal; opp: MatchupOptimal; median?: number };
+    matchups: {
+      user: MatchupOptimal;
+      opp: MatchupOptimal;
+      median?: number;
+      league_matchups: Matchup[];
+    };
     league_id: string;
   };
 }
@@ -160,6 +168,33 @@ interface fetchFilteredLmTradesEndAction {
   };
 }
 
+interface setLiveStatsAction {
+  type: "SET_LIVE_STATS";
+  payload: {
+    live: {
+      [key: string]: {
+        user: {
+          points_total: number;
+          proj_remaining_total: number;
+          players_points: { [player_id: string]: number };
+          players_proj_remaining: { [player_id: string]: number };
+        };
+        opp: {
+          points_total: number;
+          proj_remaining_total: number;
+          players_points: { [player_id: string]: number };
+          players_proj_remaining: { [player_id: string]: number };
+        };
+        median: {
+          current: number | undefined;
+          projected: number | undefined;
+        };
+      };
+    };
+    updateAt: number;
+  };
+}
+
 interface resetState {
   type: "RESET_STATE";
 }
@@ -184,6 +219,7 @@ export type UserActionTypes =
   | setStateLmTradesAction
   | fetchLmTradesErrorAction
   | fetchFilteredLmTradesEndAction
+  | setLiveStatsAction
   | resetState;
 
 export const resetState = () => (dispatch: AppDispatch) => {
@@ -245,7 +281,7 @@ export const fetchLeagues =
               ...league,
               rosters: league.rosters.map((r) => {
                 const { starters, proj_ros_s, proj_ros_t } = getOptimalStarters(
-                  r,
+                  { players: r.players || [] },
                   league.roster_positions,
                   fpseason,
                   allplayers,
@@ -311,7 +347,7 @@ export const syncLeague =
           ...response.data,
           rosters: response.data.rosters.map((r) => {
             const { starters, proj_ros_s, proj_ros_t } = getOptimalStarters(
-              r,
+              { players: r.players || [] },
               league.roster_positions,
               fpseason,
               allplayers,
@@ -376,6 +412,7 @@ export const fetchMatchups =
           user: MatchupOptimal;
           opp: MatchupOptimal;
           median?: number;
+          league_matchups: Matchup[];
         };
       } = {};
 
@@ -409,12 +446,11 @@ export const fetchMatchups =
             leagues[user_matchup.league_id].settings.best_ball
           );
 
-          console.log({ u });
-
           const o = getOptimalStartersMatchup(
             opp_matchup,
             leagues[opp_matchup.league_id].roster_positions,
             fpweek,
+
             allplayers,
             leagues[opp_matchup.league_id].scoring_settings,
             leagues[opp_matchup.league_id].settings.best_ball
@@ -480,6 +516,7 @@ export const fetchMatchups =
               players_projections: o.players_projections,
             },
             median,
+            league_matchups,
           };
         }
       });
@@ -613,6 +650,7 @@ export const syncMatchup =
             players_projections: o.players_projections,
           },
           median,
+          league_matchups: response.data,
         };
       }
 
@@ -628,6 +666,291 @@ export const syncMatchup =
         type: "SYNC_MATCHUP_ERROR",
         payload: err.message,
       });
+    }
+  };
+
+export const fetchLiveStats =
+  (
+    allplayers: { [key: string]: Allplayer },
+    week: number,
+    leagues: { [key: string]: League },
+    matchups: {
+      [key: string]: {
+        user: MatchupOptimal;
+        opp: MatchupOptimal;
+        median?: number;
+        league_matchups: Matchup[];
+      };
+    }
+  ) =>
+  async (dispatch: AppDispatch) => {
+    try {
+      const response: {
+        data: {
+          data: {
+            player_id: string;
+            stats: { [key: string]: number };
+            proj_remaining: { [key: string]: number };
+            percent_game_left: number;
+          }[];
+          updateAt: number;
+        };
+      } = await axios.get("/api/livestats", {
+        params: { week },
+      });
+
+      const live_stats_obj = Object.fromEntries(
+        response.data.data.map((player_stat) => [
+          player_stat.player_id,
+          player_stat.stats,
+        ])
+      );
+
+      const live_proj_obj = Object.fromEntries(
+        response.data.data.map((player_stat) => [
+          player_stat.player_id,
+          player_stat.proj_remaining,
+        ])
+      );
+
+      const combined_stats_proj_obj = Object.fromEntries(
+        [...Object.keys(live_stats_obj), ...Object.keys(live_proj_obj)].map(
+          (player_id) => [
+            player_id,
+            Object.fromEntries(
+              [
+                ...Object.keys(live_stats_obj[player_id] || {}),
+                ...Object.keys(live_proj_obj[player_id] || {}),
+              ].map((cat) => [
+                cat,
+                (live_stats_obj[player_id]?.[cat] || 0) +
+                  (live_proj_obj[player_id]?.[cat] || 0),
+              ])
+            ),
+          ]
+        )
+      );
+
+      const live_matchups: {
+        [key: string]: {
+          user: {
+            points_total: number;
+            proj_remaining_total: number;
+            players_points: { [player_id: string]: number };
+            players_proj_remaining: { [player_id: string]: number };
+          };
+          opp: {
+            points_total: number;
+            proj_remaining_total: number;
+            players_points: { [player_id: string]: number };
+            players_proj_remaining: { [player_id: string]: number };
+          };
+          median: {
+            current: number | undefined;
+            projected: number | undefined;
+          };
+        };
+      } = {};
+
+      Object.keys(matchups).forEach((league_id) => {
+        let user_starters;
+        let opp_starters;
+
+        if (leagues[league_id].settings.best_ball === 1) {
+          const optimal_starters_user = getOptimalStarters(
+            { players: matchups[league_id].user.players },
+            leagues[league_id].roster_positions,
+            combined_stats_proj_obj,
+            allplayers,
+            leagues[league_id].scoring_settings
+          );
+
+          user_starters = optimal_starters_user.starters;
+
+          const optimal_starters_opp = getOptimalStarters(
+            { players: matchups[league_id].opp.players },
+            leagues[league_id].roster_positions,
+            combined_stats_proj_obj,
+            allplayers,
+            leagues[league_id].scoring_settings
+          );
+
+          opp_starters = optimal_starters_opp.starters;
+        } else {
+          user_starters = matchups[league_id].user.starters;
+          opp_starters = matchups[league_id].opp.starters;
+        }
+
+        const players_points_user = Object.fromEntries(
+          matchups[league_id].user.players.map((player_id) => [
+            player_id,
+            getPlayerProjection(
+              player_id,
+              leagues[league_id].scoring_settings,
+              live_stats_obj
+            ),
+          ])
+        );
+        const players_proj_remaining_user = Object.fromEntries(
+          matchups[league_id].user.players.map((player_id) => [
+            player_id,
+            getPlayerProjection(
+              player_id,
+              leagues[league_id].scoring_settings,
+              live_proj_obj
+            ),
+          ])
+        );
+
+        const players_points_opp = Object.fromEntries(
+          matchups[league_id].opp.players.map((player_id) => [
+            player_id,
+            getPlayerProjection(
+              player_id,
+              leagues[league_id].scoring_settings,
+              live_stats_obj
+            ),
+          ])
+        );
+        const players_proj_remaining_opp = Object.fromEntries(
+          matchups[league_id].opp.players.map((player_id) => [
+            player_id,
+            getPlayerProjection(
+              player_id,
+              leagues[league_id].scoring_settings,
+              live_proj_obj
+            ),
+          ])
+        );
+
+        const user_points_total = user_starters.reduce(
+          (acc, cur) => acc + players_points_user[cur],
+          0
+        );
+        const user_proj_remaining_total = user_starters.reduce(
+          (acc, cur) =>
+            acc + players_proj_remaining_user[cur] + players_points_user[cur],
+          0
+        );
+
+        const opp_points_total = opp_starters.reduce(
+          (acc, cur) => acc + players_points_opp[cur],
+          0
+        );
+
+        const opp_proj_remaining_total = opp_starters.reduce(
+          (acc, cur) =>
+            acc + players_proj_remaining_opp[cur] + players_points_opp[cur],
+          0
+        );
+
+        let median_cur;
+        let median_proj;
+        if (matchups[league_id].median !== undefined) {
+          const scores_cur = [user_points_total, opp_points_total];
+          const scores_proj = [
+            user_proj_remaining_total,
+            opp_proj_remaining_total,
+          ];
+
+          matchups[league_id].league_matchups
+            .filter(
+              (m) =>
+                ![
+                  matchups[league_id].user.roster_id,
+                  matchups[league_id].opp.roster_id,
+                ].includes(m.roster_id)
+            )
+            .forEach((m) => {
+              let lm_starters;
+
+              if (leagues[league_id].settings.best_ball === 1) {
+                const lm_optimal = getOptimalStarters(
+                  { players: m.players || [] },
+                  leagues[league_id].roster_positions,
+                  combined_stats_proj_obj,
+                  allplayers,
+                  leagues[league_id].scoring_settings
+                );
+
+                lm_starters = lm_optimal.starters;
+              } else {
+                lm_starters = m.starters;
+              }
+
+              const lm_cur = lm_starters.reduce(
+                (acc, cur) =>
+                  acc +
+                  getPlayerProjection(
+                    cur,
+                    leagues[league_id].scoring_settings,
+                    live_stats_obj
+                  ),
+                0
+              );
+              const lm_proj = lm_starters.reduce(
+                (acc, cur) =>
+                  acc +
+                  getPlayerProjection(
+                    cur,
+                    leagues[league_id].scoring_settings,
+                    live_proj_obj
+                  ) +
+                  getPlayerProjection(
+                    cur,
+                    leagues[league_id].scoring_settings,
+                    live_stats_obj
+                  ),
+                0
+              );
+
+              scores_cur.push(lm_cur);
+              scores_proj.push(lm_proj);
+            });
+
+          const scores_sorted_cur = scores_cur.sort((a, b) => a - b);
+          const scores_sorted_proj = scores_proj.sort((a, b) => a - b);
+
+          const middle_cur = Math.floor(scores_cur.length / 2);
+          const middle_proj = Math.floor(scores_proj.length / 2);
+
+          median_cur =
+            (scores_sorted_cur[middle_cur - 1] +
+              scores_sorted_cur[middle_cur]) /
+            2;
+          median_proj =
+            (scores_sorted_proj[middle_proj - 1] +
+              scores_sorted_proj[middle_proj]) /
+            2;
+        }
+
+        live_matchups[league_id] = {
+          user: {
+            points_total: user_points_total,
+            proj_remaining_total: user_proj_remaining_total,
+            players_points: players_points_user,
+            players_proj_remaining: players_proj_remaining_user,
+          },
+          opp: {
+            points_total: opp_points_total,
+            proj_remaining_total: opp_proj_remaining_total,
+            players_points: players_points_opp,
+            players_proj_remaining: players_proj_remaining_opp,
+          },
+          median: {
+            current: median_cur,
+            projected: median_proj,
+          },
+        };
+      });
+
+      console.log({ live_matchups });
+      dispatch({
+        type: "SET_LIVE_STATS",
+        payload: { live: live_matchups, updatedAt: response.data.updateAt },
+      });
+    } catch (err: any) {
+      console.log({ err });
     }
   };
 

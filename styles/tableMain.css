@@ -191,3 +191,7 @@ table.half:first-of-type td.content {
 table.half:last-of-type td.content {
   background-image: radial-gradient(rgb(0, 70, 110) -50%, black 500%);
 }
+
+table.half * {
+  font-size: 2.75rem;
+}

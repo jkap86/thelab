@@ -42,7 +42,9 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
   const { type1, type2, allplayers } = useSelector(
     (state: RootState) => state.common
   );
-  const { matchups, leagues } = useSelector((state: RootState) => state.user);
+  const { matchups, leagues, live_stats } = useSelector(
+    (state: RootState) => state.user
+  );
   const { filterTeam, filterDraftYear, filterPosition } = useSelector(
     (state: RootState) => state.players
   );
@@ -61,6 +63,7 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
     searchedStarter,
   } = useSelector((state: RootState) => state.matchups);
 
+  console.log({ live_stats });
   const starters_obj = useMemo(() => {
     const user: { [key: string]: { start: string[]; bench: string[] } } = {};
     const opp: { [key: string]: { start: string[]; bench: string[] } } = {};
@@ -332,6 +335,58 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
       ).length) ||
     0;
 
+  const wins_live =
+    (leagues &&
+      matchups &&
+      filterLeagueIds(Object.keys(matchups), leagues, type1, type2).filter(
+        (league_id) =>
+          live_stats[league_id]?.user?.proj_remaining_total >
+          live_stats[league_id]?.opp?.proj_remaining_total
+      ).length) ||
+    0;
+
+  const losses_live =
+    (leagues &&
+      matchups &&
+      filterLeagueIds(Object.keys(matchups), leagues, type1, type2).filter(
+        (league_id) =>
+          live_stats[league_id]?.user?.proj_remaining_total <
+          live_stats[league_id]?.opp?.proj_remaining_total
+      ).length) ||
+    0;
+
+  const ties_live =
+    (leagues &&
+      matchups &&
+      filterLeagueIds(Object.keys(matchups), leagues, type1, type2).filter(
+        (league_id) =>
+          live_stats[league_id]?.user?.proj_remaining_total ===
+          live_stats[league_id]?.opp?.proj_remaining_total
+      ).length) ||
+    0;
+
+  const median_wins_live =
+    (leagues &&
+      matchups &&
+      filterLeagueIds(Object.keys(matchups), leagues, type1, type2).filter(
+        (league_id) =>
+          live_stats[league_id]?.median?.projected &&
+          live_stats[league_id]?.user?.proj_remaining_total >
+            live_stats[league_id]?.median?.projected
+      ).length) ||
+    0;
+
+  const median_losses_live =
+    (leagues &&
+      matchups &&
+      filterLeagueIds(Object.keys(matchups), leagues, type1, type2).filter(
+        (league_id) =>
+          live_stats[league_id]?.median?.projected &&
+          live_stats[league_id]?.user?.proj_remaining_total <
+            live_stats[league_id]?.median?.projected
+      ).length) ||
+    0;
+
   const content = (
     <>
       <h2 className="nav_buttons">
@@ -347,11 +402,24 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
         >
           Starters
         </button>
+        <button
+          className={tab === "Live" ? "active" : ""}
+          onClick={() => dispatch(setMatchupsTab("Live"))}
+        >
+          Live
+        </button>
       </h2>
-      <h2>
-        {wins + median_wins}-{losses + median_losses}
-        {ties ? `-${ties}` : ""}
-      </h2>
+      {tab === "Live" ? (
+        <h2>
+          {wins_live + median_wins_live}-{losses_live + median_losses_live}
+          {ties_live ? `-${ties}` : ""}
+        </h2>
+      ) : (
+        <h2>
+          {wins + median_wins}-{losses + median_losses}
+          {ties ? `-${ties}` : ""}
+        </h2>
+      )}
       {tab === "Starters" && (
         <table className="filters">
           <thead>
@@ -412,7 +480,7 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
           page={page}
           setPage={(page) => dispatch(setMatchupsPage(page))}
         />
-      ) : (
+      ) : tab === "Starters" ? (
         <TableMain
           type={1}
           headers_sort={[
@@ -574,7 +642,206 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
           active={activeStarter}
           setActive={(starter) => dispatch(setActiveStarter(starter))}
         />
-      )}
+      ) : tab === "Live" ? (
+        <TableMain
+          type={1}
+          headers={[
+            { text: "League", colspan: 3 },
+            { text: "User", colspan: 1 },
+            { text: "Opp", colspan: 1 },
+            { text: "Median", colspan: 1 },
+            { text: "Result", colspan: 1 },
+          ]}
+          data={
+            (leagues &&
+              filterLeagueIds(Object.keys(matchups), leagues, type1, type2)
+                .sort((a, b) => leagues[a].index - leagues[b].index)
+                .map((league_id) => {
+                  return {
+                    id: league_id,
+                    columns: [
+                      {
+                        text: (
+                          <Avatar
+                            id={leagues[league_id].avatar}
+                            type={"L"}
+                            text={leagues[league_id].name}
+                          />
+                        ),
+                        colspan: 3,
+                      },
+                      {
+                        text:
+                          live_stats[
+                            league_id
+                          ]?.user?.proj_remaining_total?.toFixed(1) || "-",
+                        colspan: 1,
+                      },
+                      {
+                        text:
+                          live_stats[
+                            league_id
+                          ]?.opp?.proj_remaining_total?.toFixed(1) || "-",
+                        colspan: 1,
+                      },
+                      {
+                        text:
+                          live_stats[league_id]?.median?.projected?.toFixed(
+                            1
+                          ) || "-",
+                        colspan: 1,
+                      },
+                      {
+                        text: (
+                          <>
+                            {live_stats[league_id]?.user?.proj_remaining_total >
+                            live_stats[league_id]?.opp?.proj_remaining_total ? (
+                              <span className="green">W</span>
+                            ) : live_stats[league_id]?.user
+                                ?.proj_remaining_total <
+                              live_stats[league_id]?.opp
+                                ?.proj_remaining_total ? (
+                              <span className="red">L</span>
+                            ) : (
+                              <span>T</span>
+                            )}
+                            {live_stats[league_id]?.median?.projected &&
+                              (live_stats[league_id]?.user
+                                ?.proj_remaining_total >
+                              live_stats[league_id]?.median?.projected ? (
+                                <span className="green">W</span>
+                              ) : live_stats[league_id]?.user
+                                  ?.proj_remaining_total <
+                                live_stats[league_id]?.median?.projected ? (
+                                <span className="red">L</span>
+                              ) : (
+                                <span>T</span>
+                              ))}
+                          </>
+                        ),
+                      },
+                    ],
+                    secondaryTable: (
+                      <>
+                        <div className="nav nav2"></div>
+                        <TableMain
+                          type={2}
+                          half={true}
+                          headers={[
+                            { text: "Slot", colspan: 1 },
+                            { text: "Player", colspan: 2 },
+                            { text: "Pts", colspan: 1 },
+                            { text: "Proj", colspan: 1 },
+                          ]}
+                          data={
+                            (leagues &&
+                              matchups &&
+                              allplayers && [
+                                ...leagues[league_id].roster_positions
+                                  .filter((rp) => rp !== "BN")
+                                  .map((rp, index) => {
+                                    const player_id =
+                                      matchups[league_id].user.starters[index];
+
+                                    const points =
+                                      live_stats[league_id].user.players_points[
+                                        player_id
+                                      ] || 0;
+                                    const proj =
+                                      live_stats[league_id].user
+                                        .players_proj_remaining[player_id] || 0;
+                                    return {
+                                      id: `${rp}_${index}`,
+                                      columns: [
+                                        {
+                                          text: rp,
+                                          colspan: 1,
+                                        },
+                                        {
+                                          text: allplayers[player_id]
+                                            ?.full_name,
+                                          colspan: 2,
+                                        },
+                                        {
+                                          text: points.toFixed(1),
+                                          colspan: 1,
+                                        },
+                                        {
+                                          text: (points + proj).toFixed(1),
+                                          colspan: 1,
+                                        },
+                                      ],
+                                    };
+                                  }),
+                              ]) ||
+                            []
+                          }
+                        />
+                        <TableMain
+                          type={2}
+                          half={true}
+                          headers={[
+                            { text: "Slot", colspan: 1 },
+                            { text: "Player", colspan: 2 },
+                            { text: "Pts", colspan: 1 },
+                            { text: "Proj", colspan: 1 },
+                          ]}
+                          data={
+                            (leagues &&
+                              matchups &&
+                              allplayers && [
+                                ...leagues[league_id].roster_positions
+                                  .filter((rp) => rp !== "BN")
+                                  .map((rp, index) => {
+                                    const player_id =
+                                      matchups[league_id].opp.starters[index];
+
+                                    const points =
+                                      live_stats[league_id].opp.players_points[
+                                        player_id
+                                      ] || 0;
+                                    const proj =
+                                      live_stats[league_id].opp
+                                        .players_proj_remaining[player_id] || 0;
+                                    return {
+                                      id: `${rp}_${index}`,
+                                      columns: [
+                                        {
+                                          text: rp,
+                                          colspan: 1,
+                                        },
+                                        {
+                                          text: allplayers[player_id]
+                                            ?.full_name,
+                                          colspan: 2,
+                                        },
+                                        {
+                                          text: points.toFixed(1),
+                                          colspan: 1,
+                                        },
+                                        {
+                                          text: (points + proj).toFixed(1),
+                                          colspan: 1,
+                                        },
+                                      ],
+                                    };
+                                  }),
+                              ]) ||
+                            []
+                          }
+                        />
+                      </>
+                    ),
+                  };
+                })) ||
+            []
+          }
+          active={activeMatchup}
+          setActive={(league_id) => dispatch(setActiveMatchup(league_id))}
+          page={page}
+          setPage={(page) => dispatch(setMatchupsPage(page))}
+        />
+      ) : null}
     </>
   );
 

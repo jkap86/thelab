@@ -8,6 +8,7 @@ import {
   fetchLeagues,
   fetchMatchups,
   fetchUser,
+  fetchLiveStats,
   resetState,
 } from "@/redux/actions/userActions";
 import { AppDispatch, RootState } from "@/redux/store";
@@ -43,6 +44,7 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
     isLoadingLeagues,
     errorLeagues,
     matchups,
+    live_stats_updatedAt,
   } = useSelector((state: RootState) => state.user);
 
   const navTab =
@@ -123,6 +125,28 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
       dispatch(fetchFpWeek(week));
     }
   }, [week, navTab, fpweek, isLoadingFpWeek, dispatch]);
+
+  useEffect(() => {
+    if (
+      navTab.toLowerCase() === "matchups" &&
+      week &&
+      matchups &&
+      leagues &&
+      allplayers
+    ) {
+      dispatch(fetchLiveStats(allplayers, week, leagues, matchups));
+    }
+  }, [week, navTab, matchups, leagues, allplayers, dispatch]);
+
+  useEffect(() => {
+    if (live_stats_updatedAt && allplayers && week && leagues && matchups) {
+      const update = setTimeout(() => {
+        dispatch(fetchLiveStats(allplayers, week, leagues, matchups));
+      }, live_stats_updatedAt);
+
+      return () => clearTimeout(update);
+    }
+  }, [live_stats_updatedAt, allplayers, week, leagues, matchups, dispatch]);
 
   return (errorUser && errorUser) || (errorLeagues && errorLeagues) ? (
     <h1>

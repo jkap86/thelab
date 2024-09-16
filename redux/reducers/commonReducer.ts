@@ -22,6 +22,7 @@ export interface CommonState {
   isLoadingFpSeason: boolean;
   isLoadingFpWeek: boolean;
   fpweek: { [key: string]: PlayerProjection } | false;
+
   type1: "Redraft" | "All" | "Dynasty";
   type2: "Bestball" | "All" | "Lineup";
 }
@@ -35,6 +36,7 @@ const initialState: CommonState = {
   fpseason: false,
   isLoadingFpSeason: false,
   fpweek: false,
+
   isLoadingFpWeek: false,
   type1: "All",
   type2: "All",

@@ -1,6 +1,13 @@
 import { produce, WritableDraft } from "immer";
 import { UserActionTypes } from "../actions/userActions";
-import { League, Leaguemate, MatchupOptimal, Trade, User } from "@/lib/types";
+import {
+  League,
+  Leaguemate,
+  Matchup,
+  MatchupOptimal,
+  Trade,
+  User,
+} from "@/lib/types";
 
 export interface UserState {
   user: User | false;
@@ -44,12 +51,34 @@ export interface UserState {
           user: MatchupOptimal;
           opp: MatchupOptimal;
           median?: number;
+          league_matchups: Matchup[];
         };
       }
     | false;
   errorMatchups: string | false;
   isSyncingMatchup: string | false;
   errorSyncingMatchup: string | false;
+  live_stats: {
+    [key: string]: {
+      user: {
+        points_total: number;
+        proj_remaining_total: number;
+        players_points: { [player_id: string]: number };
+        players_proj_remaining: { [player_id: string]: number };
+      };
+      opp: {
+        points_total: number;
+        proj_remaining_total: number;
+        players_points: { [player_id: string]: number };
+        players_proj_remaining: { [player_id: string]: number };
+      };
+      median: {
+        current: number | undefined;
+        projected: number | undefined;
+      };
+    };
+  };
+  live_stats_updatedAt: number | false;
 }
 const initialState: UserState = {
   user: false,
@@ -74,6 +103,8 @@ const initialState: UserState = {
   errorMatchups: false,
   isSyncingMatchup: false,
   errorSyncingMatchup: false,
+  live_stats: {},
+  live_stats_updatedAt: false,
 };
 
 const userReducer = (state = initialState, action: UserActionTypes) => {
@@ -193,6 +224,10 @@ const userReducer = (state = initialState, action: UserActionTypes) => {
           });
         }
 
+        break;
+      case "SET_LIVE_STATS":
+        draft.live_stats = action.payload.live;
+        draft.live_stats_updatedAt = action.payload.updateAt;
         break;
       case "RESET_STATE":
         return initialState;

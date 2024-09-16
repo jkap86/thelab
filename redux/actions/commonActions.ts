@@ -4,6 +4,8 @@ import {
   PlayerProjection,
   PlayerStat,
   SleeperState,
+  Matchup,
+  MatchupOptimal,
 } from "@/lib/types";
 import { AppDispatch } from "../store";
 
