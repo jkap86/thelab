@@ -42,7 +42,7 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
   const { type1, type2, allplayers } = useSelector(
     (state: RootState) => state.common
   );
-  const { matchups, leagues, live_stats } = useSelector(
+  const { user, matchups, leagues, live_stats } = useSelector(
     (state: RootState) => state.user
   );
   const { filterTeam, filterDraftYear, filterPosition } = useSelector(
@@ -657,6 +657,29 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
               filterLeagueIds(Object.keys(matchups), leagues, type1, type2)
                 .sort((a, b) => leagues[a].index - leagues[b].index)
                 .map((league_id) => {
+                  const opp =
+                    matchups &&
+                    leagues[league_id].rosters.find(
+                      (r) => r.roster_id === matchups[league_id].opp.roster_id
+                    )?.username;
+
+                  const user_bench = Array.from(
+                    new Set([
+                      ...Object.keys(live_stats[league_id].user.players_points),
+                      ...Object.keys(
+                        live_stats[league_id].user.players_proj_remaining
+                      ),
+                    ])
+                  );
+
+                  const opp_bench = Array.from(
+                    new Set([
+                      ...Object.keys(live_stats[league_id].opp.players_points),
+                      ...Object.keys(
+                        live_stats[league_id].opp.players_proj_remaining
+                      ),
+                    ])
+                  );
                   return {
                     id: league_id,
                     columns: [
@@ -723,7 +746,56 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                     ],
                     secondaryTable: (
                       <>
-                        <div className="nav nav2"></div>
+                        <div className="nav nav2">
+                          <div>
+                            {user && user.username}{" "}
+                            <span>
+                              {live_stats &&
+                                live_stats[league_id].user.points_total.toFixed(
+                                  1
+                                )}
+                              <em>
+                                (
+                                {live_stats &&
+                                  live_stats[
+                                    league_id
+                                  ].user.proj_remaining_total.toFixed(1)}
+                                )
+                              </em>
+                            </span>
+                          </div>
+                          <span>
+                            Median
+                            <br />
+                            {live_stats &&
+                              live_stats[league_id].median.current?.toFixed(1)}
+                            <em>
+                              (
+                              {live_stats &&
+                                live_stats[league_id].median.projected?.toFixed(
+                                  1
+                                )}
+                              )
+                            </em>
+                          </span>
+                          <div>
+                            {opp}{" "}
+                            <span>
+                              {live_stats &&
+                                live_stats[league_id].opp.points_total.toFixed(
+                                  1
+                                )}
+                              <em>
+                                (
+                                {live_stats &&
+                                  live_stats[
+                                    league_id
+                                  ].opp.proj_remaining_total.toFixed(1)}
+                                )
+                              </em>
+                            </span>
+                          </div>
+                        </div>
                         <TableMain
                           type={2}
                           half={true}
@@ -773,6 +845,35 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                                       ],
                                     };
                                   }),
+                                ...user_bench.map((player_id) => {
+                                  const points =
+                                    live_stats[league_id].user.players_points[
+                                      player_id
+                                    ] || 0;
+                                  const proj =
+                                    live_stats[league_id].user
+                                      .players_proj_remaining[player_id] || 0;
+                                  return {
+                                    id: player_id,
+                                    columns: [
+                                      { text: "BN", colspan: 1 },
+                                      {
+                                        text:
+                                          allplayers[player_id].full_name ||
+                                          player_id,
+                                        colspan: 2,
+                                      },
+                                      {
+                                        text: points.toFixed(1),
+                                        colspan: 1,
+                                      },
+                                      {
+                                        text: (points + proj).toFixed(1),
+                                        colspan: 1,
+                                      },
+                                    ],
+                                  };
+                                }),
                               ]) ||
                             []
                           }
@@ -826,6 +927,35 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                                       ],
                                     };
                                   }),
+                                ...opp_bench.map((player_id) => {
+                                  const points =
+                                    live_stats[league_id].opp.players_points[
+                                      player_id
+                                    ] || 0;
+                                  const proj =
+                                    live_stats[league_id].opp
+                                      .players_proj_remaining[player_id] || 0;
+                                  return {
+                                    id: player_id,
+                                    columns: [
+                                      { text: "BN", colspan: 1 },
+                                      {
+                                        text:
+                                          allplayers[player_id].full_name ||
+                                          player_id,
+                                        colspan: 2,
+                                      },
+                                      {
+                                        text: points.toFixed(1),
+                                        colspan: 1,
+                                      },
+                                      {
+                                        text: (points + proj).toFixed(1),
+                                        colspan: 1,
+                                      },
+                                    ],
+                                  };
+                                }),
                               ]) ||
                             []
                           }

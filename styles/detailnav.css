@@ -73,6 +73,10 @@ div.nav i.fa-arrows-rotate {
   animation: rotate 4s linear infinite;
 }
 
+div.nav > span {
+  text-align: center;
+}
+
 @keyframes rotate {
   0% {
     transform: rotate(0deg);
