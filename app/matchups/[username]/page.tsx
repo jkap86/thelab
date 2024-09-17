@@ -665,20 +665,33 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
 
                   const user_bench = Array.from(
                     new Set([
-                      ...Object.keys(live_stats[league_id].user.players_points),
                       ...Object.keys(
-                        live_stats[league_id].user.players_proj_remaining
+                        live_stats[league_id]?.user?.players_points || {}
+                      ),
+                      ...Object.keys(
+                        live_stats[league_id]?.user?.players_proj_remaining ||
+                          {}
                       ),
                     ])
+                  ).filter(
+                    (player_id) =>
+                      matchups &&
+                      !matchups[league_id].user.starters.includes(player_id)
                   );
 
                   const opp_bench = Array.from(
                     new Set([
-                      ...Object.keys(live_stats[league_id].opp.players_points),
                       ...Object.keys(
-                        live_stats[league_id].opp.players_proj_remaining
+                        live_stats[league_id]?.opp?.players_points || {}
+                      ),
+                      ...Object.keys(
+                        live_stats[league_id]?.opp?.players_proj_remaining || {}
                       ),
                     ])
+                  ).filter(
+                    (player_id) =>
+                      matchups &&
+                      !matchups[league_id].opp.starters.includes(player_id)
                   );
                   return {
                     id: league_id,
@@ -751,15 +764,15 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                             {user && user.username}{" "}
                             <span>
                               {live_stats &&
-                                live_stats[league_id].user.points_total.toFixed(
-                                  1
-                                )}
+                                live_stats[
+                                  league_id
+                                ]?.user?.points_total?.toFixed(1)}
                               <em>
                                 (
                                 {live_stats &&
                                   live_stats[
                                     league_id
-                                  ].user.proj_remaining_total.toFixed(1)}
+                                  ]?.user?.proj_remaining_total?.toFixed(1)}
                                 )
                               </em>
                             </span>
@@ -768,13 +781,15 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                             Median
                             <br />
                             {live_stats &&
-                              live_stats[league_id].median.current?.toFixed(1)}
+                              live_stats[league_id]?.median?.current?.toFixed(
+                                1
+                              )}
                             <em>
                               (
                               {live_stats &&
-                                live_stats[league_id].median.projected?.toFixed(
-                                  1
-                                )}
+                                live_stats[
+                                  league_id
+                                ]?.median?.projected?.toFixed(1)}
                               )
                             </em>
                           </span>
@@ -782,15 +797,15 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                             {opp}{" "}
                             <span>
                               {live_stats &&
-                                live_stats[league_id].opp.points_total.toFixed(
-                                  1
-                                )}
+                                live_stats[
+                                  league_id
+                                ]?.opp?.points_total?.toFixed(1)}
                               <em>
                                 (
                                 {live_stats &&
                                   live_stats[
                                     league_id
-                                  ].opp.proj_remaining_total.toFixed(1)}
+                                  ]?.opp?.proj_remaining_total?.toFixed(1)}
                                 )
                               </em>
                             </span>
@@ -816,12 +831,12 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                                       matchups[league_id].user.starters[index];
 
                                     const points =
-                                      live_stats[league_id].user.players_points[
-                                        player_id
-                                      ] || 0;
+                                      live_stats[league_id]?.user
+                                        ?.players_points?.[player_id] || 0;
                                     const proj =
-                                      live_stats[league_id].user
-                                        .players_proj_remaining[player_id] || 0;
+                                      live_stats[league_id]?.user
+                                        ?.players_proj_remaining?.[player_id] ||
+                                      0;
                                     return {
                                       id: `${rp}_${index}`,
                                       columns: [
@@ -898,12 +913,12 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                                       matchups[league_id].opp.starters[index];
 
                                     const points =
-                                      live_stats[league_id].opp.players_points[
-                                        player_id
-                                      ] || 0;
+                                      live_stats[league_id]?.opp
+                                        ?.players_points?.[player_id] || 0;
                                     const proj =
-                                      live_stats[league_id].opp
-                                        .players_proj_remaining[player_id] || 0;
+                                      live_stats[league_id]?.opp
+                                        ?.players_proj_remaining?.[player_id] ||
+                                      0;
                                     return {
                                       id: `${rp}_${index}`,
                                       columns: [
@@ -929,19 +944,19 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                                   }),
                                 ...opp_bench.map((player_id) => {
                                   const points =
-                                    live_stats[league_id].opp.players_points[
-                                      player_id
-                                    ] || 0;
+                                    live_stats[league_id]?.opp
+                                      ?.players_points?.[player_id] || 0;
                                   const proj =
-                                    live_stats[league_id].opp
-                                      .players_proj_remaining[player_id] || 0;
+                                    live_stats[league_id]?.opp
+                                      ?.players_proj_remaining?.[player_id] ||
+                                    0;
                                   return {
                                     id: player_id,
                                     columns: [
                                       { text: "BN", colspan: 1 },
                                       {
                                         text:
-                                          allplayers[player_id].full_name ||
+                                          allplayers[player_id]?.full_name ||
                                           player_id,
                                         colspan: 2,
                                       },

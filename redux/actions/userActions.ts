@@ -947,7 +947,7 @@ export const fetchLiveStats =
       console.log({ live_matchups });
       dispatch({
         type: "SET_LIVE_STATS",
-        payload: { live: live_matchups, updatedAt: response.data.updateAt },
+        payload: { live: live_matchups, updateAt: response.data.updateAt },
       });
     } catch (err: any) {
       console.log({ err });

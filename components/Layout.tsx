@@ -142,7 +142,7 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
     if (live_stats_updatedAt && allplayers && week && leagues && matchups) {
       const update = setTimeout(() => {
         dispatch(fetchLiveStats(allplayers, week, leagues, matchups));
-      }, live_stats_updatedAt);
+      }, Math.abs(live_stats_updatedAt - new Date().getTime()));
 
       return () => clearTimeout(update);
     }
