@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
   const state_jsonString = fs.readFileSync("./data/state.json", "utf-8");
   const state_json = JSON.parse(state_jsonString);
 
-  if (state_json.updatedAt > new Date().getTime() - 3 * 60 * 60 * 1000) {
+  if (state_json.updatedAt > new Date().getTime() - 1 * 60 * 60 * 1000) {
     data.state = state_json.data;
   } else {
     console.log("Updating STATE...");
