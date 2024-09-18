@@ -108,6 +108,7 @@ export type MatchupOptimal = {
     slot: string;
     player_id: string;
     kickoff_slot: number;
+    player_id_cur: string;
     move_into_flex: boolean;
     move_outof_flex: boolean;
   }[];

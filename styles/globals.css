@@ -94,6 +94,10 @@ ol.page_numbers > li.active {
   color: rgb(255, 0, 0);
 }
 
+.yellowl > div {
+  box-shadow: inset 0 0 2rem yellow !important;
+}
+
 .yellow {
   color: yellow;
 }

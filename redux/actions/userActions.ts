@@ -456,7 +456,10 @@ export const fetchMatchups =
             leagues[opp_matchup.league_id].settings.best_ball
           );
 
-          const scores = [u.actual_proj, o.actual_proj];
+          const scores =
+            leagues[league_id].settings.best_ball === 1
+              ? [u.optimal_proj, o.optimal_proj]
+              : [u.actual_proj, o.actual_proj];
 
           let median;
           if (leagues[league_id].settings.league_average_match === 1) {
@@ -468,7 +471,7 @@ export const fetchMatchups =
                   )
               )
               .forEach((m) => {
-                const { actual_proj } = getOptimalStartersMatchup(
+                const { actual_proj, optimal_proj } = getOptimalStartersMatchup(
                   m,
                   leagues[league_id].roster_positions,
                   fpweek,
@@ -476,7 +479,9 @@ export const fetchMatchups =
                   leagues[league_id].scoring_settings,
                   leagues[league_id].settings.best_ball
                 );
-                scores.push(actual_proj);
+                leagues[league_id].settings.best_ball === 1
+                  ? scores.push(optimal_proj)
+                  : scores.push(actual_proj);
               });
 
             const scores_sorted = scores.sort((a, b) => a - b);
@@ -591,7 +596,11 @@ export const syncMatchup =
           leagues[league_id].settings.best_ball
         );
 
-        const scores = [u.actual_proj, o.actual_proj];
+        const scores =
+          leagues[league_id].settings.best_ball === 1
+            ? [u.optimal_proj, o.optimal_proj]
+            : [u.actual_proj, o.actual_proj];
+
         let median;
         if (leagues[league_id].settings.league_average_match === 1) {
           response.data
@@ -602,7 +611,7 @@ export const syncMatchup =
                 )
             )
             .forEach((m) => {
-              const { actual_proj } = getOptimalStartersMatchup(
+              const { actual_proj, optimal_proj } = getOptimalStartersMatchup(
                 m,
                 leagues[league_id].roster_positions,
                 fpweek,
@@ -611,7 +620,9 @@ export const syncMatchup =
                 leagues[league_id].settings.best_ball
               );
 
-              scores.push(actual_proj);
+              leagues[league_id].settings.best_ball === 1
+                ? scores.push(optimal_proj)
+                : scores.push(actual_proj);
             });
 
           const scores_sorted = scores.sort((a, b) => a - b);

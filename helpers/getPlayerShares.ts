@@ -236,6 +236,7 @@ export const getOptimalStartersMatchup = (
     slot: string;
     player_id: string;
     player_id_slot: string;
+    player_id_cur: string;
     proj: number;
     kickoff_slot: number;
   }[] = [];
@@ -298,8 +299,9 @@ export const getOptimalStartersMatchup = (
           roster_positions[
             matchup.starters?.indexOf(optimal_player.player_id)
           ] || "BN",
+        player_id_cur: slot.player_id,
         proj: optimal_player.proj,
-        kickoff_slot: fpweek[optimal_player.player_id]?.kickoff_slot,
+        kickoff_slot: fpweek[slot.player_id]?.kickoff_slot,
       });
     });
 
@@ -320,14 +322,13 @@ export const getOptimalStartersMatchup = (
         if (
           optimal_starters.find(
             (os2) =>
-              position_map[os.player_id_slot]?.length >
-                position_map[os2.player_id_slot]?.length &&
+              position_map[os.slot]?.length > position_map[os2.slot]?.length &&
               os2.kickoff_slot - os.kickoff_slot > 60 * 60 * 1000 &&
-              position_map[os.player_id_slot]?.some((p) =>
-                allplayers[os2.player_id]?.fantasy_positions?.includes(p)
+              position_map[os.slot]?.some((p) =>
+                allplayers[os2.player_id_cur]?.fantasy_positions?.includes(p)
               ) &&
-              position_map[os2.player_id_slot]?.some((p) =>
-                allplayers[os.player_id]?.fantasy_positions?.includes(p)
+              position_map[os2.slot]?.some((p) =>
+                allplayers[os.player_id_cur]?.fantasy_positions?.includes(p)
               )
           )
         ) {
@@ -336,14 +337,13 @@ export const getOptimalStartersMatchup = (
         if (
           optimal_starters.find((os2) => {
             return (
-              position_map[os.player_id_slot]?.length <
-                position_map[os2.player_id_slot]?.length &&
+              position_map[os.slot]?.length < position_map[os2.slot]?.length &&
               os.kickoff_slot - os2.kickoff_slot > 60 * 60 * 1000 &&
-              position_map[os.player_id_slot].some((p) =>
-                allplayers[os2.player_id]?.fantasy_positions?.includes(p)
+              position_map[os.slot].some((p) =>
+                allplayers[os2.player_id_cur]?.fantasy_positions?.includes(p)
               ) &&
-              position_map[os2.player_id_slot].some((p) =>
-                allplayers[os.player_id]?.fantasy_positions?.includes(p)
+              position_map[os2.slot].some((p) =>
+                allplayers[os.player_id_cur]?.fantasy_positions?.includes(p)
               )
             );
           })

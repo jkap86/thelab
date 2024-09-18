@@ -48,7 +48,7 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
   const headersStarters = [
     { text: "Slot", colspan: 1 },
     { text: "Player", colspan: 3 },
-    { text: "Proj", colspan: 1 },
+    { text: "Proj", colspan: 2 },
   ];
   const getDataStarters = (matchup: MatchupOptimal) => {
     return (
@@ -58,23 +58,33 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
           .filter((rp) => rp !== "BN")
           .map((rp, index) => {
             const optimal_starter = matchup.optimal_starters.find(
-              (os) => os.player_id === matchup.starters?.[index]
+              (os) => os.player_id_cur === matchup.starters?.[index]
             );
 
-            const classname = !optimal_starter
-              ? "red"
-              : (optimal_starter.move_into_flex ||
-                  optimal_starter.move_outof_flex) &&
-                leagues[league_id].settings.best_ball !== 1
-              ? "yellow"
-              : "";
+            const classname =
+              (!matchup.optimal_starters.some(
+                (os) => os.player_id === matchup.starters[index]
+              )
+                ? "red"
+                : "") +
+              " " +
+              (optimal_starter &&
+              (optimal_starter.move_into_flex ||
+                optimal_starter.move_outof_flex) &&
+              !(
+                optimal_starter.move_into_flex &&
+                optimal_starter.move_outof_flex
+              ) &&
+              leagues[league_id].settings.best_ball !== 1
+                ? "yellowl"
+                : "");
             return {
               id: `${rp}__${index}`,
               columns: [
                 { text: rp, colspan: 1, classname },
                 {
                   text: (
-                    <div className="">
+                    <>
                       {(allplayers &&
                         allplayers[matchup.starters?.[index]]?.full_name) ||
                         "-"}
@@ -84,7 +94,7 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
                             matchup.starters?.[index]
                           ]?.injury_status?.slice(0, 1)}
                       </em>
-                    </div>
+                    </>
                   ),
                   colspan: 3,
                   classname: classname + " relative",
@@ -131,10 +141,25 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
       id: "info",
       columns:
         activeOptimalPlayer &&
-        (activeOptimalPlayer.move_into_flex
-          ? [{ text: "Move into Flex", colspan: 6, classname: "yellow" }]
-          : activeOptimalPlayer.move_outof_flex
-          ? [{ text: "Move out of Flex", colspan: 6, classname: "yellow" }]
+        (activeOptimalPlayer.move_into_flex ||
+        (activeOptimalPlayer.move_outof_flex &&
+          !(
+            activeOptimalPlayer.move_into_flex &&
+            activeOptimalPlayer.move_outof_flex
+          ))
+          ? [
+              {
+                text:
+                  ((activeOptimalPlayer.move_into_flex && "Move into Flex") ||
+                    "") +
+                  " " +
+                  ((activeOptimalPlayer.move_outof_flex &&
+                    "Move out of Flex") ||
+                    ""),
+                colspan: 6,
+                classname: "yellow",
+              },
+            ]
           : []),
     },
     ...((options &&
