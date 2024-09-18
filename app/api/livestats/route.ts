@@ -133,7 +133,10 @@ export async function GET(req: NextRequest) {
         .sort((a: number, b: number) => a - b);
 
       if (upcoming_kickoffs.length > 0) {
-        updateAt = upcoming_kickoffs[0];
+        updateAt = Math.min(
+          upcoming_kickoffs[0],
+          new Date().getTime() + 1000 * 60 * 15
+        );
       } else {
         updateAt = new Date().getTime() + 1000 * 60 * 60 * 12;
       }

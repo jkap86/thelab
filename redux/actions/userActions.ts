@@ -835,23 +835,27 @@ export const fetchLiveStats =
         );
 
         const user_points_total = user_starters.reduce(
-          (acc, cur) => acc + players_points_user[cur],
+          (acc, cur) => acc + (players_points_user[cur] || 0),
           0
         );
         const user_proj_remaining_total = user_starters.reduce(
           (acc, cur) =>
-            acc + players_proj_remaining_user[cur] + players_points_user[cur],
+            acc +
+            (players_proj_remaining_user[cur] || 0) +
+            (players_points_user[cur] || 0),
           0
         );
 
         const opp_points_total = opp_starters.reduce(
-          (acc, cur) => acc + players_points_opp[cur],
+          (acc, cur) => acc + (players_points_opp[cur] || 0),
           0
         );
 
         const opp_proj_remaining_total = opp_starters.reduce(
           (acc, cur) =>
-            acc + players_proj_remaining_opp[cur] + players_points_opp[cur],
+            acc +
+            (players_proj_remaining_opp[cur] || 0) +
+            (players_points_opp[cur] || 0),
           0
         );
 
@@ -902,16 +906,16 @@ export const fetchLiveStats =
               const lm_proj = lm_starters.reduce(
                 (acc, cur) =>
                   acc +
-                  getPlayerProjection(
+                  (getPlayerProjection(
                     cur,
                     leagues[league_id].scoring_settings,
                     live_proj_obj
-                  ) +
-                  getPlayerProjection(
+                  ) || 0) +
+                  (getPlayerProjection(
                     cur,
                     leagues[league_id].scoring_settings,
                     live_stats_obj
-                  ),
+                  ) || 0),
                 0
               );
 
