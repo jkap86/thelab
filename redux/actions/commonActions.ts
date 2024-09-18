@@ -6,6 +6,7 @@ import {
   SleeperState,
   Matchup,
   MatchupOptimal,
+  Trade,
 } from "@/lib/types";
 import { AppDispatch } from "../store";
 
@@ -72,6 +73,15 @@ interface setFpWeekAction {
   };
 }
 
+interface setPcTradesAction {
+  type: "SET_PC_TRADES";
+  payload: {
+    player_id: string;
+    count: number;
+    trades: Trade[];
+  };
+}
+
 interface fetchFpWeekErrorAction {
   type: "FETCH_FPWEEK_ERROR";
 }
@@ -100,7 +110,8 @@ export type CommonActionTypes =
   | setFpWeekAction
   | fetchFpWeekErrorAction
   | setType1Action
-  | setType2Action;
+  | setType2Action
+  | setPcTradesAction;
 
 export const fetchAllPlayers = () => async (dispatch: AppDispatch) => {
   dispatch({
@@ -267,3 +278,31 @@ export const setType2 = (
   type: "SET_COMMON_TYPE2",
   payload: value,
 });
+
+export const fetchPcTrades =
+  (player_id: string, limit: number, offset: number) =>
+  async (dispatch: AppDispatch) => {
+    try {
+      const response: { data: { count: string; rows: Trade[] } } =
+        await axios.get("/api/pctrades", {
+          params: {
+            player_id,
+            limit,
+            offset,
+          },
+        });
+
+      console.log({ PCTRADES: response.data });
+
+      dispatch({
+        type: "SET_PC_TRADES",
+        payload: {
+          player_id: player_id,
+          count: response.data.count,
+          trades: response.data.rows,
+        },
+      });
+    } catch (err) {
+      console.log({ err });
+    }
+  };

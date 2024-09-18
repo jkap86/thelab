@@ -15,7 +15,7 @@ export interface TradesState {
 }
 
 const initialState: TradesState = {
-  tab: "Leaguemate Trades",
+  tab: "LM",
   searchedPlayer: false,
   page: 1,
   activeTrade: false,
@@ -30,6 +30,9 @@ const initialState: TradesState = {
 const tradesReducer = (state = initialState, action: TradesActionTypes) => {
   return produce(state, (draft: WritableDraft<TradesState>) => {
     switch (action.type) {
+      case "SET_TAB":
+        draft.tab = action.payload;
+        break;
       case "SET_TRADES_PAGE":
         draft.page = action.payload;
         break;

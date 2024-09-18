@@ -1,5 +1,5 @@
 import { produce, WritableDraft } from "immer";
-import { Allplayer, PlayerProjection, SleeperState } from "@/lib/types";
+import { Allplayer, PlayerProjection, SleeperState, Trade } from "@/lib/types";
 import { CommonActionTypes } from "../actions/commonActions";
 
 export interface CommonState {
@@ -22,9 +22,14 @@ export interface CommonState {
   isLoadingFpSeason: boolean;
   isLoadingFpWeek: boolean;
   fpweek: { [key: string]: PlayerProjection } | false;
-
   type1: "Redraft" | "All" | "Dynasty";
   type2: "Bestball" | "All" | "Lineup";
+  pcTrades: {
+    [player_id: string]: {
+      count: number;
+      trades: Trade[] | false;
+    };
+  };
 }
 const initialState: CommonState = {
   state: false,
@@ -40,6 +45,7 @@ const initialState: CommonState = {
   isLoadingFpWeek: false,
   type1: "All",
   type2: "All",
+  pcTrades: {},
 };
 
 const commonReducer = (state = initialState, action: CommonActionTypes) => {
@@ -92,6 +98,20 @@ const commonReducer = (state = initialState, action: CommonActionTypes) => {
         break;
       case "SET_COMMON_TYPE2":
         draft.type2 = action.payload;
+        break;
+      case "SET_PC_TRADES":
+        draft.pcTrades[action.payload.player_id] = {
+          count: action.payload.count,
+          trades: [
+            ...(draft.pcTrades[action.payload.player_id]?.trades || []),
+            ...action.payload.trades.filter(
+              (t) =>
+                !(draft.pcTrades[action.payload.player_id]?.trades || []).some(
+                  (t2) => t2.transaction_id === t.transaction_id
+                )
+            ),
+          ],
+        };
       default:
         break;
     }

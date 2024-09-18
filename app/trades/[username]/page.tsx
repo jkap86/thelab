@@ -14,6 +14,7 @@ import {
   setActiveTrade,
   setSearchedManager,
   setSearchedPlayer,
+  setTab,
   setTradesPage,
   setValueType,
 } from "@/redux/actions/tradesActions";
@@ -21,6 +22,7 @@ import TradeDetail from "@/components/TradeDetail";
 import Search from "@/components/Search";
 import { getPlayerProjection } from "@/helpers/getPlayerShares";
 import { getTrendColor_Percentage } from "@/helpers/getTrendColor";
+import { fetchPcTrades } from "@/redux/actions/commonActions";
 
 interface TradesProps {
   params: { username: string };
@@ -28,7 +30,7 @@ interface TradesProps {
 
 const Trades: React.FC<TradesProps> = ({ params }) => {
   const dispatch: AppDispatch = useDispatch();
-  const { allplayers, ktc_current, fpseason } = useSelector(
+  const { allplayers, ktc_current, fpseason, pcTrades } = useSelector(
     (state: RootState) => state.common
   );
   const {
@@ -40,7 +42,7 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
     lmTradeSearches,
     playershares,
   } = useSelector((state: RootState) => state.user);
-  const { activeTrade, page, searchedManager, searchedPlayer, valueType } =
+  const { tab, activeTrade, page, searchedManager, searchedPlayer, valueType } =
     useSelector((state: RootState) => state.trades);
 
   console.log({ lmTrades });
@@ -60,23 +62,32 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
     }
   };
   const tradesDisplay =
-    searchedManager || searchedPlayer
-      ? lmTradeSearches.find(
-          (s) => s.manager === searchedManager && s.player === searchedPlayer
-        )?.trades || []
-      : lmTrades.trades || [];
+    tab === "LM"
+      ? searchedManager || searchedPlayer
+        ? lmTradeSearches.find(
+            (s) => s.manager === searchedManager && s.player === searchedPlayer
+          )?.trades || []
+        : lmTrades.trades || []
+      : tab === "PC" && searchedPlayer
+      ? pcTrades[searchedPlayer]?.trades || []
+      : [];
 
   const tradesCount =
-    searchedManager || searchedPlayer
-      ? lmTradeSearches.find(
-          (s) => s.manager === searchedManager && s.player === searchedPlayer
-        )?.count || 0
-      : lmTrades.count || 0;
+    tab === "LM"
+      ? searchedManager || searchedPlayer
+        ? lmTradeSearches.find(
+            (s) => s.manager === searchedManager && s.player === searchedPlayer
+          )?.count || 0
+        : lmTrades.count || 0
+      : tab === "PC" && searchedPlayer
+      ? pcTrades[searchedPlayer]?.count || 0
+      : 0;
 
   const cur_trade_length = tradesDisplay.length;
 
   useEffect(() => {
     if (
+      tab === "LM" &&
       leagues &&
       fpseason &&
       allplayers &&
@@ -96,7 +107,12 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
       );
     }
 
-    if ((searchedManager || searchedPlayer) && fpseason && allplayers) {
+    if (
+      tab === "LM" &&
+      (searchedManager || searchedPlayer) &&
+      fpseason &&
+      allplayers
+    ) {
       leagues &&
         dispatch(
           fetchFilteredLmTrades(
@@ -112,6 +128,7 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
         );
     }
   }, [
+    tab,
     leaguemates,
     isLoadingLmTrades,
     lmTrades,
@@ -122,6 +139,12 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
     allplayers,
     dispatch,
   ]);
+
+  useEffect(() => {
+    if (tab === "PC" && searchedPlayer && !pcTrades[searchedPlayer]) {
+      dispatch(fetchPcTrades(searchedPlayer, 125, tradesDisplay.length));
+    }
+  }, [tab, pcTrades, searchedPlayer, dispatch]);
 
   const mananger_options = Object.values(leaguemates || {}).map(
     (leaguemate) => {
@@ -162,20 +185,45 @@ const Trades: React.FC<TradesProps> = ({ params }) => {
 
   const content = (
     <>
-      <h1>{tradesCount.toLocaleString("en-US")} Leaguemate Trades</h1>
+      <div className="buttons">
+        <button
+          onClick={() => dispatch(setTab("LM"))}
+          className={tab === "LM" ? "active" : ""}
+        >
+          Leaguemate
+        </button>
+        <button
+          onClick={() => dispatch(setTab("PC"))}
+          className={tab === "PC" ? "active" : ""}
+        >
+          Price Check
+        </button>
+      </div>
+      <div className="info">
+        {tab === "LM"
+          ? "All Trades made by leaguemates, including in leagues you are not in."
+          : tab === "PC"
+          ? "All Trades where only searched player is on one side."
+          : ""}
+      </div>
+      <h3 className="tradeCount">
+        {tradesCount.toLocaleString("en-US")} Trades
+      </h3>
       <div className="searches">
-        <Search
-          searched={searchedManager}
-          setSearched={(user_id) => dispatch(setSearchedManager(user_id))}
-          options={mananger_options}
-          placeholder={"Search Manager"}
-        />
         <Search
           searched={searchedPlayer}
           setSearched={(player_id) => dispatch(setSearchedPlayer(player_id))}
           options={player_options}
           placeholder={"Search Player"}
         />
+        {tab === "LM" && (
+          <Search
+            searched={searchedManager}
+            setSearched={(user_id) => dispatch(setSearchedManager(user_id))}
+            options={mananger_options}
+            placeholder={"Search Manager"}
+          />
+        )}
       </div>
 
       <div className="page_numbers_wrapper">

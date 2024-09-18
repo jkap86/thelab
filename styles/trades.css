@@ -114,3 +114,35 @@ div.valuetype {
   display: flex;
   justify-content: space-evenly;
 }
+
+div.buttons {
+  display: flex;
+  justify-content: space-evenly;
+  width: 50%;
+  margin: auto;
+}
+
+div.buttons > button {
+  font-size: 3rem;
+  background-color: transparent;
+  color: gray;
+  opacity: 0.5;
+}
+
+div.buttons > button.active {
+  opacity: 1;
+  color: var(--color1);
+}
+
+div.info {
+  text-align: center;
+  margin: 1rem auto;
+  font-size: 2rem;
+}
+
+h3.tradeCount {
+  font-family: var(--fontPulang);
+  font-size: 3rem;
+  letter-spacing: 0.25rem;
+  color: goldenrod;
+}

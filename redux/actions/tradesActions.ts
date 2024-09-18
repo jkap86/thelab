@@ -18,6 +18,11 @@ interface setSearchedPlayerAction {
   payload: string | false;
 }
 
+interface setTabAction {
+  type: "SET_TAB";
+  payload: string;
+}
+
 interface setDetailTabAction {
   type: "SET_DETAIL_TAB";
   payload: string;
@@ -49,7 +54,8 @@ export type TradesActionTypes =
   | setRostersTabAction
   | setDetailTabAction
   | setActiveTipAction
-  | setValueTypeAction;
+  | setValueTypeAction
+  | setTabAction;
 
 export const setTradesPage = (page: number): setTradesPageAction => ({
   type: "SET_TRADES_PAGE",
@@ -98,4 +104,9 @@ export const setActiveTip = (id: string | false): setActiveTipAction => ({
 export const setValueType = (type: string): setValueTypeAction => ({
   type: "SET_VALUE_TYPE",
   payload: type,
+});
+
+export const setTab = (tab: string): setTabAction => ({
+  type: "SET_TAB",
+  payload: tab,
 });
