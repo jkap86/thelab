@@ -192,6 +192,32 @@ table.half:last-of-type td.content {
   background-image: radial-gradient(rgb(0, 70, 110) -50%, black 500%);
 }
 
+td.content.live > div {
+  font-weight: 100;
+  color: lightgrey;
+}
+
+td.content.live.complete > div {
+  font-weight: 900;
+  color: white;
+}
+
+td.content.live.inprogress > div {
+  font-weight: 900;
+  color: goldenrod;
+  font-style: oblique;
+  color: white;
+  outline: 0.25rem dotted goldenrod;
+}
+
+td.content.bench.live {
+  box-shadow: inset 0 0 10rem black;
+}
+
+td.content.inprogress.live {
+  font-style: italic;
+}
+
 table.half * {
   font-size: 3rem;
 }

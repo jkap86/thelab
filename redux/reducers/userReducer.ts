@@ -59,24 +59,29 @@ export interface UserState {
   isSyncingMatchup: string | false;
   errorSyncingMatchup: string | false;
   live_stats: {
-    [key: string]: {
-      user: {
-        points_total: number;
-        proj_remaining_total: number;
-        players_points: { [player_id: string]: number };
-        players_proj_remaining: { [player_id: string]: number };
-      };
-      opp: {
-        points_total: number;
-        proj_remaining_total: number;
-        players_points: { [player_id: string]: number };
-        players_proj_remaining: { [player_id: string]: number };
-      };
-      median: {
-        current: number | undefined;
-        projected: number | undefined;
+    leagues: {
+      [key: string]: {
+        user: {
+          points_total: number;
+          proj_remaining_total: number;
+          players_points: { [player_id: string]: number };
+          players_proj_remaining: { [player_id: string]: number };
+          starters: string[];
+        };
+        opp: {
+          points_total: number;
+          proj_remaining_total: number;
+          players_points: { [player_id: string]: number };
+          players_proj_remaining: { [player_id: string]: number };
+          starters: string[];
+        };
+        median: {
+          current: number | undefined;
+          projected: number | undefined;
+        };
       };
     };
+    teamGameSecLeft: { [team_id: string]: number };
   };
   live_stats_updatedAt: number | false;
 }
@@ -103,7 +108,7 @@ const initialState: UserState = {
   errorMatchups: false,
   isSyncingMatchup: false,
   errorSyncingMatchup: false,
-  live_stats: {},
+  live_stats: { leagues: {}, teamGameSecLeft: {} },
   live_stats_updatedAt: false,
 };
 

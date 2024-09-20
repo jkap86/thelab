@@ -172,24 +172,29 @@ interface setLiveStatsAction {
   type: "SET_LIVE_STATS";
   payload: {
     live: {
-      [key: string]: {
-        user: {
-          points_total: number;
-          proj_remaining_total: number;
-          players_points: { [player_id: string]: number };
-          players_proj_remaining: { [player_id: string]: number };
-        };
-        opp: {
-          points_total: number;
-          proj_remaining_total: number;
-          players_points: { [player_id: string]: number };
-          players_proj_remaining: { [player_id: string]: number };
-        };
-        median: {
-          current: number | undefined;
-          projected: number | undefined;
+      leagues: {
+        [key: string]: {
+          user: {
+            points_total: number;
+            proj_remaining_total: number;
+            players_points: { [player_id: string]: number };
+            players_proj_remaining: { [player_id: string]: number };
+            starters: string[];
+          };
+          opp: {
+            points_total: number;
+            proj_remaining_total: number;
+            players_points: { [player_id: string]: number };
+            players_proj_remaining: { [player_id: string]: number };
+            starters: string[];
+          };
+          median: {
+            current: number | undefined;
+            projected: number | undefined;
+          };
         };
       };
+      teamGameSecLeft: { [team_id: string]: number };
     };
     updateAt: number;
   };
@@ -742,26 +747,40 @@ export const fetchLiveStats =
         )
       );
 
+      const teamGameSecLeft_obj = Object.fromEntries(
+        response.data.data
+          .filter((player_stat) => allplayers[player_stat.player_id]?.team)
+          .map((player_stat) => [
+            allplayers[player_stat.player_id].team,
+            player_stat.percent_game_left,
+          ])
+      );
+
       const live_matchups: {
-        [key: string]: {
-          user: {
-            points_total: number;
-            proj_remaining_total: number;
-            players_points: { [player_id: string]: number };
-            players_proj_remaining: { [player_id: string]: number };
-          };
-          opp: {
-            points_total: number;
-            proj_remaining_total: number;
-            players_points: { [player_id: string]: number };
-            players_proj_remaining: { [player_id: string]: number };
-          };
-          median: {
-            current: number | undefined;
-            projected: number | undefined;
+        leagues: {
+          [key: string]: {
+            user: {
+              points_total: number;
+              proj_remaining_total: number;
+              players_points: { [player_id: string]: number };
+              players_proj_remaining: { [player_id: string]: number };
+              starters: string[];
+            };
+            opp: {
+              points_total: number;
+              proj_remaining_total: number;
+              players_points: { [player_id: string]: number };
+              players_proj_remaining: { [player_id: string]: number };
+              starters: string[];
+            };
+            median: {
+              current: number | undefined;
+              projected: number | undefined;
+            };
           };
         };
-      } = {};
+        teamGameSecLeft: { [team_id: string]: number };
+      } = { leagues: {}, teamGameSecLeft: teamGameSecLeft_obj };
 
       Object.keys(matchups).forEach((league_id) => {
         let user_starters;
@@ -939,18 +958,20 @@ export const fetchLiveStats =
             2;
         }
 
-        live_matchups[league_id] = {
+        live_matchups.leagues[league_id] = {
           user: {
             points_total: user_points_total,
             proj_remaining_total: user_proj_remaining_total,
             players_points: players_points_user,
             players_proj_remaining: players_proj_remaining_user,
+            starters: user_starters,
           },
           opp: {
             points_total: opp_points_total,
             proj_remaining_total: opp_proj_remaining_total,
             players_points: players_points_opp,
             players_proj_remaining: players_proj_remaining_opp,
+            starters: opp_starters,
           },
           median: {
             current: median_cur,

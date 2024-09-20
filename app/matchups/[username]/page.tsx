@@ -268,7 +268,7 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
         })) ||
     [];
 
-  console.log({ matchups });
+  console.log({ live_stats });
 
   const wins =
     (leagues &&
@@ -340,8 +340,8 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
       matchups &&
       filterLeagueIds(Object.keys(matchups), leagues, type1, type2).filter(
         (league_id) =>
-          live_stats[league_id]?.user?.proj_remaining_total >
-          live_stats[league_id]?.opp?.proj_remaining_total
+          live_stats.leagues[league_id]?.user?.proj_remaining_total >
+          live_stats.leagues[league_id]?.opp?.proj_remaining_total
       ).length) ||
     0;
 
@@ -350,8 +350,8 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
       matchups &&
       filterLeagueIds(Object.keys(matchups), leagues, type1, type2).filter(
         (league_id) =>
-          live_stats[league_id]?.user?.proj_remaining_total <
-          live_stats[league_id]?.opp?.proj_remaining_total
+          live_stats.leagues[league_id]?.user?.proj_remaining_total <
+          live_stats.leagues[league_id]?.opp?.proj_remaining_total
       ).length) ||
     0;
 
@@ -360,8 +360,8 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
       matchups &&
       filterLeagueIds(Object.keys(matchups), leagues, type1, type2).filter(
         (league_id) =>
-          live_stats[league_id]?.user?.proj_remaining_total ===
-          live_stats[league_id]?.opp?.proj_remaining_total
+          live_stats.leagues[league_id]?.user?.proj_remaining_total ===
+          live_stats.leagues[league_id]?.opp?.proj_remaining_total
       ).length) ||
     0;
 
@@ -370,9 +370,9 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
       matchups &&
       filterLeagueIds(Object.keys(matchups), leagues, type1, type2).filter(
         (league_id) =>
-          live_stats[league_id]?.median?.projected &&
-          live_stats[league_id]?.user?.proj_remaining_total >
-            live_stats[league_id]?.median?.projected
+          live_stats.leagues[league_id]?.median?.projected &&
+          live_stats.leagues[league_id]?.user?.proj_remaining_total >
+            live_stats.leagues[league_id]?.median?.projected
       ).length) ||
     0;
 
@@ -381,9 +381,9 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
       matchups &&
       filterLeagueIds(Object.keys(matchups), leagues, type1, type2).filter(
         (league_id) =>
-          live_stats[league_id]?.median?.projected &&
-          live_stats[league_id]?.user?.proj_remaining_total <
-            live_stats[league_id]?.median?.projected
+          live_stats.leagues[league_id]?.median?.projected &&
+          live_stats.leagues[league_id]?.user?.proj_remaining_total <
+            live_stats.leagues[league_id]?.median?.projected
       ).length) ||
     0;
 
@@ -666,32 +666,38 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                   const user_bench = Array.from(
                     new Set([
                       ...Object.keys(
-                        live_stats[league_id]?.user?.players_points || {}
+                        live_stats.leagues[league_id]?.user?.players_points ||
+                          {}
                       ),
                       ...Object.keys(
-                        live_stats[league_id]?.user?.players_proj_remaining ||
-                          {}
+                        live_stats.leagues[league_id]?.user
+                          ?.players_proj_remaining || {}
                       ),
                     ])
                   ).filter(
                     (player_id) =>
-                      matchups &&
-                      !matchups[league_id].user.starters.includes(player_id)
+                      live_stats &&
+                      !live_stats.leagues[league_id].user.starters.includes(
+                        player_id
+                      )
                   );
 
                   const opp_bench = Array.from(
                     new Set([
                       ...Object.keys(
-                        live_stats[league_id]?.opp?.players_points || {}
+                        live_stats.leagues[league_id]?.opp?.players_points || {}
                       ),
                       ...Object.keys(
-                        live_stats[league_id]?.opp?.players_proj_remaining || {}
+                        live_stats.leagues[league_id]?.opp
+                          ?.players_proj_remaining || {}
                       ),
                     ])
                   ).filter(
                     (player_id) =>
-                      matchups &&
-                      !matchups[league_id].opp.starters.includes(player_id)
+                      live_stats &&
+                      !live_stats.leagues[league_id].opp.starters.includes(
+                        player_id
+                      )
                   );
                   return {
                     id: league_id,
@@ -708,47 +714,51 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                       },
                       {
                         text:
-                          live_stats[
+                          live_stats.leagues[
                             league_id
                           ]?.user?.proj_remaining_total?.toFixed(1) || "-",
                         colspan: 1,
                       },
                       {
                         text:
-                          live_stats[
+                          live_stats.leagues[
                             league_id
                           ]?.opp?.proj_remaining_total?.toFixed(1) || "-",
                         colspan: 1,
                       },
                       {
                         text:
-                          live_stats[league_id]?.median?.projected?.toFixed(
-                            1
-                          ) || "-",
+                          live_stats.leagues[
+                            league_id
+                          ]?.median?.projected?.toFixed(1) || "-",
                         colspan: 1,
                       },
                       {
                         text: (
                           <>
-                            {live_stats[league_id]?.user?.proj_remaining_total >
-                            live_stats[league_id]?.opp?.proj_remaining_total ? (
+                            {live_stats.leagues[league_id]?.user
+                              ?.proj_remaining_total >
+                            live_stats.leagues[league_id]?.opp
+                              ?.proj_remaining_total ? (
                               <span className="green">W</span>
-                            ) : live_stats[league_id]?.user
+                            ) : live_stats.leagues[league_id]?.user
                                 ?.proj_remaining_total <
-                              live_stats[league_id]?.opp
+                              live_stats.leagues[league_id]?.opp
                                 ?.proj_remaining_total ? (
                               <span className="red">L</span>
                             ) : (
                               <span>T</span>
                             )}
-                            {live_stats[league_id]?.median?.projected &&
-                              (live_stats[league_id]?.user
+                            {live_stats.leagues[league_id]?.median?.projected &&
+                              (live_stats.leagues[league_id]?.user
                                 ?.proj_remaining_total >
-                              live_stats[league_id]?.median?.projected ? (
+                              live_stats.leagues[league_id]?.median
+                                ?.projected ? (
                                 <span className="green">W</span>
-                              ) : live_stats[league_id]?.user
+                              ) : live_stats.leagues[league_id]?.user
                                   ?.proj_remaining_total <
-                                live_stats[league_id]?.median?.projected ? (
+                                live_stats.leagues[league_id]?.median
+                                  ?.projected ? (
                                 <span className="red">L</span>
                               ) : (
                                 <span>T</span>
@@ -764,46 +774,51 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                             {user && user.username}{" "}
                             <span>
                               {live_stats &&
-                                live_stats[
+                                live_stats.leagues[
                                   league_id
                                 ]?.user?.points_total?.toFixed(1)}
+                              &nbsp;
                               <em>
                                 (
                                 {live_stats &&
-                                  live_stats[
+                                  live_stats.leagues[
                                     league_id
                                   ]?.user?.proj_remaining_total?.toFixed(1)}
                                 )
                               </em>
                             </span>
                           </div>
-                          <span>
-                            Median
-                            <br />
-                            {live_stats &&
-                              live_stats[league_id]?.median?.current?.toFixed(
-                                1
-                              )}
-                            <em>
-                              (
+                          {live_stats.leagues[league_id]?.median?.current !==
+                          undefined ? (
+                            <span>
+                              Median
+                              <br />
                               {live_stats &&
-                                live_stats[
+                                live_stats.leagues[
                                   league_id
-                                ]?.median?.projected?.toFixed(1)}
-                              )
-                            </em>
-                          </span>
+                                ]?.median?.current?.toFixed(1)}
+                              <em>
+                                (
+                                {live_stats &&
+                                  live_stats.leagues[
+                                    league_id
+                                  ]?.median?.projected?.toFixed(1)}
+                                )
+                              </em>
+                            </span>
+                          ) : null}
                           <div>
                             {opp}{" "}
                             <span>
                               {live_stats &&
-                                live_stats[
+                                live_stats.leagues[
                                   league_id
                                 ]?.opp?.points_total?.toFixed(1)}
+                              &nbsp;
                               <em>
                                 (
                                 {live_stats &&
-                                  live_stats[
+                                  live_stats.leagues[
                                     league_id
                                   ]?.opp?.proj_remaining_total?.toFixed(1)}
                                 )
@@ -816,7 +831,7 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                           half={true}
                           headers={[
                             { text: "Slot", colspan: 1 },
-                            { text: "Player", colspan: 2 },
+                            { text: "Player", colspan: 3 },
                             { text: "Pts", colspan: 1 },
                             { text: "Proj", colspan: 1 },
                           ]}
@@ -828,63 +843,120 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                                   .filter((rp) => rp !== "BN")
                                   .map((rp, index) => {
                                     const player_id =
-                                      matchups[league_id].user.starters[index];
+                                      live_stats.leagues[league_id].user
+                                        .starters[index];
 
                                     const points =
-                                      live_stats[league_id]?.user
+                                      live_stats.leagues[league_id]?.user
                                         ?.players_points?.[player_id] || 0;
                                     const proj =
-                                      live_stats[league_id]?.user
+                                      live_stats.leagues[league_id]?.user
                                         ?.players_proj_remaining?.[player_id] ||
                                       0;
+
+                                    const teamGameSecLeft =
+                                      live_stats.teamGameSecLeft[
+                                        allplayers[player_id].team
+                                      ];
+
+                                    const classname =
+                                      "live " +
+                                      (teamGameSecLeft === 0
+                                        ? "complete"
+                                        : teamGameSecLeft < 1
+                                        ? "inprogress"
+                                        : "scheduled");
+
                                     return {
                                       id: `${rp}_${index}`,
                                       columns: [
                                         {
                                           text: rp,
                                           colspan: 1,
+                                          classname,
                                         },
                                         {
                                           text: allplayers[player_id]
                                             ?.full_name,
+                                          colspan: 3,
+                                          classname,
+                                        },
+                                        {
+                                          text: (
+                                            <div
+                                              className={
+                                                "live_proj" +
+                                                (teamGameSecLeft === 0
+                                                  ? " complete"
+                                                  : "")
+                                              }
+                                            >
+                                              {points.toFixed(1)}
+                                              {teamGameSecLeft > 0 && (
+                                                <em>
+                                                  {(points + proj).toFixed(1)}
+                                                </em>
+                                              )}
+                                            </div>
+                                          ),
                                           colspan: 2,
-                                        },
-                                        {
-                                          text: points.toFixed(1),
-                                          colspan: 1,
-                                        },
-                                        {
-                                          text: (points + proj).toFixed(1),
-                                          colspan: 1,
+                                          classname,
                                         },
                                       ],
                                     };
                                   }),
+
                                 ...user_bench.map((player_id) => {
                                   const points =
-                                    live_stats[league_id].user.players_points[
-                                      player_id
-                                    ] || 0;
+                                    live_stats.leagues[league_id].user
+                                      .players_points[player_id] || 0;
                                   const proj =
-                                    live_stats[league_id].user
+                                    live_stats.leagues[league_id].user
                                       .players_proj_remaining[player_id] || 0;
+
+                                  const teamGameSecLeft =
+                                    live_stats.teamGameSecLeft[
+                                      allplayers[player_id].team
+                                    ];
+
+                                  const classname =
+                                    "bench live " +
+                                    (teamGameSecLeft === 0
+                                      ? "complete"
+                                      : teamGameSecLeft < 1
+                                      ? "inprogress"
+                                      : "scheduled");
                                   return {
                                     id: player_id,
                                     columns: [
-                                      { text: "BN", colspan: 1 },
+                                      { text: "BN", colspan: 1, classname },
                                       {
                                         text:
                                           allplayers[player_id].full_name ||
                                           player_id,
+                                        colspan: 3,
+                                        classname,
+                                      },
+                                      {
+                                        text: (
+                                          <div
+                                            className={
+                                              "live_proj" +
+                                              (teamGameSecLeft === 0
+                                                ? " complete"
+                                                : "")
+                                            }
+                                          >
+                                            {points.toFixed(1)}
+                                            {teamGameSecLeft > 0 && (
+                                              <em>
+                                                {(points + proj).toFixed(1)}
+                                              </em>
+                                            )}
+                                          </div>
+                                        ),
                                         colspan: 2,
-                                      },
-                                      {
-                                        text: points.toFixed(1),
-                                        colspan: 1,
-                                      },
-                                      {
-                                        text: (points + proj).toFixed(1),
-                                        colspan: 1,
+                                        classname,
                                       },
                                     ],
                                   };
@@ -898,7 +970,7 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                           half={true}
                           headers={[
                             { text: "Slot", colspan: 1 },
-                            { text: "Player", colspan: 2 },
+                            { text: "Player", colspan: 3 },
                             { text: "Pts", colspan: 1 },
                             { text: "Proj", colspan: 1 },
                           ]}
@@ -910,63 +982,120 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                                   .filter((rp) => rp !== "BN")
                                   .map((rp, index) => {
                                     const player_id =
-                                      matchups[league_id].opp.starters[index];
+                                      live_stats.leagues[league_id].opp
+                                        .starters[index];
 
                                     const points =
-                                      live_stats[league_id]?.opp
+                                      live_stats.leagues[league_id]?.opp
                                         ?.players_points?.[player_id] || 0;
                                     const proj =
-                                      live_stats[league_id]?.opp
+                                      live_stats.leagues[league_id]?.opp
                                         ?.players_proj_remaining?.[player_id] ||
                                       0;
+
+                                    const teamGameSecLeft =
+                                      live_stats.teamGameSecLeft[
+                                        allplayers[player_id]?.team || "FA"
+                                      ];
+
+                                    const classname =
+                                      "live " +
+                                      (teamGameSecLeft === 0
+                                        ? "complete"
+                                        : teamGameSecLeft < 1
+                                        ? "inprogress"
+                                        : "scheduled");
+
                                     return {
                                       id: `${rp}_${index}`,
                                       columns: [
                                         {
                                           text: rp,
                                           colspan: 1,
+                                          classname,
                                         },
                                         {
                                           text: allplayers[player_id]
                                             ?.full_name,
+                                          colspan: 3,
+                                          classname,
+                                        },
+                                        {
+                                          text: (
+                                            <div
+                                              className={
+                                                "live_proj" +
+                                                (teamGameSecLeft === 0
+                                                  ? " complete"
+                                                  : "")
+                                              }
+                                            >
+                                              {points.toFixed(1)}
+                                              {teamGameSecLeft > 0 && (
+                                                <em>
+                                                  {(points + proj).toFixed(1)}
+                                                </em>
+                                              )}
+                                            </div>
+                                          ),
                                           colspan: 2,
-                                        },
-                                        {
-                                          text: points.toFixed(1),
-                                          colspan: 1,
-                                        },
-                                        {
-                                          text: (points + proj).toFixed(1),
-                                          colspan: 1,
+                                          classname,
                                         },
                                       ],
                                     };
                                   }),
                                 ...opp_bench.map((player_id) => {
                                   const points =
-                                    live_stats[league_id]?.opp
+                                    live_stats.leagues[league_id]?.opp
                                       ?.players_points?.[player_id] || 0;
                                   const proj =
-                                    live_stats[league_id]?.opp
+                                    live_stats.leagues[league_id]?.opp
                                       ?.players_proj_remaining?.[player_id] ||
                                     0;
+
+                                  const teamGameSecLeft =
+                                    live_stats.teamGameSecLeft[
+                                      allplayers[player_id].team
+                                    ];
+
+                                  const classname =
+                                    "bench live " +
+                                    (teamGameSecLeft === 0
+                                      ? "complete"
+                                      : teamGameSecLeft < 1
+                                      ? "inprogress"
+                                      : "scheduled");
                                   return {
                                     id: player_id,
                                     columns: [
-                                      { text: "BN", colspan: 1 },
+                                      { text: "BN", colspan: 1, classname },
                                       {
                                         text:
                                           allplayers[player_id]?.full_name ||
                                           player_id,
+                                        colspan: 3,
+                                        classname,
+                                      },
+                                      {
+                                        text: (
+                                          <div
+                                            className={
+                                              "live_proj" +
+                                              (teamGameSecLeft === 0
+                                                ? " complete"
+                                                : "")
+                                            }
+                                          >
+                                            {points.toFixed(1)}
+                                            {teamGameSecLeft > 0 && (
+                                              <em>
+                                                {(points + proj).toFixed(1)}
+                                              </em>
+                                            )}
+                                          </div>
+                                        ),
                                         colspan: 2,
-                                      },
-                                      {
-                                        text: points.toFixed(1),
-                                        colspan: 1,
-                                      },
-                                      {
-                                        text: (points + proj).toFixed(1),
-                                        colspan: 1,
+                                        classname,
                                       },
                                     ],
                                   };
