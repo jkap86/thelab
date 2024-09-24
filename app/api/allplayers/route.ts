@@ -61,6 +61,11 @@ export async function GET(req: NextRequest) {
   const state_json = JSON.parse(state_jsonString);
 
   if (state_json.updatedAt > new Date().getTime() - 1 * 60 * 60 * 1000) {
+    console.log(
+      `state was updated - ${
+        new Date().getTime() - state_json.updatedAt
+      } ms ago`
+    );
     data.state = state_json.data;
   } else {
     console.log("Updating STATE...");

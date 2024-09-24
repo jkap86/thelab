@@ -1,1 +1,15 @@
-{"data":{"week":3,"leg":3,"season":"2024","season_type":"regular","league_season":"2024","previous_season":"2023","season_start_date":"2024-09-05","display_week":3,"league_create_season":"2024","season_has_scores":true},"updatedAt":1726867624370}
+{
+  "data": {
+    "week": 3,
+    "leg": 3,
+    "season": "2024",
+    "season_type": "regular",
+    "league_season": "2024",
+    "season_start_date": "2024-09-05",
+    "previous_season": "2023",
+    "display_week": 3,
+    "league_create_season": "2024",
+    "season_has_scores": true
+  },
+  "updatedAt": 1726688899368
+}
