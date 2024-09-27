@@ -26,7 +26,7 @@ const Search: React.FC<SearchProps> = ({
 
   useEffect(() => {
     setSearchText(searched || "");
-  }, []);
+  }, [searched]);
 
   const handleSearch = (input: string) => {
     const match = options.find(

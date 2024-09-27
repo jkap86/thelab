@@ -1,16 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import thelablogo from "../../public/images/thelab.png";
 import Image from "next/image";
 import "../../styles/home.css";
 import Heading from "@/components/Heading";
 
-const Hompage: React.FC = () => {
+const Homepage: React.FC = () => {
   const [tab, setTab] = useState("Leagues");
   const [username_searched, setUsername_searched] = useState("");
   const [leagueId, setLeagueId] = useState("");
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    if (tab === "Picktracker") {
+      setLeagueId(value);
+    } else {
+      setUsername_searched(value);
+    }
+  };
 
   return (
     <>
@@ -37,11 +47,7 @@ const Hompage: React.FC = () => {
                   type="text"
                   value={tab === "Picktracker" ? leagueId : username_searched}
                   placeholder={tab === "Picktracker" ? "League ID" : "Username"}
-                  onChange={(e) =>
-                    tab === "Picktracker"
-                      ? setLeagueId(e.target.value)
-                      : setUsername_searched(e.target.value)
-                  }
+                  onChange={handleInputChange}
                 />
                 {/* Submit link to navigate to page */}
                 <Link
@@ -58,4 +64,4 @@ const Hompage: React.FC = () => {
   );
 };
 
-export default Hompage;
+export default Homepage;

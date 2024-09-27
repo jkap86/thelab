@@ -14,8 +14,8 @@ import {
 import { AppDispatch, RootState } from "@/redux/store";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { usePathname } from "next/navigation";
 import Heading from "./Heading";
+import { usePathname } from "next/navigation";
 
 interface LayoutProps {
   username: string;
