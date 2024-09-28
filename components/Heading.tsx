@@ -15,7 +15,7 @@ interface HeadingProps {
 
 const Heading: React.FC<HeadingProps> = ({ navTab, week }) => {
   const router = useRouter();
-  const { user } = useSelector((state: RootState) => state.user);
+  const { user, leagues } = useSelector((state: RootState) => state.user);
 
   return (
     <div className="heading_wrapper">
@@ -46,9 +46,10 @@ const Heading: React.FC<HeadingProps> = ({ navTab, week }) => {
             </select>
           </h2>
           <h1>
-            {["Leagues", "Players", "Leaguemates"].includes(navTab) && (
-              <RecordTable />
-            )}
+            {leagues &&
+              ["Leagues", "Players", "Leaguemates"].includes(navTab) && (
+                <RecordTable />
+              )}
           </h1>
           <h2>{navTab === "Matchups" && `Week ${week}`}</h2>
         </>

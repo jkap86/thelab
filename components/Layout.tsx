@@ -16,6 +16,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Heading from "./Heading";
 import { usePathname } from "next/navigation";
+import LeaguesProgress from "./LeaguesProgress";
 
 interface LayoutProps {
   username: string;
@@ -160,6 +161,9 @@ const Layout: React.FC<LayoutProps> = ({ username, content }) => {
     <>
       <Heading navTab={navTab} week={week} />
       <h1>Loading...</h1>
+      <h2>
+        <LeaguesProgress />
+      </h2>
     </>
   ) : (
     <>

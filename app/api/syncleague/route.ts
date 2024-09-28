@@ -37,5 +37,7 @@ export async function GET(req: NextRequest) {
     });
   } catch (err: any) {
     console.log(err.message);
+  } finally {
+    db.release();
   }
 }

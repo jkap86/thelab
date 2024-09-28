@@ -14,6 +14,7 @@ export interface UserState {
   isLoadingUser: boolean;
   errorUser: string | false;
   leagues: { [key: string]: League } | false;
+  leaguesProgress: number;
   isLoadingLeagues: boolean;
   errorLeagues: string | false;
   isSyncing: string | false;
@@ -92,6 +93,7 @@ const initialState: UserState = {
   leagues: false,
   isLoadingLeagues: false,
   errorLeagues: false,
+  leaguesProgress: 0,
   isSyncing: false,
   errorSyncing: false,
   playershares: {},
@@ -147,6 +149,9 @@ const userReducer = (state = initialState, action: UserActionTypes) => {
         draft.leagues = action.payload.leagues;
         draft.playershares = action.payload.playershares;
         draft.leaguemates = action.payload.leaguemates;
+        break;
+      case "SET_LEAGUES_PROGRESS":
+        draft.leaguesProgress = action.payload;
         break;
       case "SYNC_LEAGUE_ERROR":
         draft.isSyncing = false;

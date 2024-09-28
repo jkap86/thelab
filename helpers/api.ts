@@ -190,8 +190,6 @@ export const updateLeagues = async (
     } catch (err) {
       await db.query("ROLLBACK");
       console.error("Error upserting leagues:", err);
-    } finally {
-      db.release();
     }
   } catch (err) {
     console.error("Error connecting to the database:", err);

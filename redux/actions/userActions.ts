@@ -200,6 +200,11 @@ interface setLiveStatsAction {
   };
 }
 
+interface setLeaguesProgress {
+  type: "SET_LEAGUES_PROGRESS";
+  payload: number;
+}
+
 interface resetState {
   type: "RESET_STATE";
 }
@@ -225,6 +230,7 @@ export type UserActionTypes =
   | fetchLmTradesErrorAction
   | fetchFilteredLmTradesEndAction
   | setLiveStatsAction
+  | setLeaguesProgress
   | resetState;
 
 export const resetState = () => (dispatch: AppDispatch) => {
@@ -274,12 +280,48 @@ export const fetchLeagues =
     });
 
     try {
-      const response: { data: League[] } = await axios.get("/api/leagues", {
-        params: { user_id, week },
-      });
+      const response = await fetch(
+        `/api/leagues?user_id=${user_id}&week=${week}`
+      );
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+      let text = "";
+
+      if (reader) {
+        while (!done) {
+          const { value, done: streamDone } = await reader.read();
+          done = streamDone;
+
+          if (value) {
+            text += decoder.decode(value, { stream: true });
+
+            const matches = text.match(/{"league_id":/g);
+
+            dispatch({
+              type: "SET_LEAGUES_PROGRESS",
+              payload: matches?.length || 0,
+            });
+          }
+        }
+      }
+
+      const text_array = text.split("\n");
+
+      const parsedLeaguesArray: League[] = [];
+
+      text_array
+        .filter((chunk) => chunk.length > 0)
+        .forEach((chunk) => {
+          try {
+            parsedLeaguesArray.push(...JSON.parse(chunk));
+          } catch (err) {
+            console.log({ chunk });
+          }
+        });
 
       const leagues_obj = Object.fromEntries(
-        response.data.map((league) => {
+        parsedLeaguesArray.map((league: League) => {
           return [
             league.league_id,
             {
@@ -304,7 +346,8 @@ export const fetchLeagues =
           ];
         })
       );
-      const { playershares, leaguemates } = getPlayerShares(response.data);
+
+      const { playershares, leaguemates } = getPlayerShares(parsedLeaguesArray);
 
       dispatch({
         type: "SET_STATE_LEAGUES",
