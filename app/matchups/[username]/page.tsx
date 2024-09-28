@@ -856,7 +856,7 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
 
                                     const teamGameSecLeft =
                                       live_stats.teamGameSecLeft[
-                                        allplayers[player_id].team
+                                        allplayers[player_id]?.team
                                       ];
 
                                     const classname =
