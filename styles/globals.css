@@ -117,3 +117,8 @@ em.inj {
 .flex {
   display: flex;
 }
+
+option {
+  background-color: black;
+  color: var(--color1);
+}

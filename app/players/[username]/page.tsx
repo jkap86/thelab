@@ -322,9 +322,11 @@ const Players: React.FC<PlayersProps> = ({ params }) => {
                 onChange={(e) => dispatch(setFilterDraftClass(e.target.value))}
               >
                 <option>All</option>
-                {Array.from(Array(25).keys()).map((key) => {
-                  return <option key={key}>{key + 2000}</option>;
-                })}
+                {Array.from(Array(25).keys())
+                  .sort((a, b) => b - a)
+                  .map((key) => {
+                    return <option key={key}>{key + 2000}</option>;
+                  })}
               </select>
             </td>
             <td>

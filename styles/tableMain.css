@@ -111,6 +111,7 @@ td.content {
   position: relative;
   font-family: var(--fontChill);
 }
+
 td.content:hover > div,
 td.content:hover > div > div {
   overflow: visible;

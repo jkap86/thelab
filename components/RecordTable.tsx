@@ -26,8 +26,6 @@ const RecordTable: React.FC = () => {
         <tr>
           <th>Record</th>
           <th>Win %</th>
-          <th>FP</th>
-          <th>FPA</th>
         </tr>
       </thead>
       <tbody>
@@ -45,6 +43,16 @@ const RecordTable: React.FC = () => {
               ).toFixed(4)}
             </em>
           </td>
+        </tr>
+      </tbody>
+      <thead>
+        <tr>
+          <th>FP</th>
+          <th>FPA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
           <td>{record.fp.toLocaleString("en-US")}</td>
           <td>{record.fpa.toLocaleString("en-US")}</td>
         </tr>

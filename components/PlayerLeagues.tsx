@@ -81,6 +81,7 @@ const PlayerLeagues: React.FC<PlayerLeaguesProps> = ({
 
   const takenOptions = [
     ...ownedOptions,
+    { text: "Lm Rank", abbrev: "Lm Rank" },
     { text: "Lm Wins", abbrev: "Lm Wins" },
     {
       text: "Leaguemate Total Projected Points Rank",

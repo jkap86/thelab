@@ -368,6 +368,19 @@ export const getLeaguesSortValue = (
         values_s.findIndex((v) => v.roster_id === league.userRoster.roster_id) +
         1;
       break;
+    case "Lm Rank":
+      const lm_rank =
+        [...(league.rosters || [])]
+          .sort(
+            (a, b) =>
+              (b.wins || 0) - (a.wins || 0) ||
+              (a.losses || 0) - (b.losses || 0) ||
+              (b.fp || 0) - (a.fp || 0)
+          )
+          .findIndex((r) => r.roster_id === lmroster?.roster_id) + 1;
+
+      sortValue = lm_rank;
+      break;
     case "LmT Proj":
       const lm_t_rank =
         [...(league.rosters || [])]

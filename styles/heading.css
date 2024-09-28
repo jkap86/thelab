@@ -110,10 +110,11 @@ a.home:hover {
 }
 
 table.record {
-  min-width: 50%;
+  max-width: 80%;
   width: fit-content;
   margin: auto;
   table-layout: auto;
+  box-shadow: 0 0 2rem white;
 }
 
 table.record td,
@@ -121,7 +122,17 @@ table.record th {
   font-family: var(--fontChill);
   text-align: center;
   letter-spacing: 0.25rem;
-  box-shadow: inset 0 0 2rem yellow;
+
   font-size: 2.5rem;
   padding: 1rem;
+}
+
+table.record th {
+  background-color: gray;
+  box-shadow: inset 0 0 5rem black;
+}
+
+table.record td {
+  background-color: var(--color3);
+  box-shadow: inset 0 0 5rem var(--color2);
 }
