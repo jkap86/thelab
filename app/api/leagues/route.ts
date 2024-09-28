@@ -19,8 +19,8 @@ export async function GET(req: NextRequest) {
       `https://api.sleeper.app/v1/user/${user_id_searched}/leagues/nfl/${process.env.SEASON}`
     );
 
-    const processLeagues = async (leagues: LeagueDb[]) => {
-      const league_ids = leagues.map(
+    const processLeagues = async (leaguesBatch: LeagueDb[]) => {
+      const league_ids = leaguesBatch.map(
         (league: SleeperLeague) => league.league_id
       );
 
@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
         (league) => league.league_id
       );
 
-      const leaguesToUpdate = leagues.filter(
+      const leaguesToUpdate = leaguesBatch.filter(
         (league: SleeperLeague) => !upToDateLeagueIds.includes(league.league_id)
       );
 
@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
         );
 
         if (userRoster) {
-          const index = leagues.findIndex(
+          const index = leagues.data.findIndex(
             (league_sleeper: LeagueDb) =>
               league_sleeper.league_id === league.league_id
           );
