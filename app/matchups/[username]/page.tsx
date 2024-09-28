@@ -906,61 +906,64 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                                     };
                                   }),
 
-                                ...user_bench.map((player_id) => {
-                                  const points =
-                                    live_stats.leagues[league_id].user
-                                      .players_points[player_id] || 0;
-                                  const proj =
-                                    live_stats.leagues[league_id].user
-                                      .players_proj_remaining[player_id] || 0;
+                                ...user_bench
+                                  .map((player_id) => {
+                                    const points =
+                                      live_stats.leagues[league_id].user
+                                        .players_points[player_id] || 0;
+                                    const proj =
+                                      live_stats.leagues[league_id].user
+                                        .players_proj_remaining[player_id] || 0;
 
-                                  const teamGameSecLeft =
-                                    live_stats.teamGameSecLeft[
-                                      allplayers[player_id].team
-                                    ];
+                                    const teamGameSecLeft =
+                                      live_stats.teamGameSecLeft[
+                                        allplayers[player_id].team
+                                      ];
 
-                                  const classname =
-                                    "bench live " +
-                                    (teamGameSecLeft === 0
-                                      ? "complete"
-                                      : teamGameSecLeft < 1
-                                      ? "inprogress"
-                                      : "scheduled");
-                                  return {
-                                    id: player_id,
-                                    columns: [
-                                      { text: "BN", colspan: 1, classname },
-                                      {
-                                        text:
-                                          allplayers[player_id].full_name ||
-                                          player_id,
-                                        colspan: 3,
-                                        classname,
-                                      },
-                                      {
-                                        text: (
-                                          <div
-                                            className={
-                                              "live_proj" +
-                                              (teamGameSecLeft === 0
-                                                ? " complete"
-                                                : "")
-                                            }
-                                          >
-                                            {points.toFixed(1)}
-                                            {teamGameSecLeft > 0 && (
-                                              <em>
-                                                {(points + proj).toFixed(1)}
-                                              </em>
-                                            )}
-                                          </div>
-                                        ),
-                                        colspan: 2,
-                                        classname,
-                                      },
-                                    ],
-                                  };
-                                }),
+                                    const classname =
+                                      "bench live " +
+                                      (teamGameSecLeft === 0
+                                        ? "complete"
+                                        : teamGameSecLeft < 1
+                                        ? "inprogress"
+                                        : "scheduled");
+                                    return {
+                                      id: player_id,
+                                      sort: points + proj,
+                                      columns: [
+                                        { text: "BN", colspan: 1, classname },
+                                        {
+                                          text:
+                                            allplayers[player_id].full_name ||
+                                            player_id,
+                                          colspan: 3,
+                                          classname,
+                                        },
+                                        {
+                                          text: (
+                                            <div
+                                              className={
+                                                "live_proj" +
+                                                (teamGameSecLeft === 0
+                                                  ? " complete"
+                                                  : "")
+                                              }
+                                            >
+                                              {points.toFixed(1)}
+                                              {teamGameSecLeft > 0 && (
+                                                <em>
+                                                  {(points + proj).toFixed(1)}
+                                                </em>
+                                              )}
+                                            </div>
+                                          ),
+                                          colspan: 2,
+                                          classname,
+                                        },
+                                      ],
+                                    };
+                                  })
+                                  .sort((a, b) => b.sort - a.sort),
                               ]) ||
                             []
                           }
@@ -1030,7 +1033,7 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                                                   : "")
                                               }
                                             >
-                                              {points.toFixed(1)}
+                                              <p>{points.toFixed(1)}</p>
                                               {teamGameSecLeft > 0 && (
                                                 <em>
                                                   {(points + proj).toFixed(1)}

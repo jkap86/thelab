@@ -17,12 +17,3 @@ table.filters select {
   color: var(--color1);
   font-weight: 900;
 }
-
-div.live_proj {
-  display: flex;
-  justify-content: space-between;
-}
-
-div.live_proj.complete {
-  justify-content: center;
-}

@@ -200,6 +200,7 @@ td.content.live > div {
 td.content.live.complete > div {
   font-weight: 900;
   color: white;
+  box-shadow: none;
 }
 
 td.content.live.inprogress > div {
@@ -220,4 +221,19 @@ td.content.inprogress.live {
 
 table.half * {
   font-size: 3rem;
+}
+
+div.live_proj {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+div.live_proj > em {
+  align-self: flex-end;
+}
+
+div.live_proj.complete {
+  align-items: center;
 }
