@@ -18,6 +18,7 @@ export type LeagueDb = {
   name: string;
   avatar: string;
   season: string;
+  status: string;
   settings: { [key: string]: string };
   scoring_settings: { [key: string]: number };
   roster_positions: string[];

@@ -168,6 +168,7 @@ export const updateLeagues = async (
             name: league.data.name,
             avatar: league.data.avatar,
             season: league.data.season,
+            status: league.data.status,
             settings: league.data.settings,
             scoring_settings: league.data.scoring_settings,
             roster_positions: league.data.roster_positions,
@@ -471,12 +472,13 @@ export const upsertLeagues = async (
 ) => {
   console.log("Upserting...");
   const upsertLeaguesQuery = `
-    INSERT INTO leagues (league_id, name, avatar, season, settings, scoring_settings, roster_positions, rosters, updatedat)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    INSERT INTO leagues (league_id, name, avatar, season, status, settings, scoring_settings, roster_positions, rosters, updatedat)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
     ON CONFLICT (league_id) DO UPDATE SET
       name = EXCLUDED.name,
       avatar = EXCLUDED.avatar,
       season = EXCLUDED.season,
+      status = EXCLUDED.status,
       settings = EXCLUDED.settings,
       scoring_settings = EXCLUDED.scoring_settings,
       roster_positions = EXCLUDED.roster_positions,
@@ -491,6 +493,7 @@ export const upsertLeagues = async (
         league.name,
         league.avatar,
         league.season,
+        league.status,
         JSON.stringify(league.settings),
         JSON.stringify(league.scoring_settings),
         JSON.stringify(league.roster_positions),
@@ -498,7 +501,7 @@ export const upsertLeagues = async (
         league.updatedat,
       ]);
     } catch (err: any) {
-      console.log(err.message);
+      console.log(err.message + " LEAGUES");
     }
   }
 };
