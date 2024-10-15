@@ -63,7 +63,7 @@ const Matchup: React.FC<MatchupProps> = ({ matchups, league_id }) => {
 
             const classname =
               (!matchup.optimal_starters.some(
-                (os) => os.player_id === matchup.starters[index]
+                (os) => os.player_id === matchup.starters?.[index]
               )
                 ? "red"
                 : "") +

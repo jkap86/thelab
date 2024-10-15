@@ -156,23 +156,8 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
     (leagues &&
       matchups &&
       filterLeagueIds(Object.keys(matchups), leagues, type1, type2)
-        .sort((a, b) => leagues[a].index - leagues[b].index)
+        .sort((a, b) => leagues[a]?.index - leagues[b]?.index)
         .map((league_id) => {
-          const user_matchup = matchups[league_id].user;
-          const delta =
-            user_matchup &&
-            (user_matchup.starters.some(
-              (s) =>
-                !user_matchup.optimal_starters
-                  .map((os) => os.player_id)
-                  .includes(s)
-            ) ||
-              user_matchup.optimal_starters.some(
-                (os) => !user_matchup.starters?.includes(os.player_id)
-              ))
-              ? user_matchup.optimal_proj - user_matchup.actual_proj
-              : <>&#10003;</> || "-";
-
           return {
             id: league_id,
             columns: [
