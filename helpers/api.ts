@@ -119,7 +119,7 @@ export const updateLeagues = async (
               });
             });
 
-          if (week && !league_ids_db.includes(leagueToUpdate.league_id)) {
+          if (week) {
             const trades_current = await getTrades(
               leagueToUpdate,
               week,
@@ -128,35 +128,38 @@ export const updateLeagues = async (
             );
 
             tradesBatch.push(...trades_current);
-            let prev_week = parseInt(week) - 1;
 
-            while (prev_week > 0) {
-              const matchups_prev = await axios.get(
-                `https://api.sleeper.app/v1/league/${leagueToUpdate.league_id}/matchups/${prev_week}`
-              );
+            if (!league_ids_db.includes(leagueToUpdate.league_id)) {
+              let prev_week = parseInt(week) - 1;
 
-              matchups_prev.data.forEach((matchup: SleeperMatchup) => {
-                matchupsBatch.push({
-                  week: prev_week,
-                  league_id: league.data.league_id,
-                  matchup_id: matchup.matchup_id,
-                  roster_id: matchup.roster_id,
-                  players: matchup.players,
-                  starters: matchup.starters,
-                  updatedat: new Date(),
+              while (prev_week > 0) {
+                const matchups_prev = await axios.get(
+                  `https://api.sleeper.app/v1/league/${leagueToUpdate.league_id}/matchups/${prev_week}`
+                );
+
+                matchups_prev.data.forEach((matchup: SleeperMatchup) => {
+                  matchupsBatch.push({
+                    week: prev_week,
+                    league_id: league.data.league_id,
+                    matchup_id: matchup.matchup_id,
+                    roster_id: matchup.roster_id,
+                    players: matchup.players,
+                    starters: matchup.starters,
+                    updatedat: new Date(),
+                  });
                 });
-              });
 
-              const trades_prev = await getTrades(
-                leagueToUpdate,
-                prev_week.toString(),
-                rosters_w_username,
-                upcoming_draft
-              );
+                const trades_prev = await getTrades(
+                  leagueToUpdate,
+                  prev_week.toString(),
+                  rosters_w_username,
+                  upcoming_draft
+                );
 
-              tradesBatch.push(...trades_prev);
+                tradesBatch.push(...trades_prev);
 
-              prev_week--;
+                prev_week--;
+              }
             }
           }
 
@@ -592,6 +595,7 @@ export const upsertMatchups = async (db: PoolClient, matchups: Matchup[]) => {
 };
 
 export const upsertTrades = async (db: PoolClient, trades: Trade[]) => {
+  console.log(`upserting ${trades.length} trades...`);
   if (trades.length === 0) return;
 
   const upsertTradesQuery = `

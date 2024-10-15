@@ -7,7 +7,7 @@ import { updateLeagues } from "@/helpers/api";
 
 export async function GET(req: NextRequest) {
   const db = await pool.connect();
-  const league_update_cutoff: Date = new Date(Date.now() - 6 * 60 * 60 * 1000);
+  const league_update_cutoff: Date = new Date(Date.now() - 3 * 60 * 60 * 1000);
 
   const { searchParams } = new URL(req.url);
 
