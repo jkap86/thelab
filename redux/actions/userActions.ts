@@ -850,8 +850,8 @@ export const fetchLiveStats =
 
           opp_starters = optimal_starters_opp.starters;
         } else {
-          user_starters = matchups[league_id].user.starters;
-          opp_starters = matchups[league_id].opp.starters;
+          user_starters = matchups[league_id].user.starters || [];
+          opp_starters = matchups[league_id].opp.starters || [];
         }
 
         const players_points_user = Object.fromEntries(
@@ -950,9 +950,9 @@ export const fetchLiveStats =
                   leagues[league_id].scoring_settings
                 );
 
-                lm_starters = lm_optimal.starters;
+                lm_starters = lm_optimal.starters || [];
               } else {
-                lm_starters = m.starters;
+                lm_starters = m.starters || [];
               }
 
               const lm_cur = lm_starters.reduce(

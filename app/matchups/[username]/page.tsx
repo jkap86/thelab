@@ -828,8 +828,8 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                                   .filter((rp) => rp !== "BN")
                                   .map((rp, index) => {
                                     const player_id =
-                                      live_stats.leagues[league_id].user
-                                        .starters[index];
+                                      live_stats.leagues[league_id]?.user
+                                        ?.starters?.[index];
 
                                     const points =
                                       live_stats.leagues[league_id]?.user
@@ -970,8 +970,8 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                                   .filter((rp) => rp !== "BN")
                                   .map((rp, index) => {
                                     const player_id =
-                                      live_stats.leagues[league_id].opp
-                                        .starters[index];
+                                      live_stats.leagues[league_id]?.opp
+                                        ?.starters?.[index];
 
                                     const points =
                                       live_stats.leagues[league_id]?.opp
