@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import axios from "axios";
+import axiosInstance from "@/lib/axiosInstance";
 import {
   SleeperDraft,
   SleeperDraftpickPicktracker,
@@ -18,9 +18,11 @@ export async function GET(req: NextRequest) {
   let active_draft;
 
   try {
-    league = await axios.get(`https://api.sleeper.app/v1/league/${league_id}`);
+    league = await axiosInstance.get(
+      `https://api.sleeper.app/v1/league/${league_id}`
+    );
 
-    const drafts = await axios.get(
+    const drafts = await axiosInstance.get(
       `https://api.sleeper.app/v1/league/${league_id}/drafts`
     );
 
@@ -37,10 +39,10 @@ export async function GET(req: NextRequest) {
       );
 
       const allplayers = JSON.parse(allplayers_string);
-      const draft_picks = await axios.get(
+      const draft_picks = await axiosInstance.get(
         `https://api.sleeper.app/v1/draft/${active_draft.draft_id}/picks`
       );
-      const users = await axios.get(
+      const users = await axiosInstance.get(
         `https://api.sleeper.app/v1/league/${league_id}/users`
       );
 

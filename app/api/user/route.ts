@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance from "@/lib/axiosInstance";
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/lib/database/db";
 
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     const result = await pool.query(findUserQuery, [username_searched]);
 
     if (result.rows.length === 0) {
-      const user = await axios.get(
+      const user = await axiosInstance.get(
         `https://api.sleeper.app/v1/user/${username_searched}`
       );
 

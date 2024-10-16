@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance from "@/lib/axiosInstance";
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/lib/database/db";
 import { SleeperLeague } from "@/lib/types/sleeperApiRawTypes";
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   const week = searchParams.get("week");
 
   try {
-    const leagues = await axios.get(
+    const leagues = await axiosInstance.get(
       `https://api.sleeper.app/v1/user/${user_id_searched}/leagues/nfl/${process.env.SEASON}`
     );
 
