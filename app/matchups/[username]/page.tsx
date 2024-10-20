@@ -113,7 +113,7 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
     {
       text: (
         <HeaderDropdown
-          options={columnOptions_lc}
+          options={columnOptions_lc.slice(0, 4)}
           columnText={column1}
           setColumnText={(col) => dispatch(setLineupcheckColumn(1, col))}
         />
@@ -123,7 +123,7 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
     {
       text: (
         <HeaderDropdown
-          options={columnOptions_lc}
+          options={columnOptions_lc.slice(0, 4)}
           columnText={column2}
           setColumnText={(col) => dispatch(setLineupcheckColumn(2, col))}
         />
@@ -133,7 +133,7 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
     {
       text: (
         <HeaderDropdown
-          options={columnOptions_lc}
+          options={columnOptions_lc.slice(0, 4)}
           columnText={column3}
           setColumnText={(col) => dispatch(setLineupcheckColumn(3, col))}
         />
@@ -143,7 +143,7 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
     {
       text: (
         <HeaderDropdown
-          options={columnOptions_lc}
+          options={columnOptions_lc.slice(0, 4)}
           columnText={column4}
           setColumnText={(col) => dispatch(setLineupcheckColumn(4, col))}
         />
@@ -176,7 +176,8 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
                   col,
                   sortLineupcheckBy.asc,
                   matchups[league_id],
-                  leagues[league_id]
+                  leagues[league_id],
+                  live_stats
                 );
 
                 return {

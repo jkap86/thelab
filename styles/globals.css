@@ -29,6 +29,7 @@ body {
   background-color: var(--backgroundcolor);
   color: white;
   height: 100vh;
+  padding-bottom: 20vh;
 }
 
 a {

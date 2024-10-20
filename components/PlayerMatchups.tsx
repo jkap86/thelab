@@ -29,7 +29,9 @@ const PlayerMatchups: React.FC<PlayerMatchupsProps> = ({
   const { type1, type2, allplayers } = useSelector(
     (state: RootState) => state.common
   );
-  const { matchups, leagues } = useSelector((state: RootState) => state.user);
+  const { matchups, leagues, live_stats } = useSelector(
+    (state: RootState) => state.user
+  );
   const {
     column1,
     column2,
@@ -110,7 +112,8 @@ const PlayerMatchups: React.FC<PlayerMatchupsProps> = ({
                           col,
                           sortLineupcheckBy.asc,
                           matchups[league_id],
-                          leagues[league_id]
+                          leagues[league_id],
+                          live_stats
                         )) || { text: "", trendColor: {} };
 
                       return {
