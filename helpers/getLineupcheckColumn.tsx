@@ -14,8 +14,8 @@ export const columnOptions_lc = [
     abbrev: "Mv frm FLX",
   },
   {
-    text: "Original Projected Result",
-    abbrev: "Proj Result O",
+    text: "Initial Projected Result",
+    abbrev: "Proj Result I",
   },
   {
     text: "User Live Projection",
@@ -130,7 +130,7 @@ export const getLineupcheckColumn = (
           ? { color: `rgb(255, 0, 0)` }
           : { color: `rgb(0, 255, 0)` };
       break;
-    case "Proj Result O":
+    case "Proj Result I":
       text = (
         <>
           {user_matchup.actual_proj > matchup.opp.actual_proj ? (

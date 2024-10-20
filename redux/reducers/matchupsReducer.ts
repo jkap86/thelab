@@ -27,7 +27,7 @@ const initialState: MatchupsState = {
   column1: "Opt-Act",
   column2: "Mv to FLX",
   column3: "Mv frm FLX",
-  column4: "Proj Result",
+  column4: "Proj Result I",
   page: 1,
   page_starters: 1,
   searchedStarter: false,

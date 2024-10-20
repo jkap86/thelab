@@ -395,17 +395,19 @@ const Matchups: React.FC<MatchupsProps> = ({ params }) => {
           Live
         </button>
       </h2>
-      {tab === "Live" ? (
-        <h2>
-          {wins_live + median_wins_live}-{losses_live + median_losses_live}
-          {ties_live ? `-${ties}` : ""}
-        </h2>
-      ) : (
-        <h2>
-          {wins + median_wins}-{losses + median_losses}
-          {ties ? `-${ties}` : ""}
-        </h2>
-      )}
+      {
+        <>
+          <h2>
+            Initial: {wins + median_wins}-{losses + median_losses}
+            {ties ? `-${ties}` : ""}
+          </h2>
+          <h2>
+            Live: {wins_live + median_wins_live}-
+            {losses_live + median_losses_live}
+            {ties_live ? `-${ties}` : ""}
+          </h2>
+        </>
+      }
       {tab === "Starters" && (
         <table className="filters">
           <thead>
