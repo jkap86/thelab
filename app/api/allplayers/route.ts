@@ -14,6 +14,8 @@ export async function GET(req: NextRequest) {
 
   if (allplayers.updatedAt > new Date().getTime() - 24 * 60 * 60 * 1000) {
     data.allplayers = allplayers.data;
+
+    console.log(`Last ALLPLAYERS update - ${new Date(allplayers.updatedAt)}`);
   } else {
     console.log("Updating Allplayers...");
 
@@ -61,12 +63,9 @@ export async function GET(req: NextRequest) {
   const state_json = JSON.parse(state_jsonString);
 
   if (state_json.updatedAt > new Date().getTime() - 1 * 60 * 60 * 1000) {
-    console.log(
-      `state was updated - ${
-        new Date().getTime() - state_json.updatedAt
-      } ms ago`
-    );
     data.state = state_json.data;
+
+    console.log(`Last STATE update - ${new Date(state_json.updatedAt)}`);
   } else {
     console.log("Updating STATE...");
 
