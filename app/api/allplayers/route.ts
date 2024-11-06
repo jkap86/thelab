@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import axiosInstance from "@/lib/axiosInstance";
-import fs from "fs";
+import pool from "@/lib/database/db";
 import { Allplayer } from "@/lib/types";
 
 export async function GET(req: NextRequest) {
@@ -9,13 +9,19 @@ export async function GET(req: NextRequest) {
     state: { [key: string]: string | number };
   } = { allplayers: [], state: {} };
 
-  const allplayers_json = fs.readFileSync("./data/allplayers.json", "utf-8");
-  const allplayers = JSON.parse(allplayers_json);
+  const allplayers_db = await pool.query(
+    `SELECT * FROM common WHERE name = $1;`,
+    ["allplayers"]
+  );
 
-  if (allplayers.updatedAt > new Date().getTime() - 24 * 60 * 60 * 1000) {
+  const allplayers = allplayers_db.rows[0];
+
+  if (
+    allplayers?.updatedat > new Date(new Date().getTime() - 24 * 60 * 60 * 1000)
+  ) {
     data.allplayers = allplayers.data;
 
-    console.log(`Last ALLPLAYERS update - ${new Date(allplayers.updatedAt)}`);
+    console.log(`Last ALLPLAYERS update - ${allplayers.updatedat}`);
   } else {
     console.log("Updating Allplayers...");
 
@@ -43,12 +49,13 @@ export async function GET(req: NextRequest) {
         });
       });
 
-      fs.writeFileSync(
-        "./data/allplayers.json",
-        JSON.stringify({
-          data: allplayers_array,
-          updatedAt: new Date().getTime(),
-        })
+      await pool.query(
+        `
+          INSERT INTO common (name, data, updatedat) 
+          VALUES ($1, $2, $3)
+          RETURNING *;
+        `,
+        ["allplayers", JSON.stringify(allplayers_array), new Date()]
       );
 
       data.allplayers = allplayers_array;
@@ -59,13 +66,16 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  const state_jsonString = fs.readFileSync("./data/state.json", "utf-8");
-  const state_json = JSON.parse(state_jsonString);
+  const state_db = await pool.query(`SELECT * FROM common WHERE name = $1;`, [
+    "state",
+  ]);
 
-  if (state_json.updatedAt > new Date().getTime() - 1 * 60 * 60 * 1000) {
-    data.state = state_json.data;
+  const state = state_db.rows[0];
 
-    console.log(`Last STATE update - ${new Date(state_json.updatedAt)}`);
+  if (state?.updatedat > new Date(new Date().getTime() - 1 * 60 * 60 * 1000)) {
+    data.state = state.data;
+
+    console.log(`Last STATE update - ${state.updatedAt}`);
   } else {
     console.log("Updating STATE...");
 
@@ -74,18 +84,18 @@ export async function GET(req: NextRequest) {
         "https://api.sleeper.app/v1/state/nfl"
       );
 
-      fs.writeFileSync(
-        "./data/state.json",
-        JSON.stringify({
-          data: state_updated.data,
-          updatedAt: new Date().getTime(),
-        })
+      await pool.query(
+        `
+          INSERT INTO common (name, data, updatedat) 
+          VALUES ($1, $2, $3)
+          RETURNING *;
+        `,
+        ["state", state_updated.data, new Date()]
       );
 
       data.state = state_updated.data;
     } catch (err: any) {
       console.log(err.message);
-      data.state = state_json.data;
     }
   }
   return NextResponse.json(data, { status: 200 });
