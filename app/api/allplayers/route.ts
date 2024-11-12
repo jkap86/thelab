@@ -53,6 +53,10 @@ export async function GET(req: NextRequest) {
         `
           INSERT INTO common (name, data, updatedat) 
           VALUES ($1, $2, $3)
+          ON CONFLICT (name) 
+          DO UPDATE SET 
+            data = EXCLUDED.data,
+            updatedat = EXCLUDED.updatedat
           RETURNING *;
         `,
         ["allplayers", JSON.stringify(allplayers_array), new Date()]
@@ -88,6 +92,10 @@ export async function GET(req: NextRequest) {
         `
           INSERT INTO common (name, data, updatedat) 
           VALUES ($1, $2, $3)
+          ON CONFLICT (name) 
+          DO UPDATE SET 
+            data = EXCLUDED.data,
+            updatedat = EXCLUDED.updatedat
           RETURNING *;
         `,
         ["state", state_updated.data, new Date()]
